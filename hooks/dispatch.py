@@ -86,7 +86,8 @@ def rel(p: Path) -> str:
 
 
 def run(script: str, *args: str) -> tuple[int, str]:
-    proc = subprocess.run([PY, str(SCRIPTS / script), *args], capture_output=True, text=True, cwd=ROOT)
+    proc = subprocess.run([PY, str(SCRIPTS / script), *args], capture_output=True, text=True, cwd=ROOT,
+                          encoding="utf-8", errors="replace", env={**os.environ, "PYTHONUTF8": "1"})
     return proc.returncode, (proc.stdout + proc.stderr).strip()
 
 

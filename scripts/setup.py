@@ -165,7 +165,8 @@ def step_optional_tools() -> None:
 def step_self_test() -> None:
     py = project_python()
     for name, args in (("Evidence gate", ["scripts/rules_lint.py"]), ("Evals", ["evals/run_evals.py"])):
-        res = subprocess.run([py, *args], cwd=ROOT, capture_output=True, text=True)
+        res = subprocess.run([py, *args], cwd=ROOT, capture_output=True, text=True, encoding="utf-8",
+                             errors="replace", env={**os.environ, "PYTHONUTF8": "1"})
         say(OK if res.returncode == 0 else FAIL, f"{name} {'passed' if res.returncode == 0 else 'failed'}")
         if res.returncode:
             print(res.stdout[-600:] + res.stderr[-600:])

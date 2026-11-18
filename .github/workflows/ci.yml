@@ -7,17 +7,28 @@ on:
 
 jobs:
   check:
-    runs-on: ubuntu-latest
+    name: ${{ matrix.os }} / Python ${{ matrix.python }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-latest, windows-latest]
+        python: ["3.10", "3.13"]
+    env:
+      PYTHONUTF8: "1"
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
         with:
-          python-version: "3.12"
-      - run: sudo apt-get update && sudo apt-get install -y poppler-utils
-      - run: pip install -r requirements.txt
-      - name: Evidence gate
-        run: python scripts/rules_lint.py
+          python-version: ${{ matrix.python }}
+      - name: Install poppler (Linux)
+        if: runner.os == 'Linux'
+        run: sudo apt-get update && sudo apt-get install -y poppler-utils
+      - name: Setup (same command users run)
+        run: python scripts/setup.py
+      - name: Verify setup
+        run: python scripts/setup.py --check --skip-tests
       - name: Unit tests
         run: python -m pytest -q
-      - name: Evals (checkers pass honest CVs and catch fabricated ones)
-        run: python evals/run_evals.py
+      - name: Build Claude app skill zip
+        run: python scripts/setup.py --zip --skip-tests
