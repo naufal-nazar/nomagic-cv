@@ -21,7 +21,17 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
 SCRIPTS = ROOT / "scripts"
-PY = sys.executable or "python3"
+
+
+def _python() -> str:
+    """Prefer the project virtualenv made by scripts/setup.py, if any."""
+    for cand in (ROOT / ".venv" / "bin" / "python", ROOT / ".venv" / "Scripts" / "python.exe"):
+        if cand.exists():
+            return str(cand)
+    return sys.executable or "python3"
+
+
+PY = _python()
 
 
 def read_input() -> dict:
@@ -58,6 +68,16 @@ def target_paths(data: dict) -> list[Path]:
     return out
 
 
+def workspace_dir() -> Path:
+    env = os.environ.get("NOMAGIC_WORKSPACE")
+    return Path(env).expanduser().resolve() if env else (ROOT / "workspace").resolve()
+
+
+def in_workspace(p: Path) -> bool:
+    ws = workspace_dir()
+    return "workspace" in p.parts or p == ws or ws in p.parents
+
+
 def rel(p: Path) -> str:
     try:
         return str(p.relative_to(ROOT))
@@ -71,8 +91,13 @@ def run(script: str, *args: str) -> tuple[int, str]:
 
 
 def session_start(_data: dict) -> int:
-    ws = ROOT / "workspace"
     lines = ["[nomagic-cv] Session context:"]
+    sys.path.insert(0, str(SCRIPTS))
+    try:
+        from cvlib import WORKSPACE as ws  # honours NOMAGIC_WORKSPACE
+    except Exception:  # cvlib needs PyYAML; fall back if setup hasn't run
+        ws = Path(os.environ.get("NOMAGIC_WORKSPACE") or ROOT / "workspace")
+        lines.append("- Dependencies missing. Run: python3 scripts/setup.py")
     if not (ws / "facts.yaml").exists():
         lines.append("- No fact sheet yet. Next step: /nomagic-start to interview the candidate and build workspace/facts.yaml.")
     else:
@@ -88,7 +113,7 @@ def session_start(_data: dict) -> int:
 
 def pre_write(data: dict) -> int:
     for p in target_paths(data):
-        if p.name == "facts.yaml" and "workspace" in p.parts:
+        if p.name == "facts.yaml" and in_workspace(p):
             print(json.dumps({"hookSpecificOutput": {
                 "hookEventName": "PreToolUse",
                 "permissionDecision": "ask",
@@ -101,7 +126,7 @@ def pre_write(data: dict) -> int:
 def post_write(data: dict) -> int:
     problems = []
     for p in target_paths(data):
-        if "workspace" not in p.parts or not p.exists():
+        if not in_workspace(p) or not p.exists():
             continue
         if p.name == "posting.md" and "applications" in p.parts:
             code, out = run("posting_guard.py", str(p), "--sanitize")

@@ -1,11 +1,10 @@
-.PHONY: setup workspace check test evals lint
+.PHONY: setup zip workspace check test evals lint
 
-setup: ## install deps, git privacy hook, workspace folders, skill links
-	python3 -m pip install -r requirements.txt
-	git config core.hooksPath scripts/git-hooks
-	chmod +x scripts/git-hooks/pre-commit scripts/cross_review.sh hooks/dispatch.py
-	$(MAKE) workspace
-	@echo "Done. Open Claude Code or Codex here and run /nomagic-start (or say 'run nomagic-start')."
+setup: ## cross-platform setup (same as python3 scripts/setup.py)
+	python3 scripts/setup.py
+
+zip: ## build dist/nomagic-cv.zip for the Claude app
+	python3 scripts/setup.py --zip --skip-tests
 
 workspace:
 	mkdir -p workspace/cvs/masters workspace/applications

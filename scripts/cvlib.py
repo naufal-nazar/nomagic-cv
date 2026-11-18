@@ -10,7 +10,25 @@ from pathlib import Path
 import yaml
 
 ROOT = Path(__file__).resolve().parent.parent
-WORKSPACE = ROOT / "workspace"
+
+
+def _workspace() -> Path:
+    """Where the candidate's private data lives.
+
+    NOMAGIC_WORKSPACE wins. Inside a clone of the repo it is <repo>/workspace.
+    When the skill runs as a standalone install (e.g. ~/.claude/skills/nomagic-cv
+    or an uploaded skill), it is ~/nomagic-cv-workspace so personal data never
+    sits inside the skill folder.
+    """
+    env = os.environ.get("NOMAGIC_WORKSPACE")
+    if env:
+        return Path(env).expanduser()
+    if (ROOT / "AGENTS.md").exists():
+        return ROOT / "workspace"
+    return Path.home() / "nomagic-cv-workspace"
+
+
+WORKSPACE = _workspace()
 MONTHS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
 
 TAG_RE = re.compile(r"<!--(.*?)-->", re.S)
