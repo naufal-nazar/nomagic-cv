@@ -1,0 +1,21 @@
+# Expected outcomes for the deterministic checks (run_evals.py) and
+# must-haves for scoring model outputs (model_bench.py).
+today: "2026-11-19"
+must_haves: ["SQL", "Power BI", "forecast", "years"]
+cvs:
+  good.md:
+    pass: true
+  fabricated.md:
+    pass: false
+    must_flag:                # each rule id must appear at least once in the errors
+      - R-HONEST-01           # invented numbers, untraced bullet, unknown skill, wrong degree, inflated years
+      - R-HONEST-02           # renamed title
+      - R-HONEST-03           # approximate number written as exact
+      - R-SIGNAL-05           # wrong start date
+    min_errors: 8
+applications:
+  app-consistent:
+    pass: true
+  app-inflated:
+    pass: false
+    must_flag: [R-KNOCK-02, R-HONEST-05]

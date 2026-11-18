@@ -1,0 +1,114 @@
+"""Unit tests for the checkers. Run: python -m pytest -q"""
+import os
+import sys
+from pathlib import Path
+
+import pytest
+
+ROOT = Path(__file__).resolve().parent.parent
+sys.path.insert(0, str(ROOT / "scripts"))
+import consistency_check  # noqa: E402
+import cvlib  # noqa: E402
+import export  # noqa: E402
+import fact_check  # noqa: E402
+import rules_lint  # noqa: E402
+import tracker  # noqa: E402
+
+CASE = ROOT / "evals" / "cases" / "data-analyst"
+FACTS = str(CASE / "facts.yaml")
+
+
+@pytest.fixture(autouse=True)
+def fixed_today(monkeypatch):
+    monkeypatch.setenv("CV_TODAY", "2026-11-19")
+
+
+def write_cv(tmp_path, body: str) -> str:
+    header = ("# Jordan Lee\nData Analyst | SQL\n"
+              "Toronto, ON | jordan.lee@example.com | linkedin.com/in/jordanlee-example\n\n")
+    p = tmp_path / "cv.md"
+    p.write_text(header + body, encoding="utf-8")
+    return str(p)
+
+
+def rules_of(rep):
+    return {e["rule"] for e in rep.errors}
+
+
+def test_good_cv_passes():
+    assert fact_check.check(str(CASE / "good.md"), FACTS).errors == []
+
+
+def test_total_years_merges_overlaps():
+    facts = cvlib.load_facts(FACTS)
+    assert 8 <= cvlib.total_years(facts) < 9
+
+
+def test_invented_number_is_flagged(tmp_path):
+    cv = write_cv(tmp_path, "## Experience\n### Data Analyst, Acme Retail, Toronto | Mar 2021 - Present <!-- role:acme -->\n"
+                            "- Rebuilt the report for 99 managers. <!-- f:acme.r2 -->\n")
+    rep = fact_check.check(cv, FACTS)
+    assert any("99" in e["message"] for e in rep.errors)
+
+
+def test_untagged_bullet_is_flagged(tmp_path):
+    cv = write_cv(tmp_path, "## Experience\n### Data Analyst, Acme Retail, Toronto | Mar 2021 - Present <!-- role:acme -->\n"
+                            "- Did great things.\n")
+    assert "R-HONEST-01" in rules_of(fact_check.check(cv, FACTS))
+
+
+def test_renamed_title_is_flagged(tmp_path):
+    cv = write_cv(tmp_path, "## Experience\n### Senior Data Analyst, Acme Retail, Toronto | Mar 2021 - Present <!-- role:acme -->\n")
+    assert "R-HONEST-02" in rules_of(fact_check.check(cv, FACTS))
+
+
+def test_title_clarifier_is_flagged(tmp_path):
+    cv = write_cv(tmp_path, "## Experience\n### Data Analyst (BI lead), Acme Retail, Toronto | Mar 2021 - Present <!-- role:acme -->\n")
+    assert "R-HONEST-02" in rules_of(fact_check.check(cv, FACTS))
+
+
+def test_approximate_needs_marker(tmp_path):
+    base = "## Experience\n### Data Analyst, Acme Retail, Toronto | Mar 2021 - Present <!-- role:acme -->\n"
+    bad = write_cv(tmp_path, base + "- Built forecasts for 40 stores. <!-- f:acme.r1 -->\n")
+    assert "R-HONEST-03" in rules_of(fact_check.check(bad, FACTS))
+    ok = write_cv(tmp_path, base + "- Built forecasts for about 40 stores. <!-- f:acme.r1 -->\n")
+    assert fact_check.check(ok, FACTS).errors == []
+
+
+def test_years_claim_capped(tmp_path):
+    cv = write_cv(tmp_path, "## Summary\nAnalyst with 9 years in retail. <!-- calc:years -->\n")
+    assert "R-HONEST-01" in rules_of(fact_check.check(cv, FACTS))
+    cv = write_cv(tmp_path, "## Summary\nAnalyst with 8 years in retail. <!-- calc:years -->\n")
+    assert fact_check.check(cv, FACTS).errors == []
+
+
+def test_unknown_skill_flagged(tmp_path):
+    cv = write_cv(tmp_path, "## Skills\nTools: SQL, Kubernetes\n")
+    rep = fact_check.check(cv, FACTS)
+    assert any("Kubernetes" in e["message"] for e in rep.errors)
+
+
+def test_consistency_catches_inflated_years():
+    res = consistency_check.check(str(CASE / "applications" / "app-inflated"), FACTS)
+    assert any(r == "R-KNOCK-02" for _w, r, _m in res["errors"])
+    assert consistency_check.check(str(CASE / "applications" / "app-consistent"), FACTS)["errors"] == []
+
+
+def test_wilson_interval_bounds():
+    lo, hi = tracker.wilson(5, 50)
+    assert 0 < lo < 0.1 < hi < 0.25
+    assert tracker.wilson(0, 0) == (0.0, 1.0)
+
+
+def test_rules_pass_evidence_gate():
+    assert rules_lint.lint() == []
+
+
+def test_export_strips_tags_and_uses_official_titles():
+    facts = cvlib.load_facts(FACTS)
+    s = export.structure(str(CASE / "good.md"), facts)
+    jr = export.to_jsonresume(s, facts)
+    assert jr["work"][0]["position"] == "Data Analyst"
+    assert "<!--" not in cvlib.clean_cv_text(CASE / "good.md")
+    rc = export.to_rendercv(s, facts)
+    assert rc["cv"]["sections"]["experience"][0]["company"] == "Acme Retail"

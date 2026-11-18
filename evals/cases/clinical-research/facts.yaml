@@ -1,0 +1,46 @@
+# Fictional candidate, used to show the framework is field-agnostic.
+schema_version: 1
+preferences:
+  writing_mode: editor
+candidate:
+  name: Sam Rivera
+  location: "Ottawa, ON"
+  email: sam.rivera@example.org
+  phone: "+1 613 555 0142"
+  linkedin: linkedin.com/in/samrivera-example
+role_families:
+  - id: cra
+    target_titles: ["Clinical Research Associate"]
+roles:
+  - id: med
+    title: "Clinical Research Coordinator"
+    employer: "Example Health Research Institute"
+    location: "Ottawa, ON"
+    start: "2022-01"
+    end: present
+    results:
+      - id: med.r1
+        text: "Coordinated 4 phase III oncology trials across 2 sites"
+      - id: med.r2
+        text: "Performed source data verification for 120 participants with zero major audit findings"
+      - id: med.r3
+        text: "Trained 6 new coordinators on GCP and the trial EDC system"
+    tools: ["Medidata Rave", "Veeva Vault", "EDC"]
+education:
+  - id: edu1
+    degree: "Bachelor of Science in Biology"
+    institution: "Example University"
+    location: "Ottawa, ON"
+    year: 2021
+certifications:
+  - id: cert1
+    name: "ICH Good Clinical Practice"
+    acronym: "GCP"
+    issuer: "CITI Program"
+    year: 2022
+skills: ["Source Data Verification (SDV)", "Informed consent", "Regulatory binders", "Medidata Rave", "Veeva Vault"]
+languages:
+  - name: English
+    level: Native
+  - name: Spanish
+    level: Fluent
