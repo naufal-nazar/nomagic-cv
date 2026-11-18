@@ -2,7 +2,7 @@
 
 Each layer clears one gate. Fix them in order: a CV that fails to parse is never searched, and one never searched is never scanned.
 
-**Rule strength.** Each rule carries the grade of its strongest source. A/B-backed rules are defaults. Rules backed only by grade C or practice (the fast scan, verb-first bullets, contact details outside the header) are starting points to test with `/nomagic-review`, not hard rules. Rule ids refer to `rules/rules.yaml`.
+**Rule strength.** Each rule carries the grade of its strongest source. A/B-backed rules are defaults. Rules backed only by grade C or practice (the fast scan, verb-first bullets, contact details outside the header) are starting points to test with `/nomagic-stats`, not hard rules. Rule ids refer to `rules/rules.yaml`.
 
 ## 1. Parse: the machine reads every word
 - Single column, built in a word processor or RenderCV. No tables, text boxes, sidebars, icons, images or skill bars. (R-PARSE-01)

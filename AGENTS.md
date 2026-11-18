@@ -26,7 +26,7 @@ The candidate's data lives in `workspace/`, or in `$NOMAGIC_WORKSPACE` if set.
 
 ## Commands
 Agents without slash commands should treat these phrases as commands and follow the matching file in `.claude/commands/`:
-`nomagic-start`, `nomagic-build`, `nomagic-apply`, `nomagic-check`, `nomagic-track`, `nomagic-review`, `nomagic-outreach`, `nomagic-inbox`, `nomagic-leads`, `nomagic-daily`.
+`nomagic-facts`, `nomagic-master`, `nomagic-tailor`, `nomagic-check`, `nomagic-employers`, `nomagic-outreach`, `nomagic-inbox`, `nomagic-track`, `nomagic-stats`, `nomagic-daily`.
 
 Roles (subagents where supported, otherwise steps): Guide (you), career-consultant, researcher, resume-builder, reviewer, tracker. Definitions: `.claude/agents/`.
 

@@ -30,7 +30,7 @@ preferences:
 3. **An organisation's own published business address**: the "careers@" or "info@" on its website. Lead lists can come from these open-source Google Maps scrapers, which collect businesses' public listings and the emails on their own websites:
    - [gosom/google-maps-scraper](https://github.com/gosom/google-maps-scraper) (MIT): CLI, Docker, web UI and REST API; `-email` visits each business website for addresses.
    - [Mahanaicoach/google-maps-scraper-kit](https://github.com/Mahanaicoach/google-maps-scraper-kit) (MIT): Python CLI and web UI, grid search, `--verify-emails` MX checks, socials.
-   `/nomagic-leads` installs and runs them for you (`scripts/leads.py find "clinical research sites" --city "Toronto, ON"`), saves the export and imports it. You can also import an export you made yourself: `outreach.py import <file> --source gosom|kit`.
+   `/nomagic-employers` installs and runs them for you (`scripts/leads.py find "clinical research sites" --city "Toronto, ON"`), saves the export and imports it. You can also import an export you made yourself: `outreach.py import <file> --source gosom|kit`.
 
 Both projects state that scraping can break Google's Terms of Service and that emails are personal data. Use them lightly, for organisations relevant to the candidate's field, and follow local law. Under Canada's CASL, the usual basis for a cold business email is implied consent through conspicuous publication: the address was published by its owner without a "no unsolicited messages" note, and the message is relevant to their role. Job applications are often treated differently from marketing, but this is not legal advice.
 

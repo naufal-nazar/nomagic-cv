@@ -4,12 +4,15 @@ All notable changes to this project are documented here. Versions follow [Semant
 
 ## [Unreleased]
 
+### Changed
+- Commands renamed to say what they do: `/nomagic-start` → `/nomagic-facts`, `/nomagic-build` → `/nomagic-master`, `/nomagic-apply` → `/nomagic-tailor` (it never submits), `/nomagic-review` → `/nomagic-stats`, `/nomagic-leads` → `/nomagic-employers`
+
 ### Added
 - Outreach in two modes: semi-auto drafts (default) and capped auto-send, with consent basis, follow-up limits, opt-outs and banned phrases enforced by `outreach.py` and a pre-send hook
 - Lead import from gosom/google-maps-scraper and google-maps-scraper-kit exports; MX checks without SMTP probing
 - Email via Claude connectors or official MCP servers (Google Gmail MCP, Microsoft Work IQ Mail), plus SMTP for auto-send
 - `/nomagic-outreach` and `/nomagic-inbox`; replies scanned by the injection guard
-- `/nomagic-leads` runs gosom/google-maps-scraper or google-maps-scraper-kit and imports results
+- `/nomagic-employers` runs gosom/google-maps-scraper or google-maps-scraper-kit and imports results
 - `/nomagic-daily` unattended routine and `schedule.py` (cron, Task Scheduler); permission allowlist for headless runs
 - Versioned CV storage (`versions.py`), HTML/PDF export, branded README visuals
 

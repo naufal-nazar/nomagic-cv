@@ -101,12 +101,12 @@ def session_start(_data: dict) -> int:
         ws = Path(os.environ.get("NOMAGIC_WORKSPACE") or ROOT / "workspace")
         lines.append("- Dependencies missing. Run: python3 scripts/setup.py")
     if not (ws / "facts.yaml").exists():
-        lines.append("- No fact sheet yet. Next step: /nomagic-start to interview the candidate and build workspace/facts.yaml.")
+        lines.append("- No fact sheet yet. Next step: /nomagic-facts to interview the candidate and build workspace/facts.yaml.")
     else:
         fams = sorted(p for p in (ws / "cvs").iterdir() if p.is_dir()) if (ws / "cvs").exists() else []
         frozen = [f for f in fams if (f / "CURRENT").exists()]
         lines.append(f"- Fact sheet present. Role families: {len(fams)}, with a frozen version: {len(frozen)}." +
-                     ("" if frozen else " Next step: /nomagic-build."))
+                     ("" if frozen else " Next step: /nomagic-master."))
         for f in frozen:
             cur = f / (f / "CURRENT").read_text(encoding="utf-8").strip()
             draft = f / "draft.md"

@@ -86,34 +86,34 @@ Data analyst with 6 years in retail analytics. Built demand forecasts for about 
 
 | Command | Who does it | Result |
 |---|---|---|
-| `/nomagic-start` | Career Consultant | Interview, then `facts.yaml` and 1-3 role families. Candidate approves. |
-| `/nomagic-build [family]` | Resume Builder, then Reviewer | Master CV per role family, checked. |
-| `/nomagic-apply <posting>` | Researcher, Builder, Reviewer, Tracker | Tailored CV, letter, screening answers, tracker row. |
+| `/nomagic-facts` | Career Consultant | Interview, then `facts.yaml` and 1-3 role families. Candidate approves. |
+| `/nomagic-master [family]` | Resume Builder, then Reviewer | Master CV per role family, checked. |
+| `/nomagic-tailor <posting>` | Researcher, Builder, Reviewer, Tracker | Tailored CV, letter, screening answers, tracker row. |
 | `/nomagic-check <file>` | Reviewer | Fact, parse and consistency checks with rule-cited feedback. |
 | `/nomagic-track <id> <status>` | Tracker | Status update and follow-up date. |
-| `/nomagic-review` | Tracker, Consultant | Callback rates with uncertainty; one change to try next. |
+| `/nomagic-stats` | Tracker, Consultant | Callback rates with uncertainty; one change to try next. |
 | `/nomagic-outreach` | Guide, Builder, Reviewer | Fact-checked emails to employers: drafts (semi-auto) or checked sends (auto). See `references/outreach.md`. |
 | `/nomagic-inbox` | Guide, Tracker | Replies read safely, recorded, tracker updated, thank-yous drafted. |
-| `/nomagic-leads` | Guide | Organisations found with an open-source Google Maps scraper, imported as contacts. |
+| `/nomagic-employers` | Guide | Organisations found with an open-source Google Maps scraper, imported as contacts. |
 | `/nomagic-daily` | Guide | Unattended routine: inbox, due follow-ups, hygiene, one report. Schedule it with `scripts/schedule.py`. |
 
-Agents without slash commands: the same names work as plain requests ("run nomagic-apply on this posting").
+Agents without slash commands: the same names work as plain requests ("run nomagic-tailor on this posting").
 
-### /nomagic-start: build the fact sheet
+### /nomagic-facts: build the fact sheet
 1. Ask whether the candidate has a current CV, a LinkedIn profile export or other records (PDF, DOCX or pasted text). Store each with `python scripts/versions.py ingest <file> --note "..."`; it lands read-only in `sources/`. Extract facts from these into `facts.yaml`, then interview for what's missing. No CV yet is fine: interview from scratch.
 2. Interview role by role: exact dates, official title, employer, location, results with numbers, tools. One question at a time.
 3. Fuzzy numbers: ask once; accept a range or approximate figure the candidate would defend in an interview, marked `approximate: true`. Otherwise leave the number out.
 4. Agree 1-3 role families (e.g. "backend engineer", "platform engineer") and list target titles under each.
 5. Show the fact sheet and get explicit approval. A hook asks the candidate before any later change to `facts.yaml`.
 
-### /nomagic-build: master CV per role family
+### /nomagic-master: master CV per role family
 1. `python scripts/versions.py init <family>` creates `cvs/<family>/draft.md` from `templates/master-cv.md`. Fill only from the fact sheet.
 2. Apply the six layers in order: Parse, Match, Scan, Prove, Signal, Knockouts (see `references/layers.md`).
 3. Run `python scripts/fact_check.py <cv>` and fix every error.
 4. Hand off to the Reviewer (fresh context, different model family where possible).
 5. When the candidate approves, `python scripts/versions.py freeze <family> --note "what changed and why"`. Freezing refuses a draft that fails the fact check. Later edits go into `draft.md` and become the next version; change one element per version so callback rates stay comparable.
 
-### /nomagic-apply: one posting, minutes not hours
+### /nomagic-tailor: one posting, minutes not hours
 0. Save `posting.md`; `scripts/posting_guard.py --sanitize` writes `posting.clean.md` and flags hidden or instruction-like text (R-SEC-01).
 1. **Researcher** reads `posting.clean.md` and writes `analysis.md`: exact title, must-haves, nice-to-haves, repeated terms, likely screening questions, and must-haves the candidate does not meet.
 2. `python scripts/versions.py apply <family> --company "..." --role "..."` creates the dated application folder with `cv.md` copied from the current frozen version and a `meta.yaml`. **Builder** then changes only: headline title, skills order, highlights, 2-3 bullets toward must-haves.
@@ -123,7 +123,7 @@ Agents without slash commands: the same names work as plain requests ("run nomag
 6. **Tracker** adds the row: `python scripts/tracker.py add --company ... --role ... --family ... --folder <folder>` (the version id comes from `meta.yaml`). Export the final CV under the `export_name` in `meta.yaml`.
 7. The candidate reviews everything and submits it themselves.
 
-### /nomagic-review: honest measurement
+### /nomagic-stats: honest measurement
 Run `python scripts/tracker.py stats`. Report callback rate per CV version with 95% intervals. If intervals overlap or a version has fewer than 30 applications, say there is no winner yet. Suggest changing one element at a time (R-MEASURE-01).
 
 ## Situations

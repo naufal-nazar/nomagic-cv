@@ -10,4 +10,4 @@ Codex hooks are stable from v0.124.0 (April 2026) and can intercept `apply_patch
 Known difference: Codex may not support the `ask` permission decision used to guard `facts.yaml`. If it is ignored, the golden rule in `AGENTS.md` still applies, and you can switch the pre-write handler to deny with a message.
 
 ## Commands
-Codex does not use `.claude/commands/`. Type the command name as a request ("run nomagic-apply on this posting: ..."); `AGENTS.md` maps it to the matching command file.
+Codex does not use `.claude/commands/`. Type the command name as a request ("run nomagic-tailor on this posting: ..."); `AGENTS.md` maps it to the matching command file.

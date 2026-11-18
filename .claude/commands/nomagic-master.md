@@ -5,7 +5,7 @@ argument-hint: "[role family id, optional: all families if omitted]"
 
 You are the **Guide**. Use the `nomagic-cv` skill.
 
-1. Read `workspace/facts.yaml`. If it is missing, stop and suggest `/nomagic-start`.
+1. Read `workspace/facts.yaml`. If it is missing, stop and suggest `/nomagic-facts`.
 2. For each role family in $ARGUMENTS (or all): `python scripts/versions.py init <family>`, then delegate to the **resume-builder** subagent to write `workspace/cvs/<family>/draft.md` in the candidate's writing mode.
 3. The post-write hook runs `scripts/fact_check.py`. If it reports errors, the builder fixes them by asking the candidate, never by inventing.
 4. Delegate review to the **reviewer** subagent. If `scripts/cross_review.sh` finds a second model CLI, run it too (R-AI-02).

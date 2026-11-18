@@ -1,5 +1,5 @@
 ---
-description: Tailor a CV, cover letter and screening answers to one job posting, check them, and log the application
+description: Tailor a CV, cover letter and screening answers to one job posting, check them and log it. Never submits; the candidate does
 argument-hint: "<posting URL or pasted text> [priority]"
 ---
 

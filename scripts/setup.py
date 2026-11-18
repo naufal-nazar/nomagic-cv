@@ -10,7 +10,7 @@ Usage:
   python3 scripts/setup.py --zip           build dist/nomagic-cv.zip to upload to the Claude app
   python3 scripts/setup.py --email gmail   add Google's official Gmail MCP server (drafts) for outreach
   python3 scripts/setup.py --email smtp    prepare auto-send through your own provider's SMTP (app password)
-  python3 scripts/setup.py --leads kit     install an open-source Google Maps scraper for /nomagic-leads
+  python3 scripts/setup.py --leads kit     install an open-source Google Maps scraper for /nomagic-employers
 
 Safe to run more than once. Prints what it did and the next step for each agent.
 """
@@ -269,9 +269,9 @@ def build_zip() -> None:
 
 NEXT = """
 Next step, in the agent you use:
-  Claude Code (terminal, desktop app or IDE)  open this folder, then type  /nomagic-start
-  Codex (CLI, IDE or app)                     open this folder, then say   run nomagic-start
-  Other agents                                open this folder, then say   Read AGENTS.md, then run nomagic-start
+  Claude Code (terminal, desktop app or IDE)  open this folder, then type  /nomagic-facts
+  Codex (CLI, IDE or app)                     open this folder, then say   run nomagic-facts
+  Other agents                                open this folder, then say   Read AGENTS.md, then run nomagic-facts
   Claude app (chat, no terminal)              python3 scripts/setup.py --zip  and upload dist/nomagic-cv.zip
 """
 
@@ -284,7 +284,7 @@ def main() -> int:
     ap.add_argument("--zip", action="store_true", help="build dist/nomagic-cv.zip for the Claude app")
     ap.add_argument("--email", choices=["gmail", "outlook", "smtp"], action="append",
                     help="connect an email provider for outreach (repeatable)")
-    ap.add_argument("--leads", choices=["kit", "gosom"], help="install an open-source Google Maps scraper for /nomagic-leads")
+    ap.add_argument("--leads", choices=["kit", "gosom"], help="install an open-source Google Maps scraper for /nomagic-employers")
     ap.add_argument("--skip-tests", action="store_true")
     a = ap.parse_args()
 

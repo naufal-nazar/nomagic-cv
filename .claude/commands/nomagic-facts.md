@@ -11,4 +11,4 @@ You are the **Guide**. Use the `nomagic-cv` skill. Delegate the interview to the
 4. Ask the writing-mode question (editor default, author opt-in) with the two-sentence evidence summary from the skill.
 5. Agree 1-3 role families and their target titles.
 6. Show the finished fact sheet in plain language and get explicit approval before saving. The pre-write hook will ask the candidate to confirm the write.
-7. End with the next step: `/nomagic-build`.
+7. End with the next step: `/nomagic-master`.

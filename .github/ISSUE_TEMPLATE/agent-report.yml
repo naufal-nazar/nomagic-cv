@@ -15,7 +15,7 @@ body:
       options:
         - label: Skill was discovered
         - label: AGENTS.md rules were followed
-        - label: Commands worked as phrases (e.g. "run nomagic-apply")
+        - label: Commands worked as phrases (e.g. "run nomagic-tailor")
         - label: Checks ran (fact_check, posting_guard, consistency_check)
         - label: Hooks ran automatically
   - type: textarea
