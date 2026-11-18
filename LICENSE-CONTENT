@@ -1,0 +1,20 @@
+NoMagicCV: Evidence-Based CV Framework text
+Copyright (c) 2026 Noufal Nazar
+
+The framework text in this repository (skills/, rules/, README.md, CREDITS.md,
+CONTRIBUTING.md and AGENTS.md) is licensed under the Creative Commons
+Attribution 4.0 International License (CC BY 4.0).
+
+You are free to share and adapt it for any purpose, including commercially,
+as long as you give appropriate credit, link to the license, and indicate
+if changes were made.
+
+Full legal text: https://creativecommons.org/licenses/by/4.0/legalcode
+
+Suggested attribution:
+  "NoMagicCV: the Evidence-Based CV Framework" by Noufal Nazar, CC BY 4.0,
+  https://github.com/naufal-nazar/nomagic-cv
+
+Code (scripts/, hooks/, tests/, evals/*.py) is licensed separately under the
+MIT License; see LICENSE. Summaries of third-party studies credit their authors;
+the studies themselves remain under their publishers' terms.
