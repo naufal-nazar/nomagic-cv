@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="520" height="128" viewBox="0 0 520 128" role="img" aria-label="NoMagicCV: no magic, no myths, just evidence">
+  <title>NoMagicCV</title>
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#12385f"/>
+      <stop offset="1" stop-color="#0b2240"/>
+    </linearGradient>
+  </defs>
+  <g>
+    <rect width="128" height="128" rx="28" fill="url(#bg)" stroke="#ffffff" stroke-opacity=".14" stroke-width="2"/>
+    <path d="M36 26h40l16 16v58a6 6 0 0 1-6 6H36a6 6 0 0 1-6-6V32a6 6 0 0 1 6-6z" fill="#ffffff"/>
+    <path d="M76 26v12a4 4 0 0 0 4 4h12z" fill="#cfe0f1"/>
+    <rect x="40" y="50" width="34" height="5" rx="2.5" fill="#9fb3c8"/>
+    <rect x="40" y="62" width="42" height="5" rx="2.5" fill="#c5d3e1"/>
+    <rect x="40" y="74" width="24" height="5" rx="2.5" fill="#c5d3e1"/>
+    <path d="M60 92l8 8 16-17" fill="none" stroke="#14b8a6" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"/>
+    <path d="M100 14c1.6 7.2 4.8 10.4 12 12-7.2 1.6-10.4 4.8-12 12-1.6-7.2-4.8-10.4-12-12 7.2-1.6 10.4-4.8 12-12z" fill="#fbbf24"/>
+    <path d="M88 38l24-24" stroke="#f97066" stroke-width="5" stroke-linecap="round"/>
+  </g>
+  <g font-family="'Inter','Segoe UI','Helvetica Neue',Arial,sans-serif">
+    <text x="152" y="72" font-size="54" font-weight="800" letter-spacing="-1.2" fill="#f8fafc">NoMagic<tspan fill="#14b8a6">CV</tspan></text>
+    <text x="154" y="104" font-size="19" font-weight="500" fill="#cbd5e1">No magic. No myths. Just evidence.</text>
+  </g>
+</svg>
