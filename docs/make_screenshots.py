@@ -67,7 +67,7 @@ def shot(name: str, title: str, steps: list[tuple[str, str]], width: int = 118) 
 def demo_tracker() -> str:
     """Fictional tracker: v2 looks better, but the sample is too small to say so."""
     rows, n = [], 0
-    for version, total, callbacks in (("be-v1", 22, 2), ("be-v2", 19, 4)):
+    for version, total, callbacks in (("backend-v1", 22, 2), ("backend-v2", 19, 4)):
         for i in range(total):
             n += 1
             rows.append({"id": f"A{n:04d}", "date_applied": "2026-10-01", "company": f"Co{n}", "role": "Backend Engineer",

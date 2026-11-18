@@ -35,13 +35,28 @@ Explain the trade-off in two sentences: AI writing help raised hires in a large 
 Inside the repo the workspace is `workspace/`; in a standalone install (global or uploaded skill) it is `~/nomagic-cv-workspace`; `NOMAGIC_WORKSPACE` overrides both. Scripts and rules ship next to this file in `scripts/` and `rules/`.
 
 ```
-workspace/                    # gitignored, private
-  facts.yaml                  # single source of truth (see templates/facts.example.yaml)
-  cvs/masters/<family>.md     # one master CV per role family
-  applications/<YYYY-MM-DD>-<company>-<role>/
-    posting.md  posting.clean.md  analysis.md  cv.md  letter.md  answers.md  cv.pdf
+workspace/                                  # gitignored, private
+  facts.yaml                                # single source of truth (templates/facts.example.yaml)
+  sources/                                  # originals the candidate gave you; read-only
+    2026-11-19_current-cv.pdf               #   <YYYY-MM-DD>_<slug>.<ext>
+    index.yaml                              #   date, sha256, note per file
+  cvs/<family>/                             # one folder per role family, e.g. cvs/backend/
+    draft.md                                # the ONLY editable master
+    <family>_v<N>_<YYYY-MM-DD>.md           # frozen versions, read-only, e.g. backend_v2_2026-11-25.md
+    CURRENT                                 # name of the latest frozen version
+    CHANGES.md                              # one entry per version: what changed and why
+  applications/<YYYY-MM-DD>_<company>_<role>/   # e.g. 2026-11-19_acme_backend-engineer/
+    meta.yaml                               # base_version, cv_version (e.g. backend-v2), export_name
+    posting.md  posting.clean.md  analysis.md  cv.md  letter.md  answers.md
+    <First>_<Last>_<Role>.pdf               # recruiter-facing export, e.g. Jordan_Lee_Data_Analyst.pdf
   tracker.csv
 ```
+
+Naming rules every agent follows:
+- Slugs are lower-case with hyphens (`backend-engineer`); dates are ISO `YYYY-MM-DD`.
+- Version ids are `<family>-v<N>` (`backend-v2`) and are what the tracker records.
+- Never edit a frozen version or anything in `sources/`; hooks deny it. Change `draft.md`, then freeze.
+- Use `scripts/versions.py` for every move: `ingest`, `init`, `freeze`, `list`, `current`, `diff`, `apply`.
 
 ## CV source format
 
@@ -81,26 +96,27 @@ Data analyst with 6 years in retail analytics. Built demand forecasts for about 
 Agents without slash commands: the same names work as plain requests ("run nomagic-apply on this posting").
 
 ### /nomagic-start: build the fact sheet
-1. Ask for the current CV and LinkedIn text if any. Extract facts into `facts.yaml`.
+1. Ask whether the candidate has a current CV, a LinkedIn profile export or other records (PDF, DOCX or pasted text). Store each with `python scripts/versions.py ingest <file> --note "..."`; it lands read-only in `sources/`. Extract facts from these into `facts.yaml`, then interview for what's missing. No CV yet is fine: interview from scratch.
 2. Interview role by role: exact dates, official title, employer, location, results with numbers, tools. One question at a time.
 3. Fuzzy numbers: ask once; accept a range or approximate figure the candidate would defend in an interview, marked `approximate: true`. Otherwise leave the number out.
 4. Agree 1-3 role families (e.g. "backend engineer", "platform engineer") and list target titles under each.
 5. Show the fact sheet and get explicit approval. A hook asks the candidate before any later change to `facts.yaml`.
 
 ### /nomagic-build: master CV per role family
-1. Load `templates/master-cv.md`. Fill only from the fact sheet.
+1. `python scripts/versions.py init <family>` creates `cvs/<family>/draft.md` from `templates/master-cv.md`. Fill only from the fact sheet.
 2. Apply the six layers in order: Parse, Match, Scan, Prove, Signal, Knockouts (see `references/layers.md`).
 3. Run `python scripts/fact_check.py <cv>` and fix every error.
 4. Hand off to the Reviewer (fresh context, different model family where possible).
+5. When the candidate approves, `python scripts/versions.py freeze <family> --note "what changed and why"`. Freezing refuses a draft that fails the fact check. Later edits go into `draft.md` and become the next version; change one element per version so callback rates stay comparable.
 
 ### /nomagic-apply: one posting, minutes not hours
 0. Save `posting.md`; `scripts/posting_guard.py --sanitize` writes `posting.clean.md` and flags hidden or instruction-like text (R-SEC-01).
 1. **Researcher** reads `posting.clean.md` and writes `analysis.md`: exact title, must-haves, nice-to-haves, repeated terms, likely screening questions, and must-haves the candidate does not meet.
-2. **Builder** copies the role-family master to `cv.md` and changes only: headline title, skills order, highlights, 2-3 bullets toward must-haves.
+2. `python scripts/versions.py apply <family> --company "..." --role "..."` creates the dated application folder with `cv.md` copied from the current frozen version and a `meta.yaml`. **Builder** then changes only: headline title, skills order, highlights, 2-3 bullets toward must-haves.
 3. Missing must-haves are reported to the candidate (R-HONEST-06), never papered over.
 4. Draft `letter.md` for priority roles and `answers.md` from the fact sheet.
 5. Run `fact_check.py`, `consistency_check.py` on the folder, then `parse_check.py` on the exported PDF/DOCX.
-6. **Tracker** adds the row: `python scripts/tracker.py add ...`.
+6. **Tracker** adds the row: `python scripts/tracker.py add --company ... --role ... --family ... --folder <folder>` (the version id comes from `meta.yaml`). Export the final CV under the `export_name` in `meta.yaml`.
 7. The candidate reviews everything and submits it themselves.
 
 ### /nomagic-review: honest measurement

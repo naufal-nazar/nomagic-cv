@@ -31,6 +31,7 @@ AI CV tools write fast and invent freely. NoMagicCV treats your CV like code und
 | 🔍 **Independent review** | A reviewer that never saw the draft, on a different model family: LLMs prefer their own writing ([Xu et al., 2025](https://doi.org/10.1609/aies.v8i3.36755)). |
 | 🛡️ **Injection guard** | Job postings are scanned for hidden text and "ignore previous instructions" before an agent reads them. |
 | 📈 **Honest stats** | Callback rates with 95% intervals. No winner declared from 20 applications. |
+| 🗂️ **Versioned** | Your original CV is kept read-only; every master is frozen as `backend_v2_2026-11-25.md` with a change log, and each application records which version it used. |
 | 🔒 **Private** | Your data stays in `workspace/`; a git hook refuses to commit it. |
 
 ## See it work
@@ -92,12 +93,16 @@ flowchart LR
 | `/nomagic-check <file>` | Reviewer | ranked fixes with rule ids |
 | `/nomagic-track` · `/nomagic-review` | Tracker | follow-ups; callback stats with uncertainty |
 
-Hooks run the checks automatically: before `facts.yaml` changes (asks you), after a posting is saved (injection guard), after a CV is written (fact and consistency checks), after a PDF export (parse test), and before the agent stops (untracked applications).
+Hooks run the checks automatically: before `facts.yaml` changes (asks you), before a frozen CV version or original is edited (blocked), after a posting is saved (injection guard), after a CV is written (fact and consistency checks), after a PDF export (parse test), and before the agent stops (untracked applications).
 
 <details>
 <summary><b>Run the checks without an agent</b></summary>
 
 ```bash
+python scripts/versions.py ingest my-current-cv.pdf            # keep the original, read-only
+python scripts/versions.py init backend                         # cvs/backend/draft.md
+python scripts/versions.py freeze backend --note "first version" # backend_v1_2026-11-19.md
+python scripts/versions.py apply backend --company Acme --role "Backend Engineer"
 python scripts/posting_guard.py posting.md --sanitize
 python scripts/fact_check.py cv.md
 python scripts/consistency_check.py workspace/applications/<folder>
