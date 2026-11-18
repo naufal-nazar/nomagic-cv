@@ -92,6 +92,8 @@ Data analyst with 6 years in retail analytics. Built demand forecasts for about 
 | `/nomagic-check <file>` | Reviewer | Fact, parse and consistency checks with rule-cited feedback. |
 | `/nomagic-track <id> <status>` | Tracker | Status update and follow-up date. |
 | `/nomagic-review` | Tracker, Consultant | Callback rates with uncertainty; one change to try next. |
+| `/nomagic-outreach` | Guide, Builder, Reviewer | Fact-checked emails to employers: drafts (semi-auto) or checked sends (auto). See `references/outreach.md`. |
+| `/nomagic-inbox` | Guide, Tracker | Replies read safely, recorded, tracker updated, thank-yous drafted. |
 
 Agents without slash commands: the same names work as plain requests ("run nomagic-apply on this posting").
 
@@ -130,4 +132,5 @@ Load `references/situations.md` when a case applies: early career, 8+ years, new
 - `references/evidence.md`: graded evidence table
 - `references/myths.md`: myths vs evidence
 - `references/situations.md`: adjustments by situation
+- `references/outreach.md`: outreach modes, contact sources, inbox check
 - `templates/master-cv.md`, `templates/facts.example.yaml`

@@ -38,6 +38,21 @@ Success ends with `NoMagicCV is ready.` To verify later without changing anythin
 | **Claude app** (chat on web or desktop, no terminal) | On a computer: `python3 scripts/setup.py --zip`, then upload `dist/nomagic-cv.zip` in **Customize > Skills** (code execution must be on). | The skill and its checks inside Claude's sandbox; no slash commands or hooks |
 | **Use it in every project** *(user-wide)* | `python3 scripts/setup.py --global claude` or `--global codex` or `--global all` | Skill installed to `~/.claude/skills` or `~/.codex/skills`; data in `~/nomagic-cv-workspace` |
 
+## 3b. Connect email for outreach (optional)
+
+Pick either route; both are supported and gated by the same pre-send hook.
+
+**Connectors** (Claude app, desktop, Claude Code): turn on the Gmail or Microsoft 365 connector in Claude and sign in. No other setup.
+
+**Official MCP servers** (Codex, Claude Code, any MCP client):
+
+| Provider | Command | Notes |
+|---|---|---|
+| Gmail | `python3 scripts/setup.py --email gmail` | Adds Google's official Gmail MCP server to `.mcp.json` and writes a Codex snippet. Developer Preview: enrol, enable the Gmail API and Gmail MCP API, then sign in from `/mcp`. Drafts and reading only. |
+| Microsoft 365 (work) | `python3 scripts/setup.py --email outlook` | Prints the steps for Microsoft's Work IQ Mail MCP, which needs a Microsoft 365 Copilot licence. |
+
+**Auto-send through any provider:** `python3 scripts/setup.py --email smtp` creates `workspace/.smtp.env` (private) for your SMTP host and an app password. Then set `preferences.outreach.mode: auto`.
+
 ## 4. Final check (agents: report this output to the user)
 
 ```bash

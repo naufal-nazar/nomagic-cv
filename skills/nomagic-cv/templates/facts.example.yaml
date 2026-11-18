@@ -5,6 +5,12 @@ schema_version: 1
 preferences:
   writing_mode: editor        # editor (default) | author
   page_limit: 2
+  outreach:                    # optional; see references/outreach.md
+    mode: semi                 # semi (drafts, default) | auto (checked messages are sent)
+    daily_cap: 10
+    followup_days: 10
+    max_followups: 2
+    avoid: []                  # phrases never to use, e.g. ["rejected"]
 
 candidate:
   name: Jordan Lee

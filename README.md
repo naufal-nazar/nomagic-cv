@@ -31,6 +31,7 @@ AI CV tools write fast and invent freely. NoMagicCV treats your CV like code und
 | 🔍 **Independent review** | A reviewer that never saw the draft, on a different model family: LLMs prefer their own writing ([Xu et al., 2025](https://doi.org/10.1609/aies.v8i3.36755)). |
 | 🛡️ **Injection guard** | Job postings are scanned for hidden text and "ignore previous instructions" before an agent reads them. |
 | 📈 **Honest stats** | Callback rates with 95% intervals. No winner declared from 20 applications. |
+| ✉️ **Outreach, two modes** | Semi-auto drafts or capped auto-send through Claude's email **connectors** or the providers' official **MCP servers**, with consent basis, follow-up limits and opt-outs enforced by code and a pre-send hook. |
 | 🗂️ **Versioned** | Your original CV is kept read-only; every master is frozen as `backend_v2_2026-11-25.md` with a change log, and each application records which version it used. |
 | 🔒 **Private** | Your data stays in `workspace/`; a git hook refuses to commit it. |
 
@@ -89,6 +90,7 @@ python3 scripts/setup.py          # macOS, Linux, Windows (py scripts/setup.py)
 | Any other agent | say `Read AGENTS.md, then run nomagic-start` |
 | Claude app (chat) | `python3 scripts/setup.py --zip`, upload `dist/nomagic-cv.zip` in **Customize > Skills** |
 | Every project | `python3 scripts/setup.py --global claude` (or `codex`, `all`) |
+| Email for outreach | **Connector:** turn on Gmail or Microsoft 365 in Claude · **Official MCP:** `python3 scripts/setup.py --email gmail` (or `outlook`) · **Auto-send:** `--email smtp` |
 
 Python 3.10+. Full guide and troubleshooting: [`INSTALL.md`](INSTALL.md).
 
@@ -109,6 +111,8 @@ flowchart LR
 | `/nomagic-apply <posting>` | Researcher → Builder → Reviewer → Tracker | tailored CV, letter, screening answers |
 | `/nomagic-check <file>` | Reviewer | ranked fixes with rule ids |
 | `/nomagic-track` · `/nomagic-review` | Tracker | follow-ups; callback stats with uncertainty |
+| `/nomagic-outreach` | Guide → Builder → Reviewer | employer emails as drafts (semi-auto) or checked sends (auto) |
+| `/nomagic-inbox` | Guide → Tracker | replies scanned for injection, recorded, tracker updated |
 
 Hooks run the checks automatically: before `facts.yaml` changes (asks you), before a frozen CV version or original is edited (blocked), after a posting is saved (injection guard), after a CV is written (fact and consistency checks), after a PDF export (parse test), and before the agent stops (untracked applications).
 
@@ -204,6 +208,9 @@ NoMagicCV connects to these projects rather than copying them. Thank you to thei
 | [ai-job-search](https://github.com/ai-job-search-dev/ai-job-search) | MIT | Inspired the posting integrity gate |
 | [career-ops](https://github.com/santifer/career-ops) | MIT | Inspired the application pipeline and tracker |
 | [JobOps](https://github.com/reggiechan74/jobops) | see repo | Inspired the one-file-per-role source of truth |
+| [google-maps-scraper](https://github.com/gosom/google-maps-scraper) | MIT | Optional source of organisations' published contacts, via `outreach.py import --source gosom` |
+| [google-maps-scraper-kit](https://github.com/Mahanaicoach/google-maps-scraper-kit) | MIT | Optional lead source with MX checks, via `outreach.py import --source kit` |
+| [Gmail MCP server](https://developers.google.com/workspace/gmail/api/reference/mcp) | Google, official | Drafts and inbox reading for semi-auto outreach (`setup.py --email gmail`) |
 | [Agent Skills](https://agentskills.io) | open standard | Packaging format that makes the skill portable across agents |
 
 Details in [`CREDITS.md`](CREDITS.md).
