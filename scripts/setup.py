@@ -10,6 +10,7 @@ Usage:
   python3 scripts/setup.py --zip           build dist/nomagic-cv.zip to upload to the Claude app
   python3 scripts/setup.py --email gmail   add Google's official Gmail MCP server (drafts) for outreach
   python3 scripts/setup.py --email smtp    prepare auto-send through your own provider's SMTP (app password)
+  python3 scripts/setup.py --leads kit     install an open-source Google Maps scraper for /nomagic-leads
 
 Safe to run more than once. Prints what it did and the next step for each agent.
 """
@@ -283,6 +284,7 @@ def main() -> int:
     ap.add_argument("--zip", action="store_true", help="build dist/nomagic-cv.zip for the Claude app")
     ap.add_argument("--email", choices=["gmail", "outlook", "smtp"], action="append",
                     help="connect an email provider for outreach (repeatable)")
+    ap.add_argument("--leads", choices=["kit", "gosom"], help="install an open-source Google Maps scraper for /nomagic-leads")
     ap.add_argument("--skip-tests", action="store_true")
     a = ap.parse_args()
 
@@ -303,6 +305,9 @@ def main() -> int:
         build_zip()
     for provider in a.email or []:
         setup_email(provider)
+    if a.leads:
+        res = subprocess.run([project_python(), str(ROOT / "scripts" / "leads.py"), "install", "--engine", a.leads])
+        say(OK if res.returncode == 0 else FAIL, f"Lead finder ({a.leads}) {'installed' if res.returncode == 0 else 'not installed'}")
     if not a.skip_tests and not problems:
         step_self_test()
 
