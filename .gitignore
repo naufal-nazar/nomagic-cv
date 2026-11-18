@@ -237,3 +237,7 @@ rendercv_output/
 evals/out/
 *.log
 .DS_Store
+
+# Outreach secrets
+.smtp.env
+.mcp.json

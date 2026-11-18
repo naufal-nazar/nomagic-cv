@@ -6,6 +6,7 @@ Hooks only trigger; the scripts in scripts/ do the checking, so every agent gets
   dispatch.py session-start   show what's due and the next step                    (SessionStart)
   dispatch.py pre-write       ask the candidate before facts.yaml changes          (PreToolUse: Write|Edit|MultiEdit|apply_patch)
   dispatch.py post-write      posting guard + fact/consistency/parse checks on written files    (PostToolUse: Write|Edit|MultiEdit|apply_patch|Bash)
+  dispatch.py pre-send       gate email-sending MCP tools: drafts in semi mode, consented recipients in auto (PreToolUse: mcp__.*send.*)
   dispatch.py stop            block finishing while an application is untracked    (Stop)
 
 Reads the hook JSON from stdin. Exit 2 + stderr sends the problem back to the agent to fix.
@@ -141,6 +142,55 @@ def pre_write(data: dict) -> int:
     return 0
 
 
+def _recipients(ti: dict) -> list[str]:
+    found = []
+    for key in ("to", "recipients", "toRecipients", "to_recipients", "cc", "bcc"):
+        v = ti.get(key)
+        if isinstance(v, str):
+            found += re.findall(r"[\w.+-]+@[\w-]+(?:\.[\w-]+)+", v)
+        elif isinstance(v, list):
+            found += re.findall(r"[\w.+-]+@[\w-]+(?:\.[\w-]+)+", json.dumps(v))
+    return sorted({e.lower() for e in found})
+
+
+def pre_send(data: dict) -> int:
+    """Gate every email-sending MCP tool (R-OUT-01..05). Semi mode: drafts only. Auto mode: known, consented
+    recipients within the daily cap."""
+    sys.path.insert(0, str(SCRIPTS))
+    try:
+        import outreach
+    except Exception as exc:  # dependencies missing
+        return _deny(f"Outreach checks unavailable ({exc}). Run scripts/setup.py, then try again.")
+    cfg = outreach.settings()
+    ti = data.get("tool_input") or {}
+    if cfg["mode"] != "auto":
+        return _deny("Outreach is in semi-auto mode: create a draft for the candidate to review instead of sending. "
+                     "To allow sending, the candidate sets preferences.outreach.mode: auto in facts.yaml.")
+    rcpts = _recipients(ti) if isinstance(ti, dict) else []
+    if not rcpts:
+        return _deny("Could not read the recipients of this send; create a draft instead.")
+    known = {c["email"].lower(): c for c in outreach.contacts()}
+    for r in rcpts:
+        c = known.get(r)
+        if not c:
+            return _deny(f"{r} is not in outreach/contacts.csv with a consent basis (R-OUT-01). Add them first.")
+        if c["status"] in ("do-not-contact", "bounced", "closed"):
+            return _deny(f"{r} is marked '{c['status']}' (R-OUT-04).")
+    if outreach.sent_today() >= int(cfg["daily_cap"]):
+        return _deny(f"Daily cap of {cfg['daily_cap']} sends reached (R-OUT-02). Save as a draft.")
+    body = " ".join(str(ti.get(k, "")) for k in ("body", "content", "text", "message", "html_body"))
+    for phrase in cfg.get("avoid") or []:
+        if phrase and phrase.lower() in body.lower():
+            return _deny(f"Message contains '{phrase}', which the candidate asked to avoid (R-OUT-05).")
+    return 0
+
+
+def _deny(reason: str) -> int:
+    print(json.dumps({"hookSpecificOutput": {"hookEventName": "PreToolUse", "permissionDecision": "deny",
+                                             "permissionDecisionReason": reason}}))
+    return 0
+
+
 def post_write(data: dict) -> int:
     problems = []
     for p in target_paths(data):
@@ -187,7 +237,8 @@ def stop(data: dict) -> int:
 
 def main() -> int:
     event = sys.argv[1] if len(sys.argv) > 1 else ""
-    handlers = {"session-start": session_start, "pre-write": pre_write, "post-write": post_write, "stop": stop}
+    handlers = {"session-start": session_start, "pre-write": pre_write, "pre-send": pre_send,
+                "post-write": post_write, "stop": stop}
     if event not in handlers:
         print(__doc__, file=sys.stderr)
         return 0

@@ -1,0 +1,5 @@
+# Google's official Gmail MCP server (Developer Preview; reads and drafts, does not send).
+# Add to ~/.codex/config.toml or a trusted project's .codex/config.toml.
+# Codex config keys change between versions: check developers.openai.com/codex/mcp for yours.
+[mcp_servers.gmail]
+url = "https://gmailmcp.googleapis.com/mcp/v1"

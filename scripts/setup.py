@@ -8,6 +8,8 @@ Usage:
   python3 scripts/setup.py --global codex  install the skill for Codex (CLI, IDE and app)
   python3 scripts/setup.py --codex-hooks   enable automatic checks in Codex for this project
   python3 scripts/setup.py --zip           build dist/nomagic-cv.zip to upload to the Claude app
+  python3 scripts/setup.py --email gmail   add Google's official Gmail MCP server (drafts) for outreach
+  python3 scripts/setup.py --email smtp    prepare auto-send through your own provider's SMTP (app password)
 
 Safe to run more than once. Prints what it did and the next step for each agent.
 """
@@ -207,6 +209,53 @@ def enable_codex_hooks() -> None:
     say(WARN, "Codex hook formats change between versions: check `codex --version` against developers.openai.com/codex/hooks")
 
 
+SMTP_TEMPLATE = """# NoMagicCV auto-send settings. This file stays in your private workspace and is never committed.
+# Use an APP PASSWORD, never your normal password.
+#   Gmail:   smtp.gmail.com, port 587 (needs 2-Step Verification, then create an app password)
+#   iCloud:  smtp.mail.me.com, port 587 (app-specific password from your Apple Account)
+#   Zoho:    smtp.zoho.com, port 587 (app password)
+#   Others:  your provider's SMTP host; port 587 (STARTTLS) or 465 (SSL)
+NOMAGIC_SMTP_HOST=
+NOMAGIC_SMTP_PORT=587
+NOMAGIC_SMTP_USER=
+NOMAGIC_SMTP_PASSWORD=
+# NOMAGIC_SMTP_FROM=Your Name <you@example.com>
+"""
+
+
+def setup_email(provider: str) -> None:
+    sys.path.insert(0, str(ROOT / "scripts"))
+    try:
+        from cvlib import WORKSPACE
+    except Exception:
+        WORKSPACE = ROOT / "workspace"
+    if provider == "gmail":
+        mcp = ROOT / ".mcp.json"
+        data = json.loads(mcp.read_text(encoding="utf-8")) if mcp.exists() else {}
+        data.setdefault("mcpServers", {})["gmail"] = {"type": "http", "url": "https://gmailmcp.googleapis.com/mcp/v1"}
+        mcp.write_text(json.dumps(data, indent=2) + "\n", encoding="utf-8")
+        say(OK, "Added Google's official Gmail MCP server to .mcp.json (Claude Code)")
+        snippet = ROOT / "adapters" / "codex" / "gmail-mcp.toml"
+        say(OK, f"Codex: copy {snippet.relative_to(ROOT)} into ~/.codex/config.toml or .codex/config.toml")
+        say(WARN, "Google's server is a Developer Preview: enrol, enable the Gmail API and Gmail MCP API in a Google "
+                  "Cloud project, then sign in from /mcp. See developers.google.com/workspace/gmail/api/reference/mcp")
+        say(WARN, "It reads and drafts but does not send, so it pairs with semi-auto mode. For auto mode add --email smtp")
+    elif provider == "outlook":
+        say(WARN, "Microsoft's official Outlook MCP (Work IQ Mail) needs a Microsoft 365 Copilot licence in an "
+                  "organisation tenant; personal Outlook.com accounts are not supported. See learn.microsoft.com "
+                  "(Work IQ MCP overview). Otherwise use semi-auto mode with drafts you paste, or --email smtp "
+                  "if your provider allows SMTP with an app password.")
+    elif provider == "smtp":
+        env = WORKSPACE / ".smtp.env"
+        env.parent.mkdir(parents=True, exist_ok=True)
+        if not env.exists():
+            env.write_text(SMTP_TEMPLATE, encoding="utf-8")
+            if not IS_WIN:
+                env.chmod(0o600)
+        say(OK, f"Fill in {env} with your SMTP host and an app password (private, gitignored)")
+        say(OK, "Then set preferences.outreach.mode: auto in facts.yaml to let checked messages send")
+
+
 def build_zip() -> None:
     dist = ROOT / "dist"
     staging = dist / "staging" / "nomagic-cv"
@@ -232,6 +281,8 @@ def main() -> int:
     ap.add_argument("--global", dest="glob", choices=["claude", "codex", "all"], help="install the skill user-wide")
     ap.add_argument("--codex-hooks", action="store_true", help="enable Codex hooks for this project")
     ap.add_argument("--zip", action="store_true", help="build dist/nomagic-cv.zip for the Claude app")
+    ap.add_argument("--email", choices=["gmail", "outlook", "smtp"], action="append",
+                    help="connect an email provider for outreach (repeatable)")
     ap.add_argument("--skip-tests", action="store_true")
     a = ap.parse_args()
 
@@ -250,6 +301,8 @@ def main() -> int:
         enable_codex_hooks()
     if a.zip:
         build_zip()
+    for provider in a.email or []:
+        setup_email(provider)
     if not a.skip_tests and not problems:
         step_self_test()
 
