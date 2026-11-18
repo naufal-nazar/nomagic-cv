@@ -1,0 +1,11 @@
+---
+description: Update an application's status, or list what's due
+argument-hint: "[application id] [applied|callback|interview|offer|rejected|ghosted|withdrawn]"
+---
+
+Delegate to the **tracker** subagent.
+
+- With an id and status: `python scripts/tracker.py status $ARGUMENTS`
+- Without arguments: `python scripts/tracker.py due`, then `python scripts/tracker.py list`.
+
+For each follow-up due, offer a short, specific follow-up note drafted from `analysis.md` and the fact sheet.
