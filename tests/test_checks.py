@@ -280,3 +280,57 @@ def test_pre_send_hook_gates_connector_and_mcp_sends(tmp_path, monkeypatch):
     assert hook(send) == ""                                               # known contact, under cap: allowed
     stranger = {"tool_name": "mcp__claude_ai_Microsoft_365__send_mail", "tool_input": {"to": ["x@unknown.example"]}}
     assert "consent basis" in hook(stranger)
+
+
+def test_leads_requires_terms_then_imports(tmp_path, monkeypatch):
+    import argparse, csv as _csv, shutil
+    o = _outreach_ws(tmp_path, monkeypatch)
+    import leads, importlib
+    importlib.reload(leads)
+    monkeypatch.setattr(leads, "engines", lambda: {"kit": True, "gosom": False})
+    args = argparse.Namespace(query="clinical research sites", city="Toronto, ON", engine="auto", depth=1, limit=50,
+                              no_email=False, accept_terms=False)
+    assert leads.cmd_find(args) == 2                                          # terms not yet accepted
+    calls = []
+
+    def fake_run(cmd, **kw):
+        calls.append(cmd)
+        if "--out" in cmd:
+            shutil.copy(OUT / "kit_export.csv", cmd[cmd.index("--out") + 1])
+        class R: returncode = 0; stdout = ""; stderr = ""
+        return R()
+    monkeypatch.setattr(leads.subprocess, "run", fake_run)
+    monkeypatch.setattr(leads.outreach, "mx_ok", lambda d: True)
+    args.accept_terms = True
+    assert leads.cmd_find(args) == 0
+    scrape = next(c for c in calls if "--out" in c)
+    assert "--verify-emails" in scrape and "--has-email" in scrape and "--city" in scrape
+    assert len(o.contacts()) == 2 and all(c["consent_basis"] == "published-business-address" for c in o.contacts())
+
+
+def test_gosom_command_shape(tmp_path, monkeypatch):
+    import leads
+    monkeypatch.setattr(leads, "gosom_binary", lambda: None)
+    cmd = leads.build_command("gosom", "clinical research sites", "Toronto, ON", 1, 50, True,
+                              tmp_path / "out.csv", tmp_path)
+    assert cmd[:3] == ["docker", "run", "--rm"] and "-email" in cmd and "-exit-on-inactivity" in cmd
+    assert (tmp_path / "queries.txt").read_text().strip() == "clinical research sites Toronto, ON"
+
+
+def test_schedule_installs_one_cron_line(monkeypatch):
+    import schedule as sched
+    monkeypatch.setattr(sched, "IS_WIN", False)
+    monkeypatch.setattr(sched.shutil, "which", lambda name: f"/usr/bin/{name}")
+    written = {}
+
+    def fake_run(cmd, **kw):
+        class R: returncode = 0; stdout = "0 7 * * * other-job\n"; stderr = ""
+        if cmd[:2] == ["crontab", "-"]:
+            written["text"] = kw["input"]
+        return R()
+    monkeypatch.setattr(sched.subprocess, "run", fake_run)
+    import argparse
+    assert sched.cmd_install(argparse.Namespace(agent="claude", time="08:41", days="weekdays")) == 0
+    lines = written["text"].strip().splitlines()
+    assert lines[0] == "0 7 * * * other-job"                                     # existing jobs kept
+    assert lines[1].startswith("41 8 * * 1-5 ") and "run-once --agent claude" in lines[1] and sched.MARK in lines[1]

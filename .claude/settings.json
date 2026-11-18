@@ -51,5 +51,35 @@
         ]
       }
     ]
+  },
+  "permissions": {
+    "allow": [
+      "Bash(python3 scripts/fact_check.py:*)",
+      "Bash(python3 scripts/parse_check.py:*)",
+      "Bash(python3 scripts/consistency_check.py:*)",
+      "Bash(python3 scripts/posting_guard.py:*)",
+      "Bash(python3 scripts/tracker.py:*)",
+      "Bash(python3 scripts/versions.py:*)",
+      "Bash(python3 scripts/export.py:*)",
+      "Bash(python3 scripts/outreach.py:*)",
+      "Bash(python3 scripts/leads.py:*)",
+      "Bash(python3 scripts/rules_lint.py:*)",
+      "Bash(python3 scripts/setup.py:*)",
+      "Bash(python scripts/fact_check.py:*)",
+      "Bash(python scripts/parse_check.py:*)",
+      "Bash(python scripts/consistency_check.py:*)",
+      "Bash(python scripts/posting_guard.py:*)",
+      "Bash(python scripts/tracker.py:*)",
+      "Bash(python scripts/versions.py:*)",
+      "Bash(python scripts/export.py:*)",
+      "Bash(python scripts/outreach.py:*)",
+      "Bash(python scripts/leads.py:*)",
+      "Bash(python scripts/rules_lint.py:*)",
+      "Bash(python scripts/setup.py:*)"
+    ],
+    "deny": [
+      "Bash(git push:*)",
+      "Read(./workspace/.smtp.env)"
+    ]
   }
 }
