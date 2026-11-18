@@ -5,6 +5,8 @@ Usage:
   export.py clean     CV.md [-o out.md]                 plain Markdown without provenance tags
   export.py jsonresume CV.md [-o resume.json]           JSON Resume (jsonresume.org) for Reactive Resume and others
   export.py rendercv  CV.md [-o Name_CV.yaml]           RenderCV input; then: rendercv render Name_CV.yaml
+  export.py html      CV.md [-o cv.html]                single-column, ATS-friendly HTML (print-ready)
+  export.py pdf       CV.md [-o First_Last_Role.pdf]    PDF via a local Chrome, Chromium or Edge (no other installs)
 
 Only lines that passed fact_check should be exported. Run fact_check.py first.
 """
@@ -130,9 +132,106 @@ def to_rendercv(s: dict, facts: dict) -> dict:
     return {"cv": cv}
 
 
+CSS = """
+@page { size: A4; margin: 16mm 17mm; }
+* { box-sizing: border-box; }
+body { font-family: "Inter", "Segoe UI", "Helvetica Neue", Arial, sans-serif; color: #111827;
+       font-size: 10.5pt; line-height: 1.38; margin: 0; }
+header { border-bottom: 2px solid #111827; padding-bottom: 6pt; margin-bottom: 8pt; }
+h1 { font-size: 21pt; letter-spacing: .3pt; margin: 0 0 2pt; }
+.headline { font-size: 11.5pt; font-weight: 600; color: #374151; margin: 0 0 3pt; }
+.contact { font-size: 9.5pt; color: #374151; margin: 0; }
+h2 { font-size: 10.5pt; text-transform: uppercase; letter-spacing: 1.2pt; color: #111827;
+     border-bottom: 1px solid #d1d5db; padding-bottom: 2pt; margin: 11pt 0 5pt; }
+.role { margin: 0 0 6pt; break-inside: avoid; }
+.role-line { display: flex; justify-content: space-between; gap: 12pt; font-size: 10.5pt; }
+.role-line .dates { white-space: nowrap; color: #374151; }
+ul { margin: 2pt 0 0 14pt; padding: 0; }
+li { margin: 0 0 2pt; }
+p { margin: 0 0 3pt; }
+.muted { color: #374151; }
+"""
+
+
+def esc(text: str) -> str:
+    import html
+    return html.escape(str(text))
+
+
+def to_html(s: dict, facts: dict) -> str:
+    c = facts["candidate"]
+    contact = " | ".join(esc(x) for x in (c.get("location"), c.get("work_authorization"), c.get("phone"),
+                                          c.get("email"), c.get("linkedin")) if x)
+    out = [f"<!DOCTYPE html><html lang='en'><head><meta charset='utf-8'><title>{esc(c.get('name', 'CV'))}</title>",
+           f"<style>{CSS}</style></head><body>",
+           f"<header><h1>{esc(c.get('name', ''))}</h1>",
+           f"<p class='headline'>{esc(s['headline'])}</p><p class='contact'>{contact}</p></header>"]
+    if s["summary"]:
+        out.append("<h2>Summary</h2>" + "".join(f"<p>{esc(x)}</p>" for x in s["summary"]))
+    if s["highlights"]:
+        out.append("<h2>Highlights</h2><ul>" + "".join(f"<li>{esc(x)}</li>" for x in s["highlights"]) + "</ul>")
+    if s["roles"]:
+        out.append("<h2>Experience</h2>")
+        for r in s["roles"]:
+            role = r["role"]
+            dates = f"{cvlib.fmt_month(role['start'])} – {cvlib.fmt_month(role.get('end', 'present'))}"
+            where = ", ".join(x for x in (role["employer"], role.get("location", "")) if x)
+            out.append(f"<div class='role'><div class='role-line'><span><strong>{esc(role['title'])}</strong>, "
+                       f"{esc(where)}</span><span class='dates'>{esc(dates)}</span></div>")
+            if r["highlights"]:
+                out.append("<ul>" + "".join(f"<li>{esc(h)}</li>" for h in r["highlights"]) + "</ul>")
+            out.append("</div>")
+    if s["education"]:
+        out.append("<h2>Education</h2>" + "".join(
+            f"<p><strong>{esc(e.get('degree', ''))}</strong>, {esc(e.get('institution', ''))}"
+            f"{', ' + esc(e['location']) if e.get('location') else ''}"
+            f"<span class='muted'> | {esc(e.get('year', ''))}</span></p>" for e in s["education"]))
+    if s["certifications"]:
+        out.append("<h2>Certifications</h2>" + "".join(
+            f"<p>{esc(x.get('name', ''))}{' (' + esc(x['acronym']) + ')' if x.get('acronym') else ''}, "
+            f"{esc(x.get('issuer', ''))}<span class='muted'> | {esc(x.get('year', ''))}</span></p>"
+            for x in s["certifications"]))
+    if s["skills"]:
+        out.append("<h2>Skills</h2>" + "".join(
+            f"<p><strong>{esc(g['label'])}:</strong> {esc(', '.join(g['items']))}</p>" for g in s["skills"]))
+    if s["languages"]:
+        out.append("<h2>Languages</h2><p>" + ", ".join(
+            f"{esc(l['name'])} ({esc(l.get('level', ''))})" for l in s["languages"]) + "</p>")
+    out.append("</body></html>")
+    return "\n".join(out) + "\n"
+
+
+def find_browser() -> str | None:
+    import shutil as _sh
+    for name in ("google-chrome", "google-chrome-stable", "chromium", "chromium-browser", "msedge", "chrome"):
+        if _sh.which(name):
+            return _sh.which(name)
+    for path in ("/Applications/Google Chrome.app/Contents/MacOS/Google Chrome",
+                 "/Applications/Chromium.app/Contents/MacOS/Chromium",
+                 "/Applications/Microsoft Edge.app/Contents/MacOS/Microsoft Edge",
+                 r"C:\Program Files\Google\Chrome\Application\chrome.exe",
+                 r"C:\Program Files (x86)\Microsoft\Edge\Application\msedge.exe"):
+        if Path(path).exists():
+            return path
+    return None
+
+
+def html_to_pdf(html_text: str, pdf_path: Path) -> None:
+    import subprocess, tempfile
+    browser = find_browser()
+    if not browser:
+        raise SystemExit("No Chrome, Chromium or Edge found. Use `export.py rendercv` or print the HTML to PDF.")
+    with tempfile.TemporaryDirectory() as tmp:
+        src = Path(tmp) / "cv.html"
+        src.write_text(html_text, encoding="utf-8")
+        subprocess.run([browser, "--headless=new", "--no-sandbox", "--disable-gpu", "--no-pdf-header-footer",
+                        f"--print-to-pdf={pdf_path.resolve()}", src.resolve().as_uri()],
+                       check=True, capture_output=True)
+
+
 def main() -> int:
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
-    ap.add_argument("format", choices=["clean", "jsonresume", "rendercv"])
+    ap.add_argument("format", choices=["clean", "jsonresume", "rendercv", "html", "pdf"])
     ap.add_argument("cv")
     ap.add_argument("--facts")
     ap.add_argument("-o", "--output")
@@ -144,6 +243,15 @@ def main() -> int:
         s = structure(a.cv, facts)
         if a.format == "jsonresume":
             data = json.dumps(to_jsonresume(s, facts), indent=2, ensure_ascii=False) + "\n"
+        elif a.format in ("html", "pdf"):
+            data = to_html(s, facts)
+            if a.format == "pdf":
+                role = s["headline"].split("|")[0].strip() or "CV"
+                name = "_".join(w for w in re.sub(r"[^A-Za-z0-9 ]", "", f"{facts['candidate'].get('name', '')} {role}").split())
+                out = Path(a.output or f"{name}.pdf")
+                html_to_pdf(data, out)
+                print(f"Wrote {out}")
+                return 0
         else:
             data = yaml.safe_dump(to_rendercv(s, facts), sort_keys=False, allow_unicode=True)
     if a.output:
