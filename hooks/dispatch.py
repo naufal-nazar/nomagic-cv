@@ -102,9 +102,15 @@ def session_start(_data: dict) -> int:
     if not (ws / "facts.yaml").exists():
         lines.append("- No fact sheet yet. Next step: /nomagic-start to interview the candidate and build workspace/facts.yaml.")
     else:
-        masters = list((ws / "cvs" / "masters").glob("*.md")) if (ws / "cvs" / "masters").exists() else []
-        lines.append(f"- Fact sheet present. Master CVs: {len(masters)}." +
-                     ("" if masters else " Next step: /nomagic-build."))
+        fams = sorted(p for p in (ws / "cvs").iterdir() if p.is_dir()) if (ws / "cvs").exists() else []
+        frozen = [f for f in fams if (f / "CURRENT").exists()]
+        lines.append(f"- Fact sheet present. Role families: {len(fams)}, with a frozen version: {len(frozen)}." +
+                     ("" if frozen else " Next step: /nomagic-build."))
+        for f in frozen:
+            cur = f / (f / "CURRENT").read_text(encoding="utf-8").strip()
+            draft = f / "draft.md"
+            if draft.exists() and cur.exists() and draft.read_text(encoding="utf-8") != cur.read_text(encoding="utf-8"):
+                lines.append(f"- {f.name}/draft.md has unfrozen changes since {cur.name}.")
         code, out = run("tracker.py", "due")
         if out and out != "Nothing due.":
             lines.append("- Due:\n" + out)
@@ -112,8 +118,19 @@ def session_start(_data: dict) -> int:
     return 0
 
 
+FROZEN_RE = re.compile(r"^[a-z0-9-]+_v\d+_\d{4}-\d{2}-\d{2}\.md$")
+
+
 def pre_write(data: dict) -> int:
     for p in target_paths(data):
+        if in_workspace(p) and (FROZEN_RE.match(p.name) or ("sources" in p.parts and p.name != "index.yaml")) and p.exists():
+            print(json.dumps({"hookSpecificOutput": {
+                "hookEventName": "PreToolUse",
+                "permissionDecision": "deny",
+                "permissionDecisionReason": (f"{p.name} is frozen. Frozen CV versions and original sources are never edited. "
+                                             "Edit cvs/<family>/draft.md and run scripts/versions.py freeze <family> --note '...'."),
+            }}))
+            return 0
         if p.name == "facts.yaml" and in_workspace(p):
             print(json.dumps({"hookSpecificOutput": {
                 "hookEventName": "PreToolUse",

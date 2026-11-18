@@ -7,7 +7,7 @@ zip: ## build dist/nomagic-cv.zip for the Claude app
 	python3 scripts/setup.py --zip --skip-tests
 
 workspace:
-	mkdir -p workspace/cvs/masters workspace/applications
+	mkdir -p workspace/sources workspace/cvs workspace/applications
 
 lint:
 	python3 scripts/rules_lint.py

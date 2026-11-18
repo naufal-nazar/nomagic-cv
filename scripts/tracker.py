@@ -2,7 +2,7 @@
 """Application tracker with honest statistics (R-SIGNAL-01, R-MEASURE-01).
 
 Commands:
-  add     --company C --role R --family F --cv-version V [--source S] [--posting-date YYYY-MM-DD] [--folder DIR] [--date YYYY-MM-DD]
+  add     --company C --role R --family F [--cv-version V | --folder DIR with meta.yaml] [--source S] [--posting-date YYYY-MM-DD] [--folder DIR] [--date YYYY-MM-DD]
   status  ID STATUS [--date YYYY-MM-DD]      STATUS: applied callback interview offer rejected ghosted withdrawn
   due                                       follow-ups due and applications with no reply after 21 days
   list
@@ -71,6 +71,14 @@ def wilson(k: int, n: int, z: float = 1.96) -> tuple[float, float]:
 
 
 def cmd_add(a) -> int:
+    if a.folder and not a.cv_version:
+        meta = Path(a.folder) / "meta.yaml"
+        if meta.exists():
+            import yaml
+            a.cv_version = (yaml.safe_load(meta.read_text(encoding="utf-8")) or {}).get("cv_version")
+    if not a.cv_version:
+        print("--cv-version is required unless --folder has a meta.yaml (made by versions.py apply)", file=sys.stderr)
+        return 2
     rows = load()
     date = a.date or today().isoformat()
     rid = f"A{len(rows) + 1:04d}"
@@ -181,7 +189,7 @@ def main() -> int:
     s.add_argument("--company", required=True)
     s.add_argument("--role", required=True)
     s.add_argument("--family", required=True)
-    s.add_argument("--cv-version", required=True)
+    s.add_argument("--cv-version")
     s.add_argument("--source")
     s.add_argument("--posting-date")
     s.add_argument("--folder")

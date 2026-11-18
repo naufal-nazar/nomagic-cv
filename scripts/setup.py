@@ -95,7 +95,7 @@ def step_workspace(check: bool) -> None:
     except Exception:
         WORKSPACE = Path(os.environ.get("NOMAGIC_WORKSPACE") or ROOT / "workspace")
     if not check:
-        for sub in ("cvs/masters", "applications"):
+        for sub in ("sources", "cvs", "applications"):
             (WORKSPACE / sub).mkdir(parents=True, exist_ok=True)
     say(OK if WORKSPACE.exists() else FAIL, f"Private workspace: {WORKSPACE}")
 

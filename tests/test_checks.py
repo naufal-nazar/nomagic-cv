@@ -154,3 +154,40 @@ def test_workspace_env_override(monkeypatch, tmp_path):
     assert cvlib.WORKSPACE == tmp_path
     monkeypatch.delenv("NOMAGIC_WORKSPACE")
     importlib.reload(cvlib)
+
+
+def test_versioning_flow(tmp_path, monkeypatch):
+    import importlib, shutil, subprocess, sys as _sys
+    monkeypatch.setenv("NOMAGIC_WORKSPACE", str(tmp_path))
+    importlib.reload(cvlib)
+    shutil.copy(CASE / "facts.yaml", tmp_path / "facts.yaml")
+    run = lambda *a: subprocess.run([_sys.executable, str(ROOT / "scripts" / "versions.py"), *a],
+                                    capture_output=True, text=True, env={**os.environ})
+    src = tmp_path / "My Old CV.pdf"; src.write_bytes(b"%PDF-1.4 fake")
+    assert "sources/2026-11-19_my-old-cv.pdf" in run("ingest", str(src)).stdout
+    assert "Already stored" in run("ingest", str(src)).stdout          # deduplicated by hash
+    run("init", "data-analyst")
+    draft = tmp_path / "cvs" / "data-analyst" / "draft.md"
+    assert run("freeze", "data-analyst", "--note", "x").returncode == 1  # template fails the fact check
+    shutil.copy(CASE / "good.md", draft)
+    out = run("freeze", "data-analyst", "--note", "first version").stdout
+    assert "data-analyst_v1_2026-11-19.md" in out and "data-analyst-v1" in out
+    frozen = tmp_path / "cvs" / "data-analyst" / "data-analyst_v1_2026-11-19.md"
+    assert not (frozen.stat().st_mode & 0o222) or os.name == "nt"
+    assert "nothing to freeze" in run("freeze", "data-analyst", "--note", "same").stdout
+    run("apply", "data-analyst", "--company", "Maple Grocers", "--role", "BI Analyst")
+    meta = (tmp_path / "applications" / "2026-11-19_maple-grocers_bi-analyst" / "meta.yaml").read_text()
+    assert "cv_version: data-analyst-v1" in meta and "Jordan_Lee_BI_Analyst.pdf" in meta
+    monkeypatch.delenv("NOMAGIC_WORKSPACE")
+    importlib.reload(cvlib)
+
+
+def test_hook_blocks_edits_to_frozen_versions(tmp_path):
+    import json as _json, subprocess, sys as _sys
+    ws = tmp_path / "workspace" / "cvs" / "backend"
+    ws.mkdir(parents=True)
+    frozen = ws / "backend_v1_2026-11-19.md"; frozen.write_text("x")
+    payload = _json.dumps({"tool_name": "Edit", "tool_input": {"file_path": str(frozen)}, "cwd": str(tmp_path)})
+    out = subprocess.run([_sys.executable, str(ROOT / "hooks" / "dispatch.py"), "pre-write"],
+                         input=payload, capture_output=True, text=True).stdout
+    assert '"permissionDecision": "deny"' in out
