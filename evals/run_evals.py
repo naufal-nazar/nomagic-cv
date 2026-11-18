@@ -3,7 +3,8 @@
 
 For each case in evals/cases/*, reads expected.yaml and runs fact_check (CVs)
 and consistency_check (application folders). Fails if an honest file is flagged
-or a fabricated one slips through or misses an expected rule.
+or a fabricated one slips through or misses an expected rule. Postings are run
+through posting_guard: clean ones must pass, malicious ones must be caught.
 """
 from __future__ import annotations
 
@@ -17,6 +18,7 @@ ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT / "scripts"))
 import consistency_check  # noqa: E402
 import fact_check  # noqa: E402
+import posting_guard  # noqa: E402
 
 
 def main() -> int:
@@ -52,6 +54,18 @@ def main() -> int:
             if not ok:
                 for w, r, m in res["errors"]:
                     print(f"        {w} [{r}] {m}")
+        for name, want in (exp.get("postings") or {}).items():
+            res = posting_guard.scan((case / name).read_text(encoding="utf-8"))
+            kinds = {e["kind"] for e in res["errors"]}
+            ok = (not res["errors"]) == want["pass"]
+            missing = set(want.get("must_flag", [])) - kinds
+            ok = ok and not missing
+            failures += not ok
+            print(f"{'PASS' if ok else 'FAIL'}  {case.name}/{name}: {len(res['errors'])} findings {sorted(kinds)}"
+                  + (f" missing {sorted(missing)}" if missing else ""))
+            if not ok:
+                for e in res["errors"]:
+                    print(f"        line {e['line']} [{e['kind']}] {e['message']}")
     print("\nAll evals passed." if not failures else f"\n{failures} eval(s) failed.")
     return 1 if failures else 0
 

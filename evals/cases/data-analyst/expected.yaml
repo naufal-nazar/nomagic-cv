@@ -19,3 +19,11 @@ applications:
   app-inflated:
     pass: false
     must_flag: [R-KNOCK-02, R-HONEST-05]
+postings:
+  posting.md:
+    pass: true
+  posting_ai_role.md:      # mentions AI, LLMs and agents legitimately
+    pass: true
+  posting_malicious.md:
+    pass: false
+    must_flag: [invisible, hidden-html, instruction]
