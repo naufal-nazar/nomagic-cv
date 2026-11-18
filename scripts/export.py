@@ -7,6 +7,7 @@ Usage:
   export.py rendercv  CV.md [-o Name_CV.yaml]           RenderCV input; then: rendercv render Name_CV.yaml
   export.py html      CV.md [-o cv.html]                single-column, ATS-friendly HTML (print-ready)
   export.py pdf       CV.md [-o First_Last_Role.pdf]    PDF via a local Chrome, Chromium or Edge (no other installs)
+      --theme classic (default, single column, safest for ATS) | modern (header band + sidebar, for people)
 
 Only lines that passed fact_check should be exported. Run fact_check.py first.
 """
@@ -132,25 +133,55 @@ def to_rendercv(s: dict, facts: dict) -> dict:
     return {"cv": cv}
 
 
-CSS = """
-@page { size: A4; margin: 16mm 17mm; }
+BASE_CSS = """
+@page { size: A4; margin: 14mm 15mm 14mm 15mm; }
 * { box-sizing: border-box; }
-body { font-family: "Inter", "Segoe UI", "Helvetica Neue", Arial, sans-serif; color: #111827;
-       font-size: 10.5pt; line-height: 1.38; margin: 0; }
-header { border-bottom: 2px solid #111827; padding-bottom: 6pt; margin-bottom: 8pt; }
-h1 { font-size: 21pt; letter-spacing: .3pt; margin: 0 0 2pt; }
-.headline { font-size: 11.5pt; font-weight: 600; color: #374151; margin: 0 0 3pt; }
-.contact { font-size: 9.5pt; color: #374151; margin: 0; }
-h2 { font-size: 10.5pt; text-transform: uppercase; letter-spacing: 1.2pt; color: #111827;
-     border-bottom: 1px solid #d1d5db; padding-bottom: 2pt; margin: 11pt 0 5pt; }
-.role { margin: 0 0 6pt; break-inside: avoid; }
-.role-line { display: flex; justify-content: space-between; gap: 12pt; font-size: 10.5pt; }
-.role-line .dates { white-space: nowrap; color: #374151; }
-ul { margin: 2pt 0 0 14pt; padding: 0; }
-li { margin: 0 0 2pt; }
+html { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+body { font-family: "Inter", "Source Sans 3", "Segoe UI", "Helvetica Neue", Arial, sans-serif; color: #1f2937;
+       font-size: 10.6pt; line-height: 1.5; margin: 0; }
+h1 { font-size: 28pt; line-height: 1.05; margin: 0; color: #0f2a4a; font-weight: 750; }
+.headline { font-size: 12.5pt; font-weight: 600; color: #334e68; margin: 5pt 0 7pt; }
+.contact { font-size: 9.6pt; color: #475569; margin: 0; }
+.contact span { white-space: nowrap; }
+.contact span + span::before { content: "|"; color: #94a3b8; margin: 0 6pt; }
+h2 { font-size: 10pt; text-transform: uppercase; letter-spacing: 0; color: #0f2a4a; font-weight: 700;
+     margin: 15pt 0 7pt; padding-bottom: 3pt; border-bottom: 1.2pt solid #c7d2df; }
 p { margin: 0 0 3pt; }
-.muted { color: #374151; }
+ul { margin: 3pt 0 0 0; padding-left: 13pt; }
+li { margin: 0 0 3.6pt; padding-left: 1pt; }
+li::marker { color: #64748b; }
+.role { margin: 0 0 12pt; break-inside: avoid; }
+.role-head { display: flex; justify-content: space-between; align-items: baseline; gap: 10pt; }
+.role-title { font-weight: 700; color: #0f172a; font-size: 11pt; }
+.dates { white-space: nowrap; color: #475569; font-size: 9.8pt; font-variant-numeric: tabular-nums; }
+.org { color: #334e68; font-weight: 500; }
+.item { margin: 0 0 7pt; }
+.item strong { color: #0f172a; }
+.muted { color: #64748b; }
+.skill-group { margin: 0 0 7pt; }
+.skill-group b { display: block; color: #0f2a4a; font-size: 9pt; margin-bottom: 1pt; }
 """
+
+THEMES = {
+    "classic": BASE_CSS + """
+header { padding-bottom: 9pt; border-bottom: 2.2pt solid #0f2a4a; margin-bottom: 2pt; }
+.skills-inline .skill-group { display: flex; gap: 6pt; }
+.skills-inline .skill-group b { display: inline; min-width: 72pt; margin: 0; }
+""",
+    "modern": BASE_CSS + """
+header { background: #0f2a4a; color: #fff; margin: 0 0 16pt; padding: 8mm 8mm 7mm; border-radius: 3pt; }
+header h1 { color: #fff; }
+header .headline { color: #c7d7ea; }
+header .contact { color: #dbe5f1; font-size: 8.7pt; }
+header .contact span + span::before { color: #7f97b3; }
+.cols { display: grid; grid-template-columns: 32% 1fr; column-gap: 16pt; }
+.cols > main { grid-column: 2; grid-row: 1; }
+.cols > aside { grid-column: 1; grid-row: 1; border-right: 1pt solid #dbe3ec; padding-right: 12pt; }
+.cols h2:first-child { margin-top: 2pt; }
+aside h2 { font-size: 9pt; }
+aside p, aside .skill-group { font-size: 9.8pt; }
+""",
+}
 
 
 def esc(text: str) -> str:
@@ -158,47 +189,62 @@ def esc(text: str) -> str:
     return html.escape(str(text))
 
 
-def to_html(s: dict, facts: dict) -> str:
-    c = facts["candidate"]
-    contact = " | ".join(esc(x) for x in (c.get("location"), c.get("work_authorization"), c.get("phone"),
-                                          c.get("email"), c.get("linkedin")) if x)
-    out = [f"<!DOCTYPE html><html lang='en'><head><meta charset='utf-8'><title>{esc(c.get('name', 'CV'))}</title>",
-           f"<style>{CSS}</style></head><body>",
-           f"<header><h1>{esc(c.get('name', ''))}</h1>",
-           f"<p class='headline'>{esc(s['headline'])}</p><p class='contact'>{contact}</p></header>"]
+def _sections(s: dict, facts: dict) -> dict[str, str]:
+    out = {}
     if s["summary"]:
-        out.append("<h2>Summary</h2>" + "".join(f"<p>{esc(x)}</p>" for x in s["summary"]))
+        out["summary"] = "<h2>Summary</h2>" + "".join(f"<p>{esc(x)}</p>" for x in s["summary"])
     if s["highlights"]:
-        out.append("<h2>Highlights</h2><ul>" + "".join(f"<li>{esc(x)}</li>" for x in s["highlights"]) + "</ul>")
+        out["highlights"] = "<h2>Highlights</h2><ul>" + "".join(f"<li>{esc(x)}</li>" for x in s["highlights"]) + "</ul>"
     if s["roles"]:
-        out.append("<h2>Experience</h2>")
+        parts = ["<h2>Experience</h2>"]
         for r in s["roles"]:
             role = r["role"]
             dates = f"{cvlib.fmt_month(role['start'])} – {cvlib.fmt_month(role.get('end', 'present'))}"
             where = ", ".join(x for x in (role["employer"], role.get("location", "")) if x)
-            out.append(f"<div class='role'><div class='role-line'><span><strong>{esc(role['title'])}</strong>, "
-                       f"{esc(where)}</span><span class='dates'>{esc(dates)}</span></div>")
+            parts.append(f"<div class='role'><div class='role-head'><span><span class='role-title'>{esc(role['title'])}</span>"
+                         f"<span class='org'>, {esc(where)}</span></span><span class='dates'>{esc(dates)}</span></div>")
             if r["highlights"]:
-                out.append("<ul>" + "".join(f"<li>{esc(h)}</li>" for h in r["highlights"]) + "</ul>")
-            out.append("</div>")
+                parts.append("<ul>" + "".join(f"<li>{esc(h)}</li>" for h in r["highlights"]) + "</ul>")
+            parts.append("</div>")
+        out["experience"] = "".join(parts)
     if s["education"]:
-        out.append("<h2>Education</h2>" + "".join(
-            f"<p><strong>{esc(e.get('degree', ''))}</strong>, {esc(e.get('institution', ''))}"
-            f"{', ' + esc(e['location']) if e.get('location') else ''}"
-            f"<span class='muted'> | {esc(e.get('year', ''))}</span></p>" for e in s["education"]))
+        out["education"] = "<h2>Education</h2>" + "".join(
+            f"<p class='item'><strong>{esc(e.get('degree', ''))}</strong><br>{esc(e.get('institution', ''))}"
+            f"{', ' + esc(e['location']) if e.get('location') else ''}<span class='muted'> | {esc(e.get('year', ''))}</span></p>"
+            for e in s["education"])
     if s["certifications"]:
-        out.append("<h2>Certifications</h2>" + "".join(
-            f"<p>{esc(x.get('name', ''))}{' (' + esc(x['acronym']) + ')' if x.get('acronym') else ''}, "
-            f"{esc(x.get('issuer', ''))}<span class='muted'> | {esc(x.get('year', ''))}</span></p>"
-            for x in s["certifications"]))
+        out["certifications"] = "<h2>Certifications</h2>" + "".join(
+            f"<p class='item'>{esc(x.get('name', ''))}{' (' + esc(x['acronym']) + ')' if x.get('acronym') else ''}"
+            f"<br><span class='muted'>{esc(x.get('issuer', ''))} | {esc(x.get('year', ''))}</span></p>"
+            for x in s["certifications"])
     if s["skills"]:
-        out.append("<h2>Skills</h2>" + "".join(
-            f"<p><strong>{esc(g['label'])}:</strong> {esc(', '.join(g['items']))}</p>" for g in s["skills"]))
+        out["skills"] = "<h2>Skills</h2>" + "".join(
+            f"<div class='skill-group'><b>{esc(g['label'])}</b>{esc(', '.join(g['items']))}</div>" for g in s["skills"])
     if s["languages"]:
-        out.append("<h2>Languages</h2><p>" + ", ".join(
-            f"{esc(l['name'])} ({esc(l.get('level', ''))})" for l in s["languages"]) + "</p>")
-    out.append("</body></html>")
-    return "\n".join(out) + "\n"
+        out["languages"] = "<h2>Languages</h2><p>" + ", ".join(
+            f"{esc(l['name'])} ({esc(l.get('level', ''))})" for l in s["languages"]) + "</p>"
+    return out
+
+
+def to_html(s: dict, facts: dict, theme: str = "classic") -> str:
+    c = facts["candidate"]
+    contact = " ".join(f"<span>{esc(x)}</span>" for x in (c.get("location"), c.get("work_authorization"),
+                                                          c.get("phone"), c.get("email"), c.get("linkedin")) if x)
+    head = (f"<!DOCTYPE html><html lang='en'><head><meta charset='utf-8'><title>{esc(c.get('name', 'CV'))}</title>"
+            f"<style>{THEMES[theme]}</style></head><body>"
+            f"<header><h1>{esc(c.get('name', ''))}</h1><p class='headline'>{esc(s['headline'])}</p>"
+            f"<p class='contact'>{contact}</p></header>")
+    sec = _sections(s, facts)
+    if theme == "modern":
+        main = "".join(sec.get(k, "") for k in ("summary", "highlights", "experience"))
+        side = "".join(sec.get(k, "") for k in ("skills", "certifications", "education", "languages"))
+        body = f"<div class='cols'><main>{main}</main><aside>{side}</aside></div>"
+    else:
+        order = ("summary", "highlights", "experience", "education", "certifications", "skills", "languages")
+        body = "".join(sec.get(k, "") for k in order).replace("<h2>Skills</h2>", "<h2>Skills</h2><div class='skills-inline'>", 1)
+        if "skills-inline" in body:
+            body = body.replace("<h2>Languages</h2>", "</div><h2>Languages</h2>", 1) if "<h2>Languages</h2>" in body else body + "</div>"
+    return head + body + "</body></html>\n"
 
 
 def find_browser() -> str | None:
@@ -235,6 +281,9 @@ def main() -> int:
     ap.add_argument("cv")
     ap.add_argument("--facts")
     ap.add_argument("-o", "--output")
+    ap.add_argument("--theme", default="classic", choices=["classic", "modern"],
+                    help="classic: single column, safest for applicant tracking systems (default). "
+                         "modern: header band and sidebar, for emailing a person directly")
     a = ap.parse_args()
     if a.format == "clean":
         data = cvlib.clean_cv_text(a.cv)
@@ -244,7 +293,7 @@ def main() -> int:
         if a.format == "jsonresume":
             data = json.dumps(to_jsonresume(s, facts), indent=2, ensure_ascii=False) + "\n"
         elif a.format in ("html", "pdf"):
-            data = to_html(s, facts)
+            data = to_html(s, facts, a.theme)
             if a.format == "pdf":
                 role = s["headline"].split("|")[0].strip() or "CV"
                 name = "_".join(w for w in re.sub(r"[^A-Za-z0-9 ]", "", f"{facts['candidate'].get('name', '')} {role}").split())

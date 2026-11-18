@@ -334,3 +334,14 @@ def test_schedule_installs_one_cron_line(monkeypatch):
     lines = written["text"].strip().splitlines()
     assert lines[0] == "0 7 * * * other-job"                                     # existing jobs kept
     assert lines[1].startswith("41 8 * * 1-5 ") and "run-once --agent claude" in lines[1] and sched.MARK in lines[1]
+
+
+def test_both_themes_render_complete_html():
+    facts = cvlib.load_facts(ROOT / "evals" / "cases" / "senior-cra" / "facts.yaml")
+    s = export.structure(str(ROOT / "evals" / "cases" / "senior-cra" / "cv.md"), facts)
+    for theme in ("classic", "modern"):
+        html = export.to_html(s, facts, theme)
+        for needle in ("Alex Morgan", "Senior Clinical Research Associate", "Apr 2022 – Present", "<h2>Education</h2>",
+                       "Certified Clinical Research Associate (CCRA)", "Medidata Rave", "French (Professional)"):
+            assert needle in html, (theme, needle)
+        assert "letter-spacing: 1" not in html        # spaced-out headings break ATS text extraction
