@@ -1,0 +1,69 @@
+# facts.yaml: the single source of truth. Fictional example.
+# Copy to workspace/facts.yaml. Only the candidate changes this file (a hook asks first).
+schema_version: 1
+
+preferences:
+  writing_mode: editor        # editor (default) | author
+  page_limit: 2
+
+candidate:
+  name: Jordan Lee
+  location: "Toronto, ON"
+  email: jordan.lee@example.com
+  phone: "+1 416 555 0100"
+  linkedin: linkedin.com/in/jordanlee-example
+  work_authorization: "Canadian permanent resident"
+
+role_families:
+  - id: data-analyst
+    target_titles: ["Data Analyst", "Business Intelligence Analyst"]
+
+roles:
+  - id: acme
+    title: "Data Analyst"            # official title, exactly as held
+    employer: "Acme Retail"
+    location: "Toronto, ON"
+    start: "2021-03"                 # YYYY-MM
+    end: present                     # YYYY-MM or present
+    results:
+      - id: acme.r1
+        text: "Built weekly demand forecasts for 40 stores"
+        approximate: true            # candidate confirmed "about 40"
+      - id: acme.r2
+        text: "Rebuilt the weekly sales report in Power BI for 12 regional managers, cutting preparation from 6 hours to 30 minutes"
+      - id: acme.r3
+        text: "Cut stock-outs by 18% in one year by adding promotion data to the forecast"
+    tools: ["SQL", "Power BI", "Python"]
+
+  - id: northwind
+    title: "Junior Analyst"
+    employer: "Northwind Foods"
+    location: "Mississauga, ON"
+    start: "2018-06"
+    end: "2021-02"
+    results:
+      - id: northwind.r1
+        text: "Automated 3 monthly Excel reports with SQL, saving 2 days of work per month"
+    tools: ["SQL", "Excel"]
+
+education:
+  - id: edu1
+    degree: "Bachelor of Commerce"
+    institution: "University of Example"
+    location: "Toronto, ON"
+    year: 2018
+
+certifications:
+  - id: cert1
+    name: "Microsoft Certified: Power BI Data Analyst Associate"
+    acronym: "PL-300"
+    issuer: "Microsoft"
+    year: 2022
+
+skills: ["SQL", "Power BI", "Python", "Excel", "Forecasting", "Dashboarding"]
+
+languages:
+  - name: English
+    level: Native
+  - name: French
+    level: Intermediate
