@@ -7,7 +7,9 @@
 <text x='115' y='27' fill='#8b9bb4'>honest callback statistics</text>
 <text x='798' y='27' text-anchor='end' fill='#8b9bb4' font-size='12'>real output</text>
 <text x='22' y='76' font-weight='700' fill='#2dd4bf'>❯</text>
-<text x='38.9' y='76' xml:space='preserve' fill='#f8fafc' font-weight='700'>python scripts/tracker.py stats</text>
+<text x='38.9' y='76' xml:space='preserve' fill='#f8fafc' font-weight='700'>python </text>
+<text x='97.9' y='76' xml:space='preserve' fill='#f8fafc' font-weight='700'>scripts/tracker.py </text>
+<text x='258.0' y='76' xml:space='preserve' fill='#f8fafc' font-weight='700'>stats</text>
 <text x='22.0' y='98' xml:space='preserve' fill='#e2e8f0'>version       </text>
 <text x='140.0' y='98' xml:space='preserve' fill='#e2e8f0'>n  </text>
 <text x='165.3' y='98' xml:space='preserve' fill='#e2e8f0'>callbacks    </text>

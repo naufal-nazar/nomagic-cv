@@ -39,20 +39,22 @@ AI CV tools write fast and invent freely. NoMagicCV treats your CV like code und
 
 ### The final product
 
+Two print-ready themes from the same checked CV. Every number traces to the fact sheet; the candidate is fictional ([`evals/cases/senior-cra`](evals/cases/senior-cra)).
+
 <table>
 <tr>
-<td width="52%" valign="top"><img src="docs/assets/cv-example.png" alt="Example one-page CV exported by NoMagicCV for a fictional data analyst"></td>
-<td valign="top">
-
-A single-column, ATS-friendly PDF exported from the checked CV, named the way recruiters expect (`First_Last_Role.pdf`), then put through the parse test:
-
-<img src="docs/assets/final-cv-check.svg" alt="export.py writing the PDF and parse_check confirming every line survives extraction in order">
-
-Every number in it traces to the fact sheet. Fictional candidate; see [`evals/cases`](evals/cases).
-
-</td>
+<th width="50%">Classic: single column, for application portals</th>
+<th width="50%">Modern: header band and sidebar, for people</th>
+</tr>
+<tr>
+<td><img src="docs/assets/cv-classic.png" alt="Classic one-column CV for a fictional Senior Clinical Research Associate"></td>
+<td><img src="docs/assets/cv-modern.png" alt="Modern two-column CV with a navy header band for the same fictional candidate"></td>
 </tr>
 </table>
+
+The classic theme passes the parse test with every line extracted in order; the modern theme parses completely but its sidebar is read out of order, so NoMagicCV recommends it for emailing a hiring manager, not for portals (R-PARSE-01).
+
+<img src="docs/assets/final-cv-check.svg" alt="export.py writing the PDF and parse_check confirming every line survives extraction in order" width="100%">
 
 ### Prompt injection in a job posting, caught
 
@@ -132,7 +134,7 @@ python scripts/posting_guard.py posting.md --sanitize
 python scripts/fact_check.py cv.md
 python scripts/consistency_check.py workspace/applications/<folder>
 python scripts/parse_check.py cv.pdf --source cv.md
-python scripts/export.py pdf cv.md                                # uses your Chrome/Edge; or:
+python scripts/export.py pdf cv.md --theme classic               # or --theme modern; uses your Chrome/Edge
 python scripts/export.py rendercv cv.md -o CV.yaml && rendercv render CV.yaml
 python scripts/tracker.py stats
 ```

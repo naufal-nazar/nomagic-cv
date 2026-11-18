@@ -1,0 +1,99 @@
+# Fictional candidate used for the README showcase and evals. Any resemblance is coincidental.
+schema_version: 1
+preferences:
+  writing_mode: editor
+candidate:
+  name: Alex Morgan
+  location: "Toronto, ON"
+  email: alex.morgan@example.com
+  phone: "+1 416 555 0175"
+  linkedin: linkedin.com/in/alexmorgan-example
+  work_authorization: "Canadian permanent resident"
+role_families:
+  - id: senior-cra
+    target_titles: ["Senior Clinical Research Associate", "Clinical Trial Lead"]
+roles:
+  - id: northlake
+    title: "Senior Clinical Research Associate"
+    employer: "Northlake Clinical (fictional CRO)"
+    location: "Toronto, ON"
+    start: "2022-04"
+    end: present
+    results:
+      - id: northlake.r1
+        text: "Monitored 14 sites across 3 phase III oncology studies, covering qualification, initiation, interim and close-out visits"
+      - id: northlake.r2
+        text: "Activated 9 sites in 41 days by running regulatory packages and site training in parallel"
+      - id: northlake.r3
+        text: "Cut open data queries by 35% in 6 months with a pre-visit source review checklist adopted across the study team"
+      - id: northlake.r4
+        text: "Mentored 4 junior CRAs on ICH GCP, monitoring reports and escalation of protocol deviations"
+    tools: ["Medidata Rave", "Veeva Vault", "IRT", "CTMS"]
+  - id: harbour
+    title: "Clinical Research Associate"
+    employer: "Harbour Research Group (fictional)"
+    location: "Mississauga, ON"
+    start: "2019-06"
+    end: "2022-03"
+    results:
+      - id: harbour.r1
+        text: "Managed 8 cardiology and diabetes sites, completing monitoring reports within 5 business days of each visit"
+      - id: harbour.r2
+        text: "Performed source data verification for 260 participants with zero critical findings at a sponsor audit"
+      - id: harbour.r3
+        text: "Coordinated REB submissions and amendments for 2 multi-site studies under Health Canada Division 5"
+    tools: ["Oracle InForm", "REDCap", "CTMS"]
+  - id: civic
+    title: "Clinical Research Coordinator"
+    employer: "Civic Hospital Research Institute (fictional)"
+    location: "Ottawa, ON"
+    start: "2017-01"
+    end: "2019-05"
+    results:
+      - id: civic.r1
+        text: "Screened and consented 120 participants for 3 interventional studies, meeting enrolment targets on all three"
+      - id: civic.r2
+        text: "Maintained investigator site files and regulatory binders ahead of 2 sponsor audits with no major findings"
+    tools: ["EPIC", "REDCap"]
+  - id: uni
+    title: "Research Assistant"
+    employer: "University of Example Clinical Trials Unit (fictional)"
+    location: "Toronto, ON"
+    start: "2015-05"
+    end: "2016-12"
+    results:
+      - id: uni.r1
+        text: "Built and validated 6 REDCap case report forms for investigator-led studies"
+      - id: uni.r2
+        text: "Prepared ethics submissions and study binders for 4 investigator-led trials"
+    tools: ["REDCap"]
+education:
+  - id: edu1
+    degree: "Master of Science in Clinical Research"
+    institution: "University of Example"
+    location: "Toronto, ON"
+    year: 2016
+  - id: edu2
+    degree: "Bachelor of Science in Biology"
+    institution: "Example University"
+    location: "Ottawa, ON"
+    year: 2014
+certifications:
+  - id: cert1
+    name: "Certified Clinical Research Associate"
+    acronym: "CCRA"
+    issuer: "ACRP"
+    year: 2021
+  - id: cert2
+    name: "ICH Good Clinical Practice"
+    acronym: "GCP"
+    issuer: "CITI Program"
+    year: 2024
+skills: ["Site monitoring", "Site activation", "Source Data Verification (SDV)", "Risk-based monitoring",
+         "Protocol deviations", "REB submissions", "Health Canada Division 5", "ICH GCP", "TCPS 2",
+         "Medidata Rave", "Veeva Vault", "Oracle InForm", "REDCap", "CTMS", "IRT", "EPIC"]
+languages:
+  - name: English
+    level: Native
+  - name: French
+    level: Professional

@@ -7,7 +7,10 @@
 <text x='115' y='27' fill='#8b9bb4'>posting injection guard</text>
 <text x='899' y='27' text-anchor='end' fill='#8b9bb4' font-size='12'>real output</text>
 <text x='22' y='76' font-weight='700' fill='#2dd4bf'>❯</text>
-<text x='38.9' y='76' xml:space='preserve' fill='#f8fafc' font-weight='700'>python scripts/posting_guard.py posting.md --sanitize</text>
+<text x='38.9' y='76' xml:space='preserve' fill='#f8fafc' font-weight='700'>python </text>
+<text x='97.9' y='76' xml:space='preserve' fill='#f8fafc' font-weight='700'>scripts/posting_guard.py </text>
+<text x='308.6' y='76' xml:space='preserve' fill='#f8fafc' font-weight='700'>posting.md </text>
+<text x='401.4' y='76' xml:space='preserve' fill='#f8fafc' font-weight='700'>--sanitize</text>
 <rect x='19' y='83' width='50.1' height='20' rx='4' fill='#4c0519'/>
 <text x='23' y='98' font-weight='700' fill='#fda4af'>ERROR</text>
 <text x='89.4' y='98' xml:space='preserve' fill='#7dd3fc'>posting.md:5</text>

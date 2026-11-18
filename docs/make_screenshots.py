@@ -4,7 +4,7 @@
 Every image is produced by running the actual scripts on the fictional eval
 cases, so the visuals can't drift from what the code does:
   terminal SVGs  fact-check.svg, posting-guard.svg, honest-stats.svg, final-cv-check.svg
-  final CV       cv-example.png (PDF exported by scripts/export.py, then rasterised)
+  final CVs      cv-classic.png, cv-modern.png (PDFs exported by scripts/export.py, then rasterised)
 
 Needs a local Chrome/Chromium/Edge (for the PDF), pdftoppm (poppler) and Pillow.
 Usage: python docs/make_screenshots.py
@@ -78,7 +78,8 @@ def render(title: str, steps: list[tuple[str, str]], cols: int = 104) -> str:
     for i, (cmd, output) in enumerate(steps):
         if i:
             rows.append((None, []))
-        rows.append(("$", [(cmd, "cmd")]))
+        for j, seg in enumerate(wrap([(cmd, "cmd")], cols - 2)):
+            rows.append(("$" if j == 0 else "$+", seg))
         for line in output.splitlines():
             m = re.match(r"^(ERROR|WARN|OK)\s+(.*)$", line)
             if m:
@@ -106,8 +107,9 @@ def render(title: str, steps: list[tuple[str, str]], cols: int = 104) -> str:
     y = HEAD + PAD + 10
     for pill, segs in rows:
         x = PAD
-        if pill == "$":
-            svg.append(f"<text x='{x}' y='{y}' font-weight='700' fill='{COLORS['prompt']}'>❯</text>")
+        if pill in ("$", "$+"):
+            if pill == "$":
+                svg.append(f"<text x='{x}' y='{y}' font-weight='700' fill='{COLORS['prompt']}'>❯</text>")
             x += 2 * CW
         elif pill:
             bg, fg = PILLS[pill]
@@ -152,27 +154,25 @@ def demo_tracker() -> str:
     return str(path)
 
 
-def cv_image(tmp: Path) -> tuple[str, str]:
-    """Export the honest example CV to PDF, parse-check it, and rasterise page 1."""
-    pdf = tmp / "Jordan_Lee_Business_Intelligence_Analyst.pdf"
-    export = run(["scripts/export.py", "pdf", f"{CASE}/good.md", "--facts", f"{CASE}/facts.yaml", "-o", str(pdf)])
-    export = export.replace(str(tmp) + os.sep, "")
-    check = run(["scripts/parse_check.py", str(pdf), "--source", f"{CASE}/good.md"]).replace(str(tmp) + os.sep, "")
+SHOW = "evals/cases/senior-cra"
+
+
+def cv_image(tmp: Path, theme: str) -> tuple[str, str]:
+    """Export the showcase CV in a theme, parse-check it, and rasterise page 1 to docs/assets/cv-<theme>.png."""
+    pdf = tmp / f"Alex_Morgan_Senior_Clinical_Research_Associate_{theme}.pdf"
+    export = run(["scripts/export.py", "pdf", f"{SHOW}/cv.md", "--facts", f"{SHOW}/facts.yaml",
+                  "--theme", theme, "-o", str(pdf)]).replace(str(tmp) + os.sep, "")
+    check = run(["scripts/parse_check.py", str(pdf), "--source", f"{SHOW}/cv.md"]).replace(str(tmp) + os.sep, "")
     if shutil.which("pdftoppm"):
-        subprocess.run(["pdftoppm", "-png", "-r", "130", "-f", "1", "-l", "1", "-singlefile", str(pdf),
-                        str(tmp / "page")], check=True)
-        from PIL import Image, ImageChops
-        img = Image.open(tmp / "page.png").convert("RGB")
-        bbox = ImageChops.difference(img, Image.new("RGB", img.size, "white")).getbbox()
-        if bbox:
-            m = 60
-            img = img.crop((max(0, bbox[0] - m), max(0, bbox[1] - m), min(img.width, bbox[2] + m),
-                            min(img.height, bbox[3] + m)))
-        framed = Image.new("RGB", (img.width + 2, img.height + 2), "#d1d5db")
+        subprocess.run(["pdftoppm", "-png", "-r", "150", "-f", "1", "-l", "1", "-singlefile", str(pdf),
+                        str(tmp / f"page-{theme}")], check=True, capture_output=True)
+        from PIL import Image
+        img = Image.open(tmp / f"page-{theme}.png").convert("RGB")
+        framed = Image.new("RGB", (img.width + 2, img.height + 2), "#cbd5e1")
         framed.paste(img, (1, 1))
-        framed.save(ASSETS / "cv-example.png", optimize=True)
-        print("wrote docs/assets/cv-example.png")
-    return export, check
+        framed.save(ASSETS / f"cv-{theme}.png", optimize=True)
+        print(f"wrote docs/assets/cv-{theme}.png")
+    return export.replace(f"_{theme}.pdf", ".pdf"), check.replace(f"_{theme}.pdf", ".pdf")
 
 
 def main() -> int:
@@ -196,10 +196,12 @@ def main() -> int:
     ], cols=92))
 
     tmp = Path(tempfile.mkdtemp())
-    export, check = cv_image(tmp)
+    export, check = cv_image(tmp, "classic")
+    cv_image(tmp, "modern")
+    pdf_name = "Alex_Morgan_Senior_Clinical_Research_Associate.pdf"
     save("final-cv-check", render("export and parse test", [
-        ("python scripts/export.py pdf cv.md", export),
-        ("python scripts/parse_check.py Jordan_Lee_Business_Intelligence_Analyst.pdf --source cv.md", check),
+        ("python scripts/export.py pdf cv.md --theme classic", export),
+        (f"python scripts/parse_check.py {pdf_name} --source cv.md", check),
     ], cols=92))
     return 0
 
