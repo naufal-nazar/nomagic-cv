@@ -19,7 +19,7 @@ import yaml
 ROOT = Path(__file__).resolve().parent.parent
 GRADES = {"A", "B", "C"}
 STRENGTHS = {"default", "test", "guardrail"}
-LAYERS = {"parse", "match", "scan", "prove", "signal", "knockout", "ai", "honesty", "measure", "security"}
+LAYERS = {"parse", "match", "scan", "prove", "signal", "knockout", "ai", "honesty", "measure", "security", "outreach"}
 
 
 def lint(root: Path = ROOT) -> list[str]:

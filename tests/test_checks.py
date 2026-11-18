@@ -191,3 +191,92 @@ def test_hook_blocks_edits_to_frozen_versions(tmp_path):
     out = subprocess.run([_sys.executable, str(ROOT / "hooks" / "dispatch.py"), "pre-write"],
                          input=payload, capture_output=True, text=True).stdout
     assert '"permissionDecision": "deny"' in out
+
+
+# ---------------------------------------------------------------- outreach
+OUT = ROOT / "evals" / "cases" / "outreach"
+
+
+def _outreach_ws(tmp_path, monkeypatch, mode="semi"):
+    import importlib, shutil, yaml
+    monkeypatch.setenv("NOMAGIC_WORKSPACE", str(tmp_path))
+    facts = yaml.safe_load((CASE / "facts.yaml").read_text())
+    facts["preferences"]["outreach"] = {"mode": mode, "daily_cap": 1, "avoid": ["rejected"]}
+    (tmp_path / "facts.yaml").write_text(yaml.safe_dump(facts))
+    importlib.reload(cvlib)
+    import outreach
+    importlib.reload(outreach)
+    return outreach
+
+
+def _message(outreach, cid, body_extra=""):
+    import argparse
+    before = set((outreach.root() / "messages").glob("*.md"))
+    outreach.cmd_new(argparse.Namespace(contact=cid, type="intro", application=None))
+    (path,) = set((outreach.root() / "messages").glob("*.md")) - before
+    meta, body = outreach.parse_message(path)
+    meta["subject"] = "Data analyst interested in reporting roles"
+    text = ("I am a data analyst with 8 years in retail analytics, writing to ask whether your team is hiring for "
+            "reporting or analytics roles. At Acme Retail I rebuilt the weekly sales report in Power BI for 12 "
+            "regional managers, cutting preparation from 6 hours to 30 minutes. I would value a short conversation "
+            "about how similar reporting could support your teams, and my CV is attached for reference. " + body_extra)
+    import re
+    outreach.write_message(path, meta, re.sub(r"\[Write the message here.*?\]", text, body, flags=re.S))
+    return path
+
+
+def test_outreach_import_dedupes_across_scrapers(tmp_path, monkeypatch):
+    import argparse
+    o = _outreach_ws(tmp_path, monkeypatch)
+    o.cmd_import(argparse.Namespace(file=str(OUT / "gosom_export.csv"), source="gosom", basis="published-business-address"))
+    o.cmd_import(argparse.Namespace(file=str(OUT / "kit_export.csv"), source="kit", basis="published-business-address"))
+    emails = [c["email"] for c in o.contacts()]
+    assert len(emails) == len(set(emails)) == 3
+
+
+def test_outreach_lint_enforces_rules(tmp_path, monkeypatch):
+    import argparse
+    o = _outreach_ws(tmp_path, monkeypatch)
+    o.cmd_import(argparse.Namespace(file=str(OUT / "kit_export.csv"), source="kit", basis="published-business-address"))
+    good = _message(o, "C0001")
+    assert o.lint(good)[0] == []
+    bad = _message(o, "C0002", "I was rejected last year and grew revenue by 45%.")
+    errs = " ".join(o.lint(bad)[0])
+    assert "R-OUT-05" in errs and "'45'" in errs
+
+
+def test_semi_mode_never_sends(tmp_path, monkeypatch):
+    import argparse
+    o = _outreach_ws(tmp_path, monkeypatch, mode="semi")
+    o.cmd_import(argparse.Namespace(file=str(OUT / "kit_export.csv"), source="kit", basis="published-business-address"))
+    path = _message(o, "C0001")
+    monkeypatch.setattr(o, "smtp_send", lambda *a: (_ for _ in ()).throw(AssertionError("sent in semi mode")))
+    assert o.cmd_send(argparse.Namespace(message=str(path))) == 0
+    assert o.parse_message(path)[0]["status"] == "ready"
+
+
+def test_auto_mode_sends_within_cap(tmp_path, monkeypatch):
+    import argparse
+    o = _outreach_ws(tmp_path, monkeypatch, mode="auto")
+    o.cmd_import(argparse.Namespace(file=str(OUT / "kit_export.csv"), source="kit", basis="published-business-address"))
+    sent = []
+    monkeypatch.setattr(o, "smtp_send", lambda meta, body, cfg: sent.append(meta["to"]))
+    first, second = _message(o, "C0001"), _message(o, "C0002")
+    assert o.cmd_send(argparse.Namespace(message=str(first))) == 0
+    assert o.cmd_send(argparse.Namespace(message=str(second))) == 1      # daily cap of 1
+    assert sent == ["careers@maple-research.example"]
+
+
+def test_pre_send_hook_gates_connector_and_mcp_sends(tmp_path, monkeypatch):
+    import argparse, json as _json, subprocess, sys as _sys
+    o = _outreach_ws(tmp_path, monkeypatch, mode="semi")
+    o.cmd_import(argparse.Namespace(file=str(OUT / "kit_export.csv"), source="kit", basis="published-business-address"))
+    hook = lambda payload: subprocess.run([_sys.executable, str(ROOT / "hooks" / "dispatch.py"), "pre-send"],
+                                          input=_json.dumps(payload), capture_output=True, text=True,
+                                          env={**os.environ}).stdout
+    send = {"tool_name": "mcp__Gmail__send_message", "tool_input": {"to": "careers@maple-research.example", "body": "Hi"}}
+    assert "semi-auto" in hook(send)
+    _outreach_ws(tmp_path, monkeypatch, mode="auto")
+    assert hook(send) == ""                                               # known contact, under cap: allowed
+    stranger = {"tool_name": "mcp__claude_ai_Microsoft_365__send_mail", "tool_input": {"to": ["x@unknown.example"]}}
+    assert "consent basis" in hook(stranger)
