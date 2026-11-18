@@ -1,0 +1,276 @@
+# Every rule in rules.yaml cites one or more of these sources by id.
+# grade: A = peer-reviewed experiment or field study
+#        B = large controlled experiment or dataset, not peer-reviewed
+#        C = survey or vendor analysis (direction, not proof)
+# setting (grade A only): field = real applications; lab = constructed CVs rated by people or models
+# status: verified | unverified (unverified sources cannot back any rule until checked)
+# checked: date the citation was last re-checked (re-check yearly)
+
+sources:
+  - id: wiles2023
+    title: "Algorithmic Writing Assistance on Jobseekers' Resumes Increases Hires"
+    authors: "Wiles, Munyikwa & Horton"
+    venue: "NBER w30886; Management Science 2025"
+    url: "https://www.nber.org/papers/w30886"
+    grade: A
+    setting: field
+    sample: "~480,000 jobseekers"
+    finding: "Jobseekers given algorithmic writing help were hired about 8% more often; gains largest for weaker writers."
+    region: "global online labour market"
+    status: verified
+    checked: 2026-11-18
+
+  - id: lacroux2016
+    title: "Do Employers Forgive Applicants' Bad Spelling in Résumés?"
+    authors: "Lacroux & Martin-Lacroux"
+    venue: "2016"
+    url: "https://econpapers.repec.org/RePEc:hal:journl:hal-01451842"
+    grade: A
+    setting: lab
+    sample: "536 recruiters"
+    finding: "Spelling errors lowered employability ratings about as much as missing experience."
+    region: "France"
+    status: verified
+    checked: 2026-11-18
+
+  - id: oppenheimer2006
+    title: "Consequences of Erudite Vernacular Utilized Irrespective of Necessity"
+    authors: "Oppenheimer"
+    venue: "Applied Cognitive Psychology 2006"
+    url: "https://doi.org/10.1002/acp.1178"
+    grade: A
+    setting: lab
+    sample: "5 experiments"
+    finding: "Needlessly complex words lowered judged intelligence of the author."
+    region: "US"
+    status: verified
+    checked: 2026-11-18
+
+  - id: burks2015
+    title: "The Value of Hiring through Employee Referrals"
+    authors: "Burks, Cowgill, Hoffman & Housman"
+    venue: "QJE 2015"
+    url: "https://econpapers.repec.org/RePEc:oup:qjecon:v:130:y:2015:i:2:p:805-839"
+    grade: A
+    setting: field
+    sample: "personnel data from 9 large firms"
+    finding: "Referred applicants are more likely to be hired."
+    region: "US"
+    status: verified
+    checked: 2026-11-18
+
+  - id: kroft2013
+    title: "Duration Dependence and Labor Market Conditions"
+    authors: "Kroft, Lange & Notowidigdo"
+    venue: "QJE 2013 (J-PAL summary)"
+    url: "https://www.povertyactionlab.org/evaluation/dependence-duration-and-labor-market-conditions-evidence-united-states"
+    grade: A
+    setting: field
+    sample: "12,054 résumés to 3,040 openings"
+    finding: "Callbacks fall as the length of unemployment rises."
+    region: "US"
+    status: verified
+    checked: 2026-11-18
+
+  - id: oreopoulos2011
+    title: "Why Do Skilled Immigrants Struggle in the Labor Market?"
+    authors: "Oreopoulos"
+    venue: "AEJ: Economic Policy 2011 (J-PAL summary)"
+    url: "https://www.povertyactionlab.org/print/pdf/node/1917?lang=id"
+    grade: A
+    setting: field
+    sample: "12,910 résumés, Toronto"
+    finding: "Local (Canadian) experience lifted callbacks from 5.9% to 11%."
+    region: "Canada"
+    status: verified
+    checked: 2026-11-18
+
+  - id: kang2016
+    title: "Whitened Résumés: Race and Self-Presentation in the Labor Market"
+    authors: "Kang, DeCelles, Tilcsik & Jun"
+    venue: "Administrative Science Quarterly 2016"
+    url: "https://typeset.io/pdf/whitened-resumes-race-and-self-presentation-in-the-labor-oa0v9myp8o.pdf"
+    grade: A
+    setting: field
+    sample: "audit study"
+    finding: "Résumés with minority cues got fewer callbacks, even from pro-diversity employers."
+    region: "US"
+    status: verified
+    checked: 2026-11-18
+
+  - id: wilson2024
+    title: "Gender, Race, and Intersectional Bias in Resume Screening via Language Model Retrieval"
+    authors: "Wilson & Caliskan"
+    venue: "AIES 2024"
+    url: "https://www.washington.edu/news/2024/10/31/ai-bias-resume-screening-race-gender/"
+    grade: A
+    setting: lab
+    sample: "554 résumés x 571 postings, 3M+ comparisons"
+    finding: "Three open embedding models favoured white-associated names 85% of the time."
+    region: "US"
+    status: verified
+    checked: 2026-11-19
+
+  - id: xu2025
+    title: "AI Self-preferencing in Algorithmic Hiring: Empirical Evidence and Insights"
+    authors: "Xu, Li & Jiang"
+    venue: "AIES 2025"
+    url: "https://doi.org/10.1609/aies.v8i3.36755"
+    grade: A
+    setting: lab
+    sample: "2,200+ résumés, multiple LLMs, 24 occupations simulated"
+    finding: "LLM screeners preferred résumés they generated over human-written ones (68-92%), even at equal quality."
+    region: "US"
+    status: verified
+    checked: 2026-11-19
+
+  - id: stlfed2017
+    title: "How Quickly Do People Apply for Jobs?"
+    authors: "Federal Reserve Bank of St. Louis"
+    venue: "On the Economy, 2017"
+    url: "https://www.stlouisfed.org/on-the-economy/2017/november/how-quickly-people-apply-jobs"
+    grade: B
+    finding: "56% of applications arrive in the first 96 hours after posting."
+    region: "US"
+    status: verified
+    checked: 2026-11-18
+
+  - id: resumego_cover
+    title: "Cover Letters: Just How Important Are They?"
+    authors: "ResumeGo"
+    venue: "ResumeGo research"
+    url: "https://www.resumego.net/research/cover-letters/"
+    grade: B
+    sample: "7,287 applications"
+    finding: "Callbacks: 10.7% no letter, 12.5% generic letter, 16.4% tailored letter."
+    region: "US"
+    status: verified
+    checked: 2026-11-18
+
+  - id: resumego_linkedin
+    title: "A Comprehensive LinkedIn Profile Boosts Job Chances"
+    authors: "ResumeGo via Statista"
+    venue: "Statista chart"
+    url: "https://statista.com/chart/amp/17535/linkedin-profile-boosts-job-chances"
+    grade: B
+    sample: "~24,570 résumés"
+    finding: "13.5% callbacks with a full LinkedIn profile vs 7.9% with none."
+    region: "US"
+    status: verified
+    checked: 2026-11-18
+
+  - id: resumego_length
+    title: "One or Two Page Résumés"
+    authors: "ResumeGo"
+    venue: "ResumeGo research"
+    url: "https://resumego.net/research/one-or-two-page-resumes"
+    grade: B
+    sample: "482 hiring professionals"
+    finding: "Two-page résumés preferred 2.3 to 1 for experienced candidates."
+    region: "US"
+    status: verified
+    checked: 2026-11-18
+
+  - id: ladders2018
+    title: "Eye-Tracking Study 2018"
+    authors: "Ladders"
+    venue: "Vendor study"
+    url: "https://csuglobal.edu/sites/default/files/blog-files/theladders-eyetracking-studyc2.pdf"
+    grade: C
+    finding: "Average first scan about 7.4 seconds; titles, companies and dates read first; clutter and columns penalised."
+    region: "US"
+    status: verified
+    checked: 2026-11-18
+
+  - id: jobscan_survey2025
+    title: "ATS-Ready Résumés (2025 recruiter survey)"
+    authors: "Jobscan"
+    venue: "Vendor survey"
+    url: "https://www.jobscan.co/organizations/ats-ready-resumes/"
+    grade: C
+    sample: "384 recruiters"
+    finding: "Recruiters filter by education (76.4%), title (55.3%) and certifications (50.6%)."
+    region: "US"
+    status: verified
+    checked: 2026-11-18
+
+  - id: jobscan_tables
+    title: "Can ATS Read Tables and Columns?"
+    authors: "Jobscan"
+    venue: "Vendor analysis"
+    url: "https://www.jobscan.co/blog/resume-tables-columns-ats/"
+    grade: C
+    finding: "Tables, columns and text boxes are the formats parsers handle worst."
+    status: verified
+    checked: 2026-11-18
+
+  - id: jobscan_spot
+    title: "How to Spot an ATS"
+    authors: "Jobscan"
+    venue: "Vendor analysis"
+    url: "https://www.jobscan.co/blog/spot-ats/"
+    grade: C
+    finding: "Knockout screening questions do most of the automatic rejecting."
+    status: verified
+    checked: 2026-11-18
+
+  - id: hiringthing
+    title: "Applicant Tracking Systems Aren't Excluding Job Applicants"
+    authors: "HiringThing"
+    venue: "Vendor blog"
+    url: "https://blog.hiringthing.com/applicant-tracking-systems-arent-excluding-job-applicants-people-are"
+    grade: C
+    finding: "The '75% rejected by ATS' figure traces to an unsourced 2012 sales pitch."
+    status: verified
+    checked: 2026-11-18
+
+  - id: atsverification
+    title: "10 ATS Résumé Myths Debunked"
+    authors: "ATS Verification"
+    venue: "Vendor blog"
+    url: "https://atsverification.com/blog/ats-resume-myths-debunked/"
+    grade: C
+    finding: "Hidden white-text keywords appear in the parsed recruiter view."
+    status: verified
+    checked: 2026-11-18
+
+  - id: resumegenius2026
+    title: "Resume Genius 2026 Hiring Trends (via CPA Practice Advisor)"
+    authors: "Resume Genius"
+    venue: "Vendor survey"
+    url: "https://www.cpapracticeadvisor.com/?p=188492"
+    grade: C
+    sample: "1,500 hiring managers"
+    finding: "49% call heavily AI-generated materials a red flag, after job-hopping at 65%."
+    status: verified
+    checked: 2026-11-18
+
+  - id: resumegenius2026_gaps
+    title: "Resume Genius 2026 Hiring Trends: employment gaps figure"
+    authors: "Resume Genius"
+    venue: "Vendor survey"
+    url: "https://www.cpapracticeadvisor.com/?p=188492"
+    grade: C
+    finding: "43% of hiring managers flag long unexplained gaps (as cited in the framework; not yet re-checked)."
+    status: unverified
+    checked: null
+
+  - id: resumenow2025
+    title: "2025 AI and the Applicant Report"
+    authors: "Resume Now"
+    venue: "Vendor survey"
+    url: "https://www.resume-now.com/job-resources/careers/ai-applicant-report"
+    grade: C
+    finding: "Cited for tailoring per role family; figures not yet re-checked."
+    status: unverified
+    checked: null
+
+  - id: talentworks
+    title: "TalentWorks findings"
+    authors: "TalentWorks via Paul van der Laken"
+    venue: "Vendor analysis"
+    url: "https://paulvanderlaken.com/tag/talentworks/"
+    grade: C
+    finding: "Action-verb sentences +140% and numbers +40% interview rate."
+    status: verified
+    checked: 2026-11-18

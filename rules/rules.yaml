@@ -1,0 +1,243 @@
+# Machine-readable rules. The Reviewer cites rule ids in its feedback.
+#
+# strength:
+#   default   - backed by at least one verified grade A or B source. Applied unless the candidate overrides.
+#   test      - backed only by grade C or practice. A starting point to test with /cv-review, never a hard rule.
+#   guardrail - honesty rule. Ethical, not empirical: always enforced, needs no study.
+# check: the script that enforces the rule automatically (null = Reviewer judgement).
+# scripts/rules_lint.py fails CI if a "default" rule lacks a verified A/B source.
+
+rules:
+  # ---------- Layer 1: Parse — the machine reads every word ----------
+  - id: R-PARSE-01
+    layer: parse
+    rule: "Single column. No tables, text boxes, sidebars, icons, images or skill bars."
+    strength: test
+    sources: [jobscan_tables, ladders2018]
+    check: parse_check
+  - id: R-PARSE-02
+    layer: parse
+    rule: "Standard section headings: Summary, Experience, Education, Certifications, Skills."
+    strength: test
+    sources: [jobscan_tables]
+    check: parse_check
+  - id: R-PARSE-03
+    layer: parse
+    rule: "Contact details in the body, not in the page header or footer."
+    strength: test
+    sources: [jobscan_tables]
+    check: parse_check
+  - id: R-PARSE-04
+    layer: parse
+    rule: "Submit .docx or a text-based PDF, whichever the portal asks for. Copy-paste test: extracted text must be complete and in order."
+    strength: test
+    sources: [jobscan_tables]
+    check: parse_check
+
+  # ---------- Layer 2: Match — the CV appears in the recruiter's search ----------
+  - id: R-MATCH-01
+    layer: match
+    rule: "Headline uses the posting's exact job title, only where it truthfully describes the candidate."
+    strength: test
+    sources: [jobscan_survey2025, ladders2018]
+    check: null
+  - id: R-MATCH-02
+    layer: match
+    rule: "Every true must-have from the posting appears in the posting's own words."
+    strength: test
+    sources: [jobscan_survey2025]
+    check: null
+  - id: R-MATCH-03
+    layer: match
+    rule: "Write terms in full and as an acronym once, e.g. 'Source Data Verification (SDV)'."
+    strength: test
+    sources: [jobscan_survey2025]
+    check: null
+  - id: R-MATCH-04
+    layer: match
+    rule: "Degrees and certifications written out in full."
+    strength: test
+    sources: [jobscan_survey2025]
+    check: null
+  - id: R-MATCH-05
+    layer: match
+    rule: "Tailor per posting: one master per role family, then swap headline, reorder skills and rewrite 2-3 bullets."
+    strength: default
+    sources: [resumego_cover, wiles2023]
+    check: null
+
+  # ---------- Layer 3: Scan — the top third wins the first look ----------
+  - id: R-SCAN-01
+    layer: scan
+    rule: "Top third holds name, target title, location and work authorization where relevant."
+    strength: test
+    sources: [ladders2018]
+    check: null
+  - id: R-SCAN-02
+    layer: scan
+    rule: "A 2-3 line summary: years, domain, strongest employers or clients, one number."
+    strength: test
+    sources: [ladders2018]
+    check: null
+  - id: R-SCAN-03
+    layer: scan
+    rule: "Job title and employer bold, dates on the same line, generous white space."
+    strength: test
+    sources: [ladders2018]
+    check: null
+  - id: R-SCAN-04
+    layer: scan
+    rule: "One page early-career; two pages once experience fills it."
+    strength: default
+    sources: [resumego_length]
+    check: null
+
+  # ---------- Layer 4: Prove — every bullet shows scope or a result ----------
+  - id: R-PROVE-01
+    layer: prove
+    rule: "Zero spelling or grammar errors."
+    strength: default
+    sources: [lacroux2016, wiles2023]
+    check: null
+  - id: R-PROVE-02
+    layer: prove
+    rule: "Plain words and short sentences; no thesaurus language or self-praise adjectives."
+    strength: default
+    sources: [oppenheimer2006]
+    check: null
+  - id: R-PROVE-03
+    layer: prove
+    rule: "Bullet formula: verb + what + scale + outcome. Start with a verb; quantify where true."
+    strength: test
+    sources: [talentworks]
+    check: null
+  - id: R-PROVE-04
+    layer: prove
+    rule: "3-5 bullets for recent roles, 1-3 for older ones; cut duties everyone in the role does."
+    strength: test
+    sources: []
+    check: null
+
+  # ---------- Layer 5: Signal — evidence beyond the CV ----------
+  - id: R-SIGNAL-01
+    layer: signal
+    rule: "Apply within the first few days after posting."
+    strength: default
+    sources: [stlfed2017]
+    check: tracker
+  - id: R-SIGNAL-02
+    layer: signal
+    rule: "Link a complete LinkedIn profile consistent with the CV."
+    strength: default
+    sources: [resumego_linkedin]
+    check: consistency_check
+  - id: R-SIGNAL-03
+    layer: signal
+    rule: "Write a tailored cover letter for priority roles; a generic one adds little."
+    strength: default
+    sources: [resumego_cover]
+    check: null
+  - id: R-SIGNAL-04
+    layer: signal
+    rule: "Seek a referral or direct note to the hiring manager for priority roles."
+    strength: default
+    sources: [burks2015]
+    check: null
+  - id: R-SIGNAL-05
+    layer: signal
+    rule: "Keep current dates honest and current; apply while employed where possible."
+    strength: default
+    sources: [kroft2013]
+    check: fact_check
+  - id: R-SIGNAL-06
+    layer: signal
+    rule: "Show local experience prominently; never hide it."
+    strength: default
+    sources: [oreopoulos2011]
+    check: null
+
+  # ---------- Layer 6: Knockouts — screening answers match the CV ----------
+  - id: R-KNOCK-01
+    layer: knockout
+    rule: "Read every screening question first; answer from the same fact sheet as the CV."
+    strength: test
+    sources: [jobscan_spot]
+    check: consistency_check
+  - id: R-KNOCK-02
+    layer: knockout
+    rule: "Never stretch an answer to pass. A mismatch with the CV ends the application later."
+    strength: guardrail
+    sources: []
+    check: consistency_check
+
+  # ---------- AI and fairness ----------
+  - id: R-AI-01
+    layer: ai
+    rule: "Default mode is editor: the candidate writes rough bullets, the agent fixes, tightens and tailors. Author mode is opt-in."
+    strength: default
+    sources: [wiles2023, xu2025, resumegenius2026]
+    check: null
+  - id: R-AI-02
+    layer: ai
+    rule: "The Reviewer runs on a different model family from the Builder where available, because LLMs prefer their own output."
+    strength: default
+    sources: [xu2025]
+    check: null
+  - id: R-AI-03
+    layer: ai
+    rule: "Identity disclosure is the candidate's call. Show the evidence; never remove or change identity details by default."
+    strength: guardrail
+    sources: [kang2016, wilson2024]
+    check: null
+
+  # ---------- Honesty guardrails ----------
+  - id: R-HONEST-01
+    layer: honesty
+    rule: "No invented facts. Every title, date, number, tool and credential comes from facts.yaml."
+    strength: guardrail
+    sources: []
+    check: fact_check
+  - id: R-HONEST-02
+    layer: honesty
+    rule: "Titles stay exactly as held. No renaming and no clarifiers in the role line; the target title appears only in the headline."
+    strength: guardrail
+    sources: []
+    check: fact_check
+  - id: R-HONEST-03
+    layer: honesty
+    rule: "Approximate numbers are allowed only if the candidate confirmed them, and must read as approximate (~, about)."
+    strength: guardrail
+    sources: []
+    check: fact_check
+  - id: R-HONEST-04
+    layer: honesty
+    rule: "No hidden text or keyword stuffing. Keywords appear only where they describe real experience."
+    strength: guardrail
+    sources: [atsverification]
+    check: null
+  - id: R-HONEST-05
+    layer: honesty
+    rule: "One version of the truth across CV, LinkedIn, cover letter and screening answers."
+    strength: guardrail
+    sources: []
+    check: consistency_check
+  - id: R-HONEST-06
+    layer: honesty
+    rule: "Gaps against must-haves are flagged to the candidate and bridged from real adjacent experience, never hidden."
+    strength: guardrail
+    sources: []
+    check: null
+  - id: R-HONEST-07
+    layer: honesty
+    rule: "The candidate reviews and approves every line before anything is sent. The agent never submits."
+    strength: guardrail
+    sources: []
+    check: null
+
+  # ---------- Measurement ----------
+  - id: R-MEASURE-01
+    layer: measure
+    rule: "Change one element at a time; compare versions within a role family; treat small samples as noise."
+    strength: guardrail
+    sources: []
+    check: tracker
