@@ -1,0 +1,16 @@
+#!/usr/bin/env bash
+# Privacy guard: block personal job-search data from being committed.
+# Installed by `make setup` (git config core.hooksPath scripts/git-hooks).
+set -euo pipefail
+
+blocked=$(git diff --cached --name-only --diff-filter=ACMR | grep -E '^workspace/|(^|/)facts\.yaml$|(^|/)tracker\.csv$' | grep -vE '^(skills/.*/templates/|evals/cases/)' || true)
+if [[ -n "$blocked" ]]; then
+  echo "pre-commit: refusing to commit personal job-search data:" >&2
+  echo "$blocked" | sed 's/^/  /' >&2
+  echo "Keep it in workspace/ (gitignored). Unstage with: git restore --staged <file>" >&2
+  exit 1
+fi
+
+if git diff --cached --name-only --diff-filter=ACMR | grep -qE '^(rules|skills|scripts)/'; then
+  python3 scripts/rules_lint.py
+fi

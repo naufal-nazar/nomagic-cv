@@ -221,3 +221,19 @@ __marimo__/
 
 # Streamlit
 .streamlit/secrets.toml
+
+# NoMagicCV
+# Private job-search data never leaves your machine
+workspace/
+
+# Python
+__pycache__/
+*.pyc
+.pytest_cache/
+.venv/
+
+# Build outputs
+rendercv_output/
+evals/out/
+*.log
+.DS_Store
