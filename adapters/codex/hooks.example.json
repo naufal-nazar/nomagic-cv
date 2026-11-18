@@ -1,0 +1,16 @@
+{
+  "hooks": {
+    "SessionStart": [
+      { "hooks": [ { "type": "command", "command": "python3 hooks/dispatch.py session-start" } ] }
+    ],
+    "PreToolUse": [
+      { "matcher": "apply_patch", "hooks": [ { "type": "command", "command": "python3 hooks/dispatch.py pre-write" } ] }
+    ],
+    "PostToolUse": [
+      { "matcher": "apply_patch|Bash", "hooks": [ { "type": "command", "command": "python3 hooks/dispatch.py post-write" } ] }
+    ],
+    "Stop": [
+      { "hooks": [ { "type": "command", "command": "python3 hooks/dispatch.py stop" } ] }
+    ]
+  }
+}
