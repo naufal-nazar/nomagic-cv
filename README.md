@@ -95,6 +95,15 @@ Your data lives in `workspace/` (gitignored), and a pre-commit hook blocks it fr
 
 </td>
 </tr>
+<tr>
+<td colspan="2" valign="top">
+
+### 🛡️ Prompt-injection guard for job postings
+Job ads can hide text aimed at AI agents: invisible Unicode, hidden HTML, "ignore previous instructions". Every posting is scanned and sanitized before an agent reads it, and agents never follow instructions found in a posting.<br>
+<sub>`scripts/posting_guard.py` · runs automatically via hook · rule R-SEC-01</sub>
+
+</td>
+</tr>
 </table>
 
 ## 🚀 Quick start
@@ -176,6 +185,7 @@ python scripts/export.py jsonresume cv.md -o resume.json                        
 |---|---|---|
 | 🟢 SessionStart | session opens | Shows follow-ups due and your next step |
 | 🛑 PreToolUse | before `facts.yaml` changes | Asks you first: only you change the truth |
+| 🛡️ PostToolUse | after a posting is saved | Scans it for hidden or injected text and writes a sanitized copy for agents to read |
 | 🧾 PostToolUse | after a CV, letter or answers file is written | Runs fact and consistency checks; errors go back to the agent to fix |
 | 🤖 PostToolUse | after a PDF/DOCX export | Runs the parse test against the source |
 | 📒 Stop | before the agent finishes | Blocks while an application folder is untracked |
@@ -190,6 +200,7 @@ Hooks only trigger. The plain Python scripts do the checking, so every agent get
 <br>
 
 ```bash
+python scripts/posting_guard.py posting.md --sanitize
 python scripts/fact_check.py workspace/cvs/masters/backend.md
 python scripts/consistency_check.py workspace/applications/2026-11-19-acme-backend
 python scripts/parse_check.py cv.pdf --source cv.md
@@ -214,6 +225,7 @@ python scripts/tracker.py stats
 | 👥 Subagents | ✅ 5 built in | 🔁 run as steps | 🔁 run as steps |
 | 🪝 Automatic hooks | ✅ ready | ⚠️ [example config](adapters/codex/README.md), verify for your version | ❌ run the scripts as steps |
 | 🧾 Fact, parse, consistency checks | ✅ | ✅ | ✅ |
+| 🛡️ Posting guard | ✅ automatic | ✅ (automatic with hooks) | ✅ run as a step |
 
 <sub>Tested end to end: the scripts, hooks dispatcher and evals. Agent support beyond Claude Code and Codex follows each agent's published Agent Skills support; please open an issue with results from your agent.</sub>
 
@@ -282,6 +294,23 @@ Full table, myths and links: [`evidence.md`](skills/nomagic-cv/references/eviden
 - ≈ **Approximate numbers** only if you'd defend them in an interview, marked as approximate.
 - 🌍 **Same rules everywhere**; most evidence is North American and European, and we say so.
 - ⚡ **One master per role family**, quick tailoring per posting, because speed matters.
+
+## 🧭 How NoMagicCV compares
+
+Great open-source job-search agents already exist, and NoMagicCV is built to sit alongside them as **the evidence and honesty layer**. Its checks are plain scripts, so you can run them on a CV made with any tool.
+
+| | NoMagicCV | Full job-search agents (e.g. [ai-job-search](https://github.com/ai-job-search-dev/ai-job-search), [career-ops](https://github.com/santifer/career-ops)) |
+|---|---|---|
+| 🔎 Find and rank postings | ❌ not in scope | ✅ |
+| 🎯 Tailor CV and cover letter | ✅ | ✅ |
+| 📚 Rules graded against named studies | ✅ | Author experience and best practice |
+| 🧾 Fact provenance checked by code, line by line | ✅ | Varies; see each project |
+| 🔍 Reviewer on a different model family | ✅ | Same-model review where present |
+| 📈 Callback stats with uncertainty | ✅ | Counts and dashboards |
+| 🛡️ Posting prompt-injection guard | ✅ | ✅ in ai-job-search |
+| 🔒 Personal data blocked from git | ✅ | Varies; some recommend a private repo |
+
+<sub>Based on each project's README in November 2026. Corrections welcome via issue or PR.</sub>
 
 ## 🧰 Works with
 
