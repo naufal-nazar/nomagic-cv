@@ -6,8 +6,8 @@ on:
   pull_request:
 
 jobs:
-  check:
-    name: ${{ matrix.os }} / Python ${{ matrix.python }}
+  uv:
+    name: ${{ matrix.os }} / Python ${{ matrix.python }} (uv)
     runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
@@ -18,17 +18,32 @@ jobs:
       PYTHONUTF8: "1"
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
+      - uses: astral-sh/setup-uv@v6
         with:
           python-version: ${{ matrix.python }}
       - name: Install poppler (Linux)
         if: runner.os == 'Linux'
         run: sudo apt-get update && sudo apt-get install -y poppler-utils
       - name: Setup (same command users run)
+        run: uv run scripts/setup.py
+      - name: Verify setup
+        run: uv run scripts/setup.py --check --skip-tests
+      - name: Unit tests
+        run: uv run --group dev pytest -q
+      - name: Build Claude app skill zip
+        run: uv run scripts/setup.py --zip --skip-tests
+
+  pip-fallback:
+    name: ubuntu / Python 3.12 (no uv)
+    runs-on: ubuntu-latest
+    env:
+      PYTHONUTF8: "1"
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Setup without uv
         run: python scripts/setup.py
       - name: Verify setup
         run: python scripts/setup.py --check --skip-tests
-      - name: Unit tests
-        run: python -m pytest -q
-      - name: Build Claude app skill zip
-        run: python scripts/setup.py --zip --skip-tests

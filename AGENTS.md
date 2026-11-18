@@ -6,7 +6,7 @@ Instructions for any coding agent (Codex, Claude Code, Gemini CLI, Cursor, other
 An evidence-based CV agent. The skill lives in `skills/nomagic-cv/SKILL.md` (also linked at `.agents/skills/` and `.claude/skills/`). Read it before doing CV work.
 
 ## Setup
-If `python3 scripts/setup.py --check` fails, run `python3 scripts/setup.py` (full guide: `INSTALL.md`).
+If `python3 scripts/setup.py --check` fails, run `uv run scripts/setup.py` (or `python3 scripts/setup.py` without uv; full guide: `INSTALL.md`).
 Run scripts with `.venv/bin/python` (Windows: `.venv\Scripts\python`) if a `.venv` exists, otherwise `python3`.
 The candidate's data lives in `workspace/`, or in `$NOMAGIC_WORKSPACE` if set.
 

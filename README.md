@@ -54,12 +54,12 @@ Most AI CV tools promise magic: instant scores, keyword tricks, one-click perfec
 Install NoMagicCV from https://github.com/naufal-nazar/nomagic-cv by following its INSTALL.md, then run nomagic-facts.
 ```
 
-**Or set it up yourself** (needs [Python 3.10+](https://www.python.org/downloads/)):
+**Or set it up yourself** with [uv](https://docs.astral.sh/uv/getting-started/installation/) (or plain [Python 3.10+](https://www.python.org/downloads/): use `python3` instead of `uv run`):
 
 ```bash
 git clone https://github.com/naufal-nazar/nomagic-cv.git
 cd nomagic-cv
-python3 scripts/setup.py
+uv run scripts/setup.py
 ```
 
 Then open the folder in your assistant and type `/nomagic-facts` (in Codex, say "run nomagic-facts"). Full guide: [`INSTALL.md`](INSTALL.md).

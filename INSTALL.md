@@ -13,13 +13,21 @@ No git? Download the ZIP from the repository page, unzip it, and `cd` into the f
 
 ## 2. Run setup (all environments)
 
+With [uv](https://docs.astral.sh/uv/) (recommended: fast, and installs the exact locked versions):
+
+```bash
+uv run scripts/setup.py
+```
+
+Without uv:
+
 ```bash
 python3 scripts/setup.py        # Windows: py scripts/setup.py  or  python scripts/setup.py
 ```
 
 It is safe to run more than once. It:
 
-- checks Python 3.10+ and installs dependencies (falls back to a project `.venv` if the system blocks `pip`)
+- checks Python 3.10+ and installs dependencies into a project `.venv`: with `uv sync` from `uv.lock` when uv is installed, otherwise with pip
 - creates the private `workspace/` folder
 - makes the skill visible to Claude Code (`.claude/skills/`) and Codex and other agents (`.agents/skills/`), copying instead of linking where symlinks are unavailable
 - points the hooks at a Python that exists on this machine

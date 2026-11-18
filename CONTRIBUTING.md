@@ -17,6 +17,7 @@ Grades: A = peer-reviewed experiment or field study; B = large controlled experi
 Most studies are from North America and Europe. Studies from other regions are especially welcome; tag them with `region`.
 
 ## Code
+- Dependencies are managed with [uv](https://docs.astral.sh/uv/): `uv sync` for the environment, `uv add <pkg>` to add one (keep `requirements.txt` in step for the pip fallback), `uv run --group dev pytest -q` for tests.
 - Python 3.10+, standard library plus PyYAML. Keep scripts dependency-light and deterministic.
 - Add tests in `tests/` and, for new checks, an eval case in `evals/cases/` with an `expected.yaml`.
 - Never weaken a check to make a CV pass.
