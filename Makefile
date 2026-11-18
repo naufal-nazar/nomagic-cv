@@ -5,7 +5,7 @@ setup: ## install deps, git privacy hook, workspace folders, skill links
 	git config core.hooksPath scripts/git-hooks
 	chmod +x scripts/git-hooks/pre-commit scripts/cross_review.sh hooks/dispatch.py
 	$(MAKE) workspace
-	@echo "Done. Open Claude Code or Codex here and run /cv-start (or say 'run cv-start')."
+	@echo "Done. Open Claude Code or Codex here and run /nomagic-start (or say 'run nomagic-start')."
 
 workspace:
 	mkdir -p workspace/cvs/masters workspace/applications

@@ -1,6 +1,6 @@
 ---
 name: resume-builder
-description: Writes master CVs per role family and tailors them per posting, strictly from workspace/facts.yaml with provenance tags on every fact. Use in /cv-build and /cv-apply.
+description: Writes master CVs per role family and tailors them per posting, strictly from workspace/facts.yaml with provenance tags on every fact. Use in /nomagic-build and /nomagic-apply.
 tools: Read, Write, Edit, Bash, Glob
 ---
 

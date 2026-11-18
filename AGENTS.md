@@ -19,7 +19,7 @@ An evidence-based CV agent. The skill lives in `skills/nomagic-cv/SKILL.md` (als
 
 ## Commands
 Agents without slash commands should treat these phrases as commands and follow the matching file in `.claude/commands/`:
-`cv-start`, `cv-build`, `cv-apply`, `cv-check`, `cv-track`, `cv-review`.
+`nomagic-start`, `nomagic-build`, `nomagic-apply`, `nomagic-check`, `nomagic-track`, `nomagic-review`.
 
 Roles (subagents where supported, otherwise steps): Guide (you), career-consultant, researcher, resume-builder, reviewer, tracker. Definitions: `.claude/agents/`.
 

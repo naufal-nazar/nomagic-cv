@@ -1,6 +1,6 @@
 ---
 name: researcher
-description: Decodes a job posting into exact title, must-haves, repeated terms and likely screening questions, researches the company, and checks evidence for new claims. Use in /cv-apply and when a new rule or source is proposed.
+description: Decodes a job posting into exact title, must-haves, repeated terms and likely screening questions, researches the company, and checks evidence for new claims. Use in /nomagic-apply and when a new rule or source is proposed.
 tools: Read, Write, WebSearch, WebFetch, Glob
 ---
 

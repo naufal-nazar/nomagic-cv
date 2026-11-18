@@ -2,7 +2,7 @@
 #
 # strength:
 #   default   - backed by at least one verified grade A or B source. Applied unless the candidate overrides.
-#   test      - backed only by grade C or practice. A starting point to test with /cv-review, never a hard rule.
+#   test      - backed only by grade C or practice. A starting point to test with /nomagic-review, never a hard rule.
 #   guardrail - honesty rule. Ethical, not empirical: always enforced, needs no study.
 # check: the script that enforces the rule automatically (null = Reviewer judgement).
 # scripts/rules_lint.py fails CI if a "default" rule lacks a verified A/B source.

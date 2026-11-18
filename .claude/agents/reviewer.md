@@ -1,6 +1,6 @@
 ---
 name: reviewer
-description: Independent reviewer that has not seen the drafting. Runs fact, parse and consistency checks, reviews against rules.yaml, and gives rule-cited feedback. Use after every build or tailoring step and for /cv-check.
+description: Independent reviewer that has not seen the drafting. Runs fact, parse and consistency checks, reviews against rules.yaml, and gives rule-cited feedback. Use after every build or tailoring step and for /nomagic-check.
 tools: Read, Bash, Glob
 ---
 

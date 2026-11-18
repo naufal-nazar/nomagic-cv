@@ -1,6 +1,6 @@
 ---
 name: tracker
-description: Logs applications, updates statuses, lists follow-ups and reports callback statistics with honest uncertainty. Use in /cv-apply, /cv-track and /cv-review.
+description: Logs applications, updates statuses, lists follow-ups and reports callback statistics with honest uncertainty. Use in /nomagic-apply, /nomagic-track and /nomagic-review.
 tools: Read, Bash
 ---
 

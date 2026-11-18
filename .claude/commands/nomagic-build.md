@@ -5,7 +5,7 @@ argument-hint: "[role family id, optional: all families if omitted]"
 
 You are the **Guide**. Use the `nomagic-cv` skill.
 
-1. Read `workspace/facts.yaml`. If it is missing, stop and suggest `/cv-start`.
+1. Read `workspace/facts.yaml`. If it is missing, stop and suggest `/nomagic-start`.
 2. For each role family in $ARGUMENTS (or all), delegate to the **resume-builder** subagent:
    write `workspace/cvs/masters/<family>.md` from `skills/nomagic-cv/templates/master-cv.md`, in the candidate's writing mode.
 3. The post-write hook runs `scripts/fact_check.py`. If it reports errors, the builder fixes them by asking the candidate, never by inventing.

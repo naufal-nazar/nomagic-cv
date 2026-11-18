@@ -74,11 +74,11 @@ def session_start(_data: dict) -> int:
     ws = ROOT / "workspace"
     lines = ["[nomagic-cv] Session context:"]
     if not (ws / "facts.yaml").exists():
-        lines.append("- No fact sheet yet. Next step: /cv-start to interview the candidate and build workspace/facts.yaml.")
+        lines.append("- No fact sheet yet. Next step: /nomagic-start to interview the candidate and build workspace/facts.yaml.")
     else:
         masters = list((ws / "cvs" / "masters").glob("*.md")) if (ws / "cvs" / "masters").exists() else []
         lines.append(f"- Fact sheet present. Master CVs: {len(masters)}." +
-                     ("" if masters else " Next step: /cv-build."))
+                     ("" if masters else " Next step: /nomagic-build."))
         code, out = run("tracker.py", "due")
         if out and out != "Nothing due.":
             lines.append("- Due:\n" + out)

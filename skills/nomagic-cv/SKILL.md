@@ -69,29 +69,29 @@ Data analyst with 6 years in retail analytics. Built demand forecasts for about 
 
 | Command | Who does it | Result |
 |---|---|---|
-| `/cv-start` | Career Consultant | Interview, then `facts.yaml` and 1-3 role families. Candidate approves. |
-| `/cv-build [family]` | Resume Builder, then Reviewer | Master CV per role family, checked. |
-| `/cv-apply <posting>` | Researcher, Builder, Reviewer, Tracker | Tailored CV, letter, screening answers, tracker row. |
-| `/cv-check <file>` | Reviewer | Fact, parse and consistency checks with rule-cited feedback. |
-| `/cv-track <id> <status>` | Tracker | Status update and follow-up date. |
-| `/cv-review` | Tracker, Consultant | Callback rates with uncertainty; one change to try next. |
+| `/nomagic-start` | Career Consultant | Interview, then `facts.yaml` and 1-3 role families. Candidate approves. |
+| `/nomagic-build [family]` | Resume Builder, then Reviewer | Master CV per role family, checked. |
+| `/nomagic-apply <posting>` | Researcher, Builder, Reviewer, Tracker | Tailored CV, letter, screening answers, tracker row. |
+| `/nomagic-check <file>` | Reviewer | Fact, parse and consistency checks with rule-cited feedback. |
+| `/nomagic-track <id> <status>` | Tracker | Status update and follow-up date. |
+| `/nomagic-review` | Tracker, Consultant | Callback rates with uncertainty; one change to try next. |
 
-Agents without slash commands: the same names work as plain requests ("run cv-apply on this posting").
+Agents without slash commands: the same names work as plain requests ("run nomagic-apply on this posting").
 
-### /cv-start: build the fact sheet
+### /nomagic-start: build the fact sheet
 1. Ask for the current CV and LinkedIn text if any. Extract facts into `facts.yaml`.
 2. Interview role by role: exact dates, official title, employer, location, results with numbers, tools. One question at a time.
 3. Fuzzy numbers: ask once; accept a range or approximate figure the candidate would defend in an interview, marked `approximate: true`. Otherwise leave the number out.
 4. Agree 1-3 role families (e.g. "backend engineer", "platform engineer") and list target titles under each.
 5. Show the fact sheet and get explicit approval. A hook asks the candidate before any later change to `facts.yaml`.
 
-### /cv-build: master CV per role family
+### /nomagic-build: master CV per role family
 1. Load `templates/master-cv.md`. Fill only from the fact sheet.
 2. Apply the six layers in order: Parse, Match, Scan, Prove, Signal, Knockouts (see `references/layers.md`).
 3. Run `python scripts/fact_check.py <cv>` and fix every error.
 4. Hand off to the Reviewer (fresh context, different model family where possible).
 
-### /cv-apply: one posting, minutes not hours
+### /nomagic-apply: one posting, minutes not hours
 0. Save `posting.md`; `scripts/posting_guard.py --sanitize` writes `posting.clean.md` and flags hidden or instruction-like text (R-SEC-01).
 1. **Researcher** reads `posting.clean.md` and writes `analysis.md`: exact title, must-haves, nice-to-haves, repeated terms, likely screening questions, and must-haves the candidate does not meet.
 2. **Builder** copies the role-family master to `cv.md` and changes only: headline title, skills order, highlights, 2-3 bullets toward must-haves.
@@ -101,7 +101,7 @@ Agents without slash commands: the same names work as plain requests ("run cv-ap
 6. **Tracker** adds the row: `python scripts/tracker.py add ...`.
 7. The candidate reviews everything and submits it themselves.
 
-### /cv-review: honest measurement
+### /nomagic-review: honest measurement
 Run `python scripts/tracker.py stats`. Report callback rate per CV version with 95% intervals. If intervals overlap or a version has fewer than 30 applications, say there is no winner yet. Suggest changing one element at a time (R-MEASURE-01).
 
 ## Situations
