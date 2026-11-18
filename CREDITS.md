@@ -10,8 +10,8 @@ This project integrates with other open-source tools through adapters. No third-
 | [JSON Resume](https://github.com/jsonresume/resume-schema) schema ([jsonresume.org](https://jsonresume.org)) | MIT | `scripts/export.py jsonresume` writes the open schema for import into other tools. |
 | [Reactive Resume](https://github.com/amruthpillai/reactive-resume) by Amruth Pillai | MIT | Optional visual editing, via JSON Resume export. |
 | [OpenResume](https://github.com/xitanggg/open-resume) by Xitang Zhao | AGPL-3.0 | Optional second parse test, run as a separate program. No code copied. |
-| [google-maps-scraper](https://github.com/gosom/google-maps-scraper) by gosom | MIT | Optional lead source; `outreach.py import --source gosom` reads its CSV/JSON export. Run separately. |
-| [google-maps-scraper-kit](https://github.com/Mahanaicoach/google-maps-scraper-kit) by Mahanaicoach | MIT | Optional lead source; `outreach.py import --source kit` reads its CSV/JSON export. Run separately. |
+| [google-maps-scraper](https://github.com/gosom/google-maps-scraper) by gosom | MIT | Lead engine for `/nomagic-leads`: pulled as a Docker image or used as a binary by `leads.py`; outputs imported by `outreach.py`. Not vendored. |
+| [google-maps-scraper-kit](https://github.com/Mahanaicoach/google-maps-scraper-kit) by Mahanaicoach | MIT | Default lead engine for `/nomagic-leads`: cloned to `~/.nomagic/tools` by `leads.py install --engine kit` and run as a separate program. Not vendored. |
 | [Gmail MCP server](https://developers.google.com/workspace/gmail/api/reference/mcp) by Google | Google terms | Official remote MCP for drafts and inbox reading, added by `setup.py --email gmail`. |
 | [Work IQ Mail](https://learn.microsoft.com/en-us/microsoft-copilot-studio/use-work-iq) by Microsoft | Microsoft terms | Official Outlook MCP for Microsoft 365 tenants with Copilot licences; documented, not configured automatically. |
 | [Resume Matcher](https://github.com/srbhr/Resume-Matcher) by Saurabh Rai | Apache-2.0 | Optional keyword-gap check. We report must-have coverage, not a match score. |

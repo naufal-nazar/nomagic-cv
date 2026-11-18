@@ -94,6 +94,8 @@ Data analyst with 6 years in retail analytics. Built demand forecasts for about 
 | `/nomagic-review` | Tracker, Consultant | Callback rates with uncertainty; one change to try next. |
 | `/nomagic-outreach` | Guide, Builder, Reviewer | Fact-checked emails to employers: drafts (semi-auto) or checked sends (auto). See `references/outreach.md`. |
 | `/nomagic-inbox` | Guide, Tracker | Replies read safely, recorded, tracker updated, thank-yous drafted. |
+| `/nomagic-leads` | Guide | Organisations found with an open-source Google Maps scraper, imported as contacts. |
+| `/nomagic-daily` | Guide | Unattended routine: inbox, due follow-ups, hygiene, one report. Schedule it with `scripts/schedule.py`. |
 
 Agents without slash commands: the same names work as plain requests ("run nomagic-apply on this posting").
 

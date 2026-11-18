@@ -53,6 +53,15 @@ Pick either route; both are supported and gated by the same pre-send hook.
 
 **Auto-send through any provider:** `python3 scripts/setup.py --email smtp` creates `workspace/.smtp.env` (private) for your SMTP host and an app password. Then set `preferences.outreach.mode: auto`.
 
+## 3c. Lead finder and daily schedule (optional)
+
+```bash
+python3 scripts/setup.py --leads kit          # or --leads gosom (Docker); installed to ~/.nomagic/tools
+python3 scripts/schedule.py install --agent claude --time 08:30   # or --agent codex; cron or Task Scheduler
+```
+
+Agents: ask the user before installing either. The lead finder shows a terms notice the user must accept themselves.
+
 ## 4. Final check (agents: report this output to the user)
 
 ```bash

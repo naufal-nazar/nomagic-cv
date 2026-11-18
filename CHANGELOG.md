@@ -9,6 +9,8 @@ All notable changes to this project are documented here. Versions follow [Semant
 - Lead import from gosom/google-maps-scraper and google-maps-scraper-kit exports; MX checks without SMTP probing
 - Email via Claude connectors or official MCP servers (Google Gmail MCP, Microsoft Work IQ Mail), plus SMTP for auto-send
 - `/nomagic-outreach` and `/nomagic-inbox`; replies scanned by the injection guard
+- `/nomagic-leads` runs gosom/google-maps-scraper or google-maps-scraper-kit and imports results
+- `/nomagic-daily` unattended routine and `schedule.py` (cron, Task Scheduler); permission allowlist for headless runs
 - Versioned CV storage (`versions.py`), HTML/PDF export, branded README visuals
 
 ## [0.1.0] - 2026-11-19
