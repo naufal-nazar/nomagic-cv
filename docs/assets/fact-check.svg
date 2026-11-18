@@ -1,117 +1,188 @@
-<svg class="rich-terminal" viewBox="0 0 1458 416.0" xmlns="http://www.w3.org/2000/svg">
-    <!-- Generated with Rich https://www.textualize.io -->
-    <style>
-
-    @font-face {
-        font-family: "Fira Code";
-        src: local("FiraCode-Regular"),
-                url("https://cdnjs.cloudflare.com/ajax/libs/firacode/6.2.0/woff2/FiraCode-Regular.woff2") format("woff2"),
-                url("https://cdnjs.cloudflare.com/ajax/libs/firacode/6.2.0/woff/FiraCode-Regular.woff") format("woff");
-        font-style: normal;
-        font-weight: 400;
-    }
-    @font-face {
-        font-family: "Fira Code";
-        src: local("FiraCode-Bold"),
-                url("https://cdnjs.cloudflare.com/ajax/libs/firacode/6.2.0/woff2/FiraCode-Bold.woff2") format("woff2"),
-                url("https://cdnjs.cloudflare.com/ajax/libs/firacode/6.2.0/woff/FiraCode-Bold.woff") format("woff");
-        font-style: bold;
-        font-weight: 700;
-    }
-
-    .terminal-1143079806-matrix {
-        font-family: Fira Code, monospace;
-        font-size: 20px;
-        line-height: 24.4px;
-        font-variant-east-asian: full-width;
-    }
-
-    .terminal-1143079806-title {
-        font-size: 18px;
-        font-weight: bold;
-        font-family: arial;
-    }
-
-    .terminal-1143079806-r1 { fill: #98a84b;font-weight: bold }
-.terminal-1143079806-r2 { fill: #c5c8c6 }
-.terminal-1143079806-r3 { fill: #cc555a;font-weight: bold }
-.terminal-1143079806-r4 { fill: #98729f }
-    </style>
-
-    <defs>
-    <clipPath id="terminal-1143079806-clip-terminal">
-      <rect x="0" y="0" width="1438.6" height="365.0" />
-    </clipPath>
-    <clipPath id="terminal-1143079806-line-0">
-    <rect x="0" y="1.5" width="1439.6" height="24.65"/>
-            </clipPath>
-<clipPath id="terminal-1143079806-line-1">
-    <rect x="0" y="25.9" width="1439.6" height="24.65"/>
-            </clipPath>
-<clipPath id="terminal-1143079806-line-2">
-    <rect x="0" y="50.3" width="1439.6" height="24.65"/>
-            </clipPath>
-<clipPath id="terminal-1143079806-line-3">
-    <rect x="0" y="74.7" width="1439.6" height="24.65"/>
-            </clipPath>
-<clipPath id="terminal-1143079806-line-4">
-    <rect x="0" y="99.1" width="1439.6" height="24.65"/>
-            </clipPath>
-<clipPath id="terminal-1143079806-line-5">
-    <rect x="0" y="123.5" width="1439.6" height="24.65"/>
-            </clipPath>
-<clipPath id="terminal-1143079806-line-6">
-    <rect x="0" y="147.9" width="1439.6" height="24.65"/>
-            </clipPath>
-<clipPath id="terminal-1143079806-line-7">
-    <rect x="0" y="172.3" width="1439.6" height="24.65"/>
-            </clipPath>
-<clipPath id="terminal-1143079806-line-8">
-    <rect x="0" y="196.7" width="1439.6" height="24.65"/>
-            </clipPath>
-<clipPath id="terminal-1143079806-line-9">
-    <rect x="0" y="221.1" width="1439.6" height="24.65"/>
-            </clipPath>
-<clipPath id="terminal-1143079806-line-10">
-    <rect x="0" y="245.5" width="1439.6" height="24.65"/>
-            </clipPath>
-<clipPath id="terminal-1143079806-line-11">
-    <rect x="0" y="269.9" width="1439.6" height="24.65"/>
-            </clipPath>
-<clipPath id="terminal-1143079806-line-12">
-    <rect x="0" y="294.3" width="1439.6" height="24.65"/>
-            </clipPath>
-<clipPath id="terminal-1143079806-line-13">
-    <rect x="0" y="318.7" width="1439.6" height="24.65"/>
-            </clipPath>
-    </defs>
-
-    <rect fill="#292929" stroke="rgba(255,255,255,0.35)" stroke-width="1" x="1" y="1" width="1456" height="414" rx="8"/><text class="terminal-1143079806-title" fill="#c5c8c6" text-anchor="middle" x="728" y="27">NoMagicCV:&#160;fact&#160;check</text>
-            <g transform="translate(26,22)">
-            <circle cx="0" cy="0" r="7" fill="#ff5f57"/>
-            <circle cx="22" cy="0" r="7" fill="#febc2e"/>
-            <circle cx="44" cy="0" r="7" fill="#28c840"/>
-            </g>
-        
-    <g transform="translate(9, 41)" clip-path="url(#terminal-1143079806-clip-terminal)">
-    
-    <g class="terminal-1143079806-matrix">
-    <text class="terminal-1143079806-r1" x="0" y="20" textLength="24.4" clip-path="url(#terminal-1143079806-line-0)">$ </text><text class="terminal-1143079806-r1" x="24.4" y="20" textLength="744.2" clip-path="url(#terminal-1143079806-line-0)">python&#160;scripts/fact_check.py&#160;fabricated.md&#160;--facts&#160;facts.yaml</text><text class="terminal-1143079806-r2" x="1439.6" y="20" textLength="12.2" clip-path="url(#terminal-1143079806-line-0)">
-</text><text class="terminal-1143079806-r3" x="0" y="44.4" textLength="61" clip-path="url(#terminal-1143079806-line-1)">ERROR</text><text class="terminal-1143079806-r2" x="61" y="44.4" textLength="231.8" clip-path="url(#terminal-1143079806-line-1)">  fabricated.md:6  </text><text class="terminal-1143079806-r4" x="292.8" y="44.4" textLength="158.6" clip-path="url(#terminal-1143079806-line-1)">[R-HONEST-01]</text><text class="terminal-1143079806-r2" x="451.4" y="44.4" textLength="512.4" clip-path="url(#terminal-1143079806-line-1)"> Claims&#160;12&#160;years;&#160;facts&#160;support&#160;at&#160;most&#160;8.</text><text class="terminal-1143079806-r2" x="1439.6" y="44.4" textLength="12.2" clip-path="url(#terminal-1143079806-line-1)">
-</text><text class="terminal-1143079806-r3" x="0" y="68.8" textLength="61" clip-path="url(#terminal-1143079806-line-2)">ERROR</text><text class="terminal-1143079806-r2" x="61" y="68.8" textLength="231.8" clip-path="url(#terminal-1143079806-line-2)">  fabricated.md:7  </text><text class="terminal-1143079806-r4" x="292.8" y="68.8" textLength="158.6" clip-path="url(#terminal-1143079806-line-2)">[R-HONEST-03]</text><text class="terminal-1143079806-r2" x="451.4" y="68.8" textLength="768.6" clip-path="url(#terminal-1143079806-line-2)"> &#x27;40&#x27;&#160;is&#160;approximate&#160;in&#160;facts;&#160;write&#160;it&#160;as&#160;&#x27;~40&#x27;&#160;or&#160;&#x27;about&#160;40&#x27;.</text><text class="terminal-1143079806-r2" x="1439.6" y="68.8" textLength="12.2" clip-path="url(#terminal-1143079806-line-2)">
-</text><text class="terminal-1143079806-r3" x="0" y="93.2" textLength="61" clip-path="url(#terminal-1143079806-line-3)">ERROR</text><text class="terminal-1143079806-r2" x="61" y="93.2" textLength="244" clip-path="url(#terminal-1143079806-line-3)">  fabricated.md:10  </text><text class="terminal-1143079806-r4" x="305" y="93.2" textLength="158.6" clip-path="url(#terminal-1143079806-line-3)">[R-HONEST-02]</text><text class="terminal-1143079806-r2" x="463.6" y="93.2" textLength="902.8" clip-path="url(#terminal-1143079806-line-3)"> Role&#160;line&#160;must&#160;start&#160;with&#160;the&#160;official&#160;title&#160;and&#160;employer&#160;exactly:&#160;&#x27;Data&#160;</text><text class="terminal-1143079806-r2" x="1439.6" y="93.2" textLength="12.2" clip-path="url(#terminal-1143079806-line-3)">
-</text><text class="terminal-1143079806-r2" x="0" y="117.6" textLength="268.4" clip-path="url(#terminal-1143079806-line-4)">Analyst,&#160;Acme&#160;Retail&#x27;.</text><text class="terminal-1143079806-r2" x="1439.6" y="117.6" textLength="12.2" clip-path="url(#terminal-1143079806-line-4)">
-</text><text class="terminal-1143079806-r3" x="0" y="142" textLength="61" clip-path="url(#terminal-1143079806-line-5)">ERROR</text><text class="terminal-1143079806-r2" x="61" y="142" textLength="244" clip-path="url(#terminal-1143079806-line-5)">  fabricated.md:10  </text><text class="terminal-1143079806-r4" x="305" y="142" textLength="158.6" clip-path="url(#terminal-1143079806-line-5)">[R-SIGNAL-05]</text><text class="terminal-1143079806-r2" x="463.6" y="142" textLength="817.4" clip-path="url(#terminal-1143079806-line-5)"> Dates&#160;&#x27;Jan&#160;2020&#160;-&#160;Present&#x27;&#160;differ&#160;from&#160;facts&#160;&#x27;Mar&#160;2021&#160;-&#160;Present&#x27;.</text><text class="terminal-1143079806-r2" x="1439.6" y="142" textLength="12.2" clip-path="url(#terminal-1143079806-line-5)">
-</text><text class="terminal-1143079806-r3" x="0" y="166.4" textLength="61" clip-path="url(#terminal-1143079806-line-6)">ERROR</text><text class="terminal-1143079806-r2" x="61" y="166.4" textLength="244" clip-path="url(#terminal-1143079806-line-6)">  fabricated.md:11  </text><text class="terminal-1143079806-r4" x="305" y="166.4" textLength="158.6" clip-path="url(#terminal-1143079806-line-6)">[R-HONEST-01]</text><text class="terminal-1143079806-r2" x="463.6" y="166.4" textLength="646.6" clip-path="url(#terminal-1143079806-line-6)"> Number&#160;&#x27;25&#x27;&#160;is&#160;not&#160;in&#160;the&#160;cited&#160;fact(s)&#160;[&#x27;acme.r2&#x27;].</text><text class="terminal-1143079806-r2" x="1439.6" y="166.4" textLength="12.2" clip-path="url(#terminal-1143079806-line-6)">
-</text><text class="terminal-1143079806-r3" x="0" y="190.8" textLength="61" clip-path="url(#terminal-1143079806-line-7)">ERROR</text><text class="terminal-1143079806-r2" x="61" y="190.8" textLength="244" clip-path="url(#terminal-1143079806-line-7)">  fabricated.md:12  </text><text class="terminal-1143079806-r4" x="305" y="190.8" textLength="158.6" clip-path="url(#terminal-1143079806-line-7)">[R-HONEST-01]</text><text class="terminal-1143079806-r2" x="463.6" y="190.8" textLength="829.6" clip-path="url(#terminal-1143079806-line-7)"> Bullet&#160;has&#160;no&#160;&lt;!--&#160;f:ID&#160;--&gt;&#160;tag;&#160;every&#160;bullet&#160;must&#160;trace&#160;to&#160;a&#160;fact.</text><text class="terminal-1143079806-r2" x="1439.6" y="190.8" textLength="12.2" clip-path="url(#terminal-1143079806-line-7)">
-</text><text class="terminal-1143079806-r3" x="0" y="215.2" textLength="61" clip-path="url(#terminal-1143079806-line-8)">ERROR</text><text class="terminal-1143079806-r2" x="61" y="215.2" textLength="244" clip-path="url(#terminal-1143079806-line-8)">  fabricated.md:13  </text><text class="terminal-1143079806-r4" x="305" y="215.2" textLength="158.6" clip-path="url(#terminal-1143079806-line-8)">[R-HONEST-01]</text><text class="terminal-1143079806-r2" x="463.6" y="215.2" textLength="451.4" clip-path="url(#terminal-1143079806-line-8)"> Tag&#160;cites&#160;unknown&#160;fact&#160;id&#160;&#x27;acme.r9&#x27;.</text><text class="terminal-1143079806-r2" x="1439.6" y="215.2" textLength="12.2" clip-path="url(#terminal-1143079806-line-8)">
-</text><text class="terminal-1143079806-r3" x="0" y="239.6" textLength="61" clip-path="url(#terminal-1143079806-line-9)">ERROR</text><text class="terminal-1143079806-r2" x="61" y="239.6" textLength="244" clip-path="url(#terminal-1143079806-line-9)">  fabricated.md:13  </text><text class="terminal-1143079806-r4" x="305" y="239.6" textLength="158.6" clip-path="url(#terminal-1143079806-line-9)">[R-HONEST-01]</text><text class="terminal-1143079806-r2" x="463.6" y="239.6" textLength="646.6" clip-path="url(#terminal-1143079806-line-9)"> Number&#160;&#x27;18&#x27;&#160;is&#160;not&#160;in&#160;the&#160;cited&#160;fact(s)&#160;[&#x27;acme.r9&#x27;].</text><text class="terminal-1143079806-r2" x="1439.6" y="239.6" textLength="12.2" clip-path="url(#terminal-1143079806-line-9)">
-</text><text class="terminal-1143079806-r3" x="0" y="264" textLength="61" clip-path="url(#terminal-1143079806-line-10)">ERROR</text><text class="terminal-1143079806-r2" x="61" y="264" textLength="244" clip-path="url(#terminal-1143079806-line-10)">  fabricated.md:16  </text><text class="terminal-1143079806-r4" x="305" y="264" textLength="158.6" clip-path="url(#terminal-1143079806-line-10)">[R-HONEST-01]</text><text class="terminal-1143079806-r2" x="463.6" y="264" textLength="622.2" clip-path="url(#terminal-1143079806-line-10)"> Education&#160;degree&#160;must&#160;read&#160;&#x27;Bachelor&#160;of&#160;Commerce&#x27;.</text><text class="terminal-1143079806-r2" x="1439.6" y="264" textLength="12.2" clip-path="url(#terminal-1143079806-line-10)">
-</text><text class="terminal-1143079806-r3" x="0" y="288.4" textLength="61" clip-path="url(#terminal-1143079806-line-11)">ERROR</text><text class="terminal-1143079806-r2" x="61" y="288.4" textLength="244" clip-path="url(#terminal-1143079806-line-11)">  fabricated.md:19  </text><text class="terminal-1143079806-r4" x="305" y="288.4" textLength="158.6" clip-path="url(#terminal-1143079806-line-11)">[R-HONEST-01]</text><text class="terminal-1143079806-r2" x="463.6" y="288.4" textLength="915" clip-path="url(#terminal-1143079806-line-11)"> Skill&#160;&#x27;TensorFlow&#x27;&#160;is&#160;not&#160;in&#160;facts&#160;(skills,&#160;role&#160;tools&#160;or&#160;certifications).</text><text class="terminal-1143079806-r2" x="1439.6" y="288.4" textLength="12.2" clip-path="url(#terminal-1143079806-line-11)">
-</text><text class="terminal-1143079806-r2" x="1439.6" y="312.8" textLength="12.2" clip-path="url(#terminal-1143079806-line-12)">
-</text><text class="terminal-1143079806-r1" x="0" y="337.2" textLength="24.4" clip-path="url(#terminal-1143079806-line-13)">$ </text><text class="terminal-1143079806-r1" x="24.4" y="337.2" textLength="671" clip-path="url(#terminal-1143079806-line-13)">python&#160;scripts/fact_check.py&#160;good.md&#160;--facts&#160;facts.yaml</text><text class="terminal-1143079806-r2" x="1439.6" y="337.2" textLength="12.2" clip-path="url(#terminal-1143079806-line-13)">
-</text><text class="terminal-1143079806-r1" x="0" y="361.6" textLength="24.4" clip-path="url(#terminal-1143079806-line-14)">OK</text><text class="terminal-1143079806-r2" x="24.4" y="361.6" textLength="768.6" clip-path="url(#terminal-1143079806-line-14)">     good.md:&#160;every&#160;fact&#160;traces&#160;to&#160;the&#160;fact&#160;sheet&#160;(0&#160;warnings).</text><text class="terminal-1143079806-r2" x="1439.6" y="361.6" textLength="12.2" clip-path="url(#terminal-1143079806-line-14)">
-</text>
-    </g>
-    </g>
-</svg>
+<svg xmlns='http://www.w3.org/2000/svg' width='921' height='478' viewBox='0 0 921 478' role='img' aria-label='NoMagicCV fact check'>
+<rect x='.5' y='.5' width='920' height='477' rx='12' fill='#0b1020' stroke='#24304d'/>
+<path d='M12.5 .5h896a12 12 0 0 1 12 12v32h-920v-32a12 12 0 0 1 12-12z' fill='#121a2f'/>
+<line x1='0' y1='44' x2='921' y2='44' stroke='#24304d'/>
+<g font-family="'JetBrains Mono','SFMono-Regular','Cascadia Code',Menlo,Consolas,'DejaVu Sans Mono',monospace" font-size='14'>
+<text x='22' y='27' font-weight='700' fill='#2dd4bf'>nomagic-cv</text>
+<text x='115' y='27' fill='#8b9bb4'>fact check</text>
+<text x='899' y='27' text-anchor='end' fill='#8b9bb4' font-size='12'>real output</text>
+<text x='22' y='76' font-weight='700' fill='#2dd4bf'>❯</text>
+<text x='38.9' y='76' xml:space='preserve' fill='#f8fafc' font-weight='700'>python scripts/fact_check.py fabricated.md</text>
+<rect x='19' y='83' width='50.1' height='20' rx='4' fill='#4c0519'/>
+<text x='23' y='98' font-weight='700' fill='#fda4af'>ERROR</text>
+<text x='89.4' y='98' xml:space='preserve' fill='#7dd3fc'>fabricated.md:6</text>
+<text x='215.9' y='98' xml:space='preserve' fill='#e2e8f0'>  </text>
+<text x='232.8' y='98' xml:space='preserve' fill='#c4b5fd'>[R-HONEST-01]</text>
+<text x='342.3' y='98' xml:space='preserve' fill='#e2e8f0'> </text>
+<text x='350.8' y='98' xml:space='preserve' fill='#e2e8f0'>Claims </text>
+<text x='409.8' y='98' xml:space='preserve' fill='#e2e8f0'>12 </text>
+<text x='435.1' y='98' xml:space='preserve' fill='#e2e8f0'>years; </text>
+<text x='494.1' y='98' xml:space='preserve' fill='#e2e8f0'>facts </text>
+<text x='544.7' y='98' xml:space='preserve' fill='#e2e8f0'>support </text>
+<text x='612.1' y='98' xml:space='preserve' fill='#e2e8f0'>at </text>
+<text x='637.4' y='98' xml:space='preserve' fill='#e2e8f0'>most </text>
+<text x='679.5' y='98' xml:space='preserve' fill='#e2e8f0'>8.</text>
+<rect x='19' y='105' width='50.1' height='20' rx='4' fill='#4c0519'/>
+<text x='23' y='120' font-weight='700' fill='#fda4af'>ERROR</text>
+<text x='89.4' y='120' xml:space='preserve' fill='#7dd3fc'>fabricated.md:7</text>
+<text x='215.9' y='120' xml:space='preserve' fill='#e2e8f0'>  </text>
+<text x='232.8' y='120' xml:space='preserve' fill='#c4b5fd'>[R-HONEST-03]</text>
+<text x='342.3' y='120' xml:space='preserve' fill='#e2e8f0'> </text>
+<text x='350.8' y='120' xml:space='preserve' fill='#e2e8f0'>&#x27;40&#x27; </text>
+<text x='392.9' y='120' xml:space='preserve' fill='#e2e8f0'>is </text>
+<text x='418.2' y='120' xml:space='preserve' fill='#e2e8f0'>approximate </text>
+<text x='519.4' y='120' xml:space='preserve' fill='#e2e8f0'>in </text>
+<text x='544.7' y='120' xml:space='preserve' fill='#e2e8f0'>facts; </text>
+<text x='603.7' y='120' xml:space='preserve' fill='#e2e8f0'>write </text>
+<text x='654.2' y='120' xml:space='preserve' fill='#e2e8f0'>it </text>
+<text x='679.5' y='120' xml:space='preserve' fill='#e2e8f0'>as </text>
+<text x='704.8' y='120' xml:space='preserve' fill='#e2e8f0'>&#x27;~40&#x27; </text>
+<text x='755.4' y='120' xml:space='preserve' fill='#e2e8f0'>or </text>
+<text x='780.7' y='120' xml:space='preserve' fill='#e2e8f0'>&#x27;about </text>
+<text x='839.7' y='120' xml:space='preserve' fill='#e2e8f0'>40&#x27;.</text>
+<rect x='19' y='127' width='50.1' height='20' rx='4' fill='#4c0519'/>
+<text x='23' y='142' font-weight='700' fill='#fda4af'>ERROR</text>
+<text x='89.4' y='142' xml:space='preserve' fill='#7dd3fc'>fabricated.md:10</text>
+<text x='224.3' y='142' xml:space='preserve' fill='#e2e8f0'>  </text>
+<text x='241.2' y='142' xml:space='preserve' fill='#c4b5fd'>[R-HONEST-02]</text>
+<text x='350.8' y='142' xml:space='preserve' fill='#e2e8f0'> </text>
+<text x='359.2' y='142' xml:space='preserve' fill='#e2e8f0'>Role </text>
+<text x='401.3' y='142' xml:space='preserve' fill='#e2e8f0'>line </text>
+<text x='443.5' y='142' xml:space='preserve' fill='#e2e8f0'>must </text>
+<text x='485.6' y='142' xml:space='preserve' fill='#e2e8f0'>start </text>
+<text x='536.2' y='142' xml:space='preserve' fill='#e2e8f0'>with </text>
+<text x='578.4' y='142' xml:space='preserve' fill='#e2e8f0'>the </text>
+<text x='612.1' y='142' xml:space='preserve' fill='#e2e8f0'>official </text>
+<text x='688.0' y='142' xml:space='preserve' fill='#e2e8f0'>title </text>
+<text x='738.5' y='142' xml:space='preserve' fill='#e2e8f0'>and </text>
+<text x='772.3' y='142' xml:space='preserve' fill='#e2e8f0'>employer </text>
+<text x='89.4' y='164' xml:space='preserve' fill='#e2e8f0'>exactly: </text>
+<text x='165.3' y='164' xml:space='preserve' fill='#e2e8f0'>&#x27;Data </text>
+<text x='215.9' y='164' xml:space='preserve' fill='#e2e8f0'>Analyst, </text>
+<text x='291.8' y='164' xml:space='preserve' fill='#e2e8f0'>Acme </text>
+<text x='333.9' y='164' xml:space='preserve' fill='#e2e8f0'>Retail&#x27;.</text>
+<rect x='19' y='171' width='50.1' height='20' rx='4' fill='#4c0519'/>
+<text x='23' y='186' font-weight='700' fill='#fda4af'>ERROR</text>
+<text x='89.4' y='186' xml:space='preserve' fill='#7dd3fc'>fabricated.md:10</text>
+<text x='224.3' y='186' xml:space='preserve' fill='#e2e8f0'>  </text>
+<text x='241.2' y='186' xml:space='preserve' fill='#c4b5fd'>[R-SIGNAL-05]</text>
+<text x='350.8' y='186' xml:space='preserve' fill='#e2e8f0'> </text>
+<text x='359.2' y='186' xml:space='preserve' fill='#e2e8f0'>Dates </text>
+<text x='409.8' y='186' xml:space='preserve' fill='#e2e8f0'>&#x27;Jan </text>
+<text x='451.9' y='186' xml:space='preserve' fill='#e2e8f0'>2020 </text>
+<text x='494.1' y='186' xml:space='preserve' fill='#e2e8f0'>- </text>
+<text x='510.9' y='186' xml:space='preserve' fill='#e2e8f0'>Present&#x27; </text>
+<text x='586.8' y='186' xml:space='preserve' fill='#e2e8f0'>differ </text>
+<text x='645.8' y='186' xml:space='preserve' fill='#e2e8f0'>from </text>
+<text x='688.0' y='186' xml:space='preserve' fill='#e2e8f0'>facts </text>
+<text x='738.5' y='186' xml:space='preserve' fill='#e2e8f0'>&#x27;Mar </text>
+<text x='780.7' y='186' xml:space='preserve' fill='#e2e8f0'>2021 </text>
+<text x='822.8' y='186' xml:space='preserve' fill='#e2e8f0'>- </text>
+<text x='89.4' y='208' xml:space='preserve' fill='#e2e8f0'>Present&#x27;.</text>
+<rect x='19' y='215' width='50.1' height='20' rx='4' fill='#4c0519'/>
+<text x='23' y='230' font-weight='700' fill='#fda4af'>ERROR</text>
+<text x='89.4' y='230' xml:space='preserve' fill='#7dd3fc'>fabricated.md:11</text>
+<text x='224.3' y='230' xml:space='preserve' fill='#e2e8f0'>  </text>
+<text x='241.2' y='230' xml:space='preserve' fill='#c4b5fd'>[R-HONEST-01]</text>
+<text x='350.8' y='230' xml:space='preserve' fill='#e2e8f0'> </text>
+<text x='359.2' y='230' xml:space='preserve' fill='#e2e8f0'>Number </text>
+<text x='418.2' y='230' xml:space='preserve' fill='#e2e8f0'>&#x27;25&#x27; </text>
+<text x='460.4' y='230' xml:space='preserve' fill='#e2e8f0'>is </text>
+<text x='485.6' y='230' xml:space='preserve' fill='#e2e8f0'>not </text>
+<text x='519.4' y='230' xml:space='preserve' fill='#e2e8f0'>in </text>
+<text x='544.7' y='230' xml:space='preserve' fill='#e2e8f0'>the </text>
+<text x='578.4' y='230' xml:space='preserve' fill='#e2e8f0'>cited </text>
+<text x='629.0' y='230' xml:space='preserve' fill='#e2e8f0'>fact(s) </text>
+<text x='696.4' y='230' xml:space='preserve' fill='#e2e8f0'>[&#x27;acme.r2&#x27;].</text>
+<rect x='19' y='237' width='50.1' height='20' rx='4' fill='#4c0519'/>
+<text x='23' y='252' font-weight='700' fill='#fda4af'>ERROR</text>
+<text x='89.4' y='252' xml:space='preserve' fill='#7dd3fc'>fabricated.md:12</text>
+<text x='224.3' y='252' xml:space='preserve' fill='#e2e8f0'>  </text>
+<text x='241.2' y='252' xml:space='preserve' fill='#c4b5fd'>[R-HONEST-01]</text>
+<text x='350.8' y='252' xml:space='preserve' fill='#e2e8f0'> </text>
+<text x='359.2' y='252' xml:space='preserve' fill='#e2e8f0'>Bullet </text>
+<text x='418.2' y='252' xml:space='preserve' fill='#e2e8f0'>has </text>
+<text x='451.9' y='252' xml:space='preserve' fill='#e2e8f0'>no </text>
+<text x='477.2' y='252' xml:space='preserve' fill='#e2e8f0'>&lt;!-- </text>
+<text x='519.4' y='252' xml:space='preserve' fill='#e2e8f0'>f:ID </text>
+<text x='561.5' y='252' xml:space='preserve' fill='#e2e8f0'>--&gt; </text>
+<text x='595.2' y='252' xml:space='preserve' fill='#e2e8f0'>tag; </text>
+<text x='637.4' y='252' xml:space='preserve' fill='#e2e8f0'>every </text>
+<text x='688.0' y='252' xml:space='preserve' fill='#e2e8f0'>bullet </text>
+<text x='747.0' y='252' xml:space='preserve' fill='#e2e8f0'>must </text>
+<text x='789.1' y='252' xml:space='preserve' fill='#e2e8f0'>trace </text>
+<text x='839.7' y='252' xml:space='preserve' fill='#e2e8f0'>to </text>
+<text x='865.0' y='252' xml:space='preserve' fill='#e2e8f0'>a </text>
+<text x='89.4' y='274' xml:space='preserve' fill='#e2e8f0'>fact.</text>
+<rect x='19' y='281' width='50.1' height='20' rx='4' fill='#4c0519'/>
+<text x='23' y='296' font-weight='700' fill='#fda4af'>ERROR</text>
+<text x='89.4' y='296' xml:space='preserve' fill='#7dd3fc'>fabricated.md:13</text>
+<text x='224.3' y='296' xml:space='preserve' fill='#e2e8f0'>  </text>
+<text x='241.2' y='296' xml:space='preserve' fill='#c4b5fd'>[R-HONEST-01]</text>
+<text x='350.8' y='296' xml:space='preserve' fill='#e2e8f0'> </text>
+<text x='359.2' y='296' xml:space='preserve' fill='#e2e8f0'>Tag </text>
+<text x='392.9' y='296' xml:space='preserve' fill='#e2e8f0'>cites </text>
+<text x='443.5' y='296' xml:space='preserve' fill='#e2e8f0'>unknown </text>
+<text x='510.9' y='296' xml:space='preserve' fill='#e2e8f0'>fact </text>
+<text x='553.1' y='296' xml:space='preserve' fill='#e2e8f0'>id </text>
+<text x='578.4' y='296' xml:space='preserve' fill='#e2e8f0'>&#x27;acme.r9&#x27;.</text>
+<rect x='19' y='303' width='50.1' height='20' rx='4' fill='#4c0519'/>
+<text x='23' y='318' font-weight='700' fill='#fda4af'>ERROR</text>
+<text x='89.4' y='318' xml:space='preserve' fill='#7dd3fc'>fabricated.md:13</text>
+<text x='224.3' y='318' xml:space='preserve' fill='#e2e8f0'>  </text>
+<text x='241.2' y='318' xml:space='preserve' fill='#c4b5fd'>[R-HONEST-01]</text>
+<text x='350.8' y='318' xml:space='preserve' fill='#e2e8f0'> </text>
+<text x='359.2' y='318' xml:space='preserve' fill='#e2e8f0'>Number </text>
+<text x='418.2' y='318' xml:space='preserve' fill='#e2e8f0'>&#x27;18&#x27; </text>
+<text x='460.4' y='318' xml:space='preserve' fill='#e2e8f0'>is </text>
+<text x='485.6' y='318' xml:space='preserve' fill='#e2e8f0'>not </text>
+<text x='519.4' y='318' xml:space='preserve' fill='#e2e8f0'>in </text>
+<text x='544.7' y='318' xml:space='preserve' fill='#e2e8f0'>the </text>
+<text x='578.4' y='318' xml:space='preserve' fill='#e2e8f0'>cited </text>
+<text x='629.0' y='318' xml:space='preserve' fill='#e2e8f0'>fact(s) </text>
+<text x='696.4' y='318' xml:space='preserve' fill='#e2e8f0'>[&#x27;acme.r9&#x27;].</text>
+<rect x='19' y='325' width='50.1' height='20' rx='4' fill='#4c0519'/>
+<text x='23' y='340' font-weight='700' fill='#fda4af'>ERROR</text>
+<text x='89.4' y='340' xml:space='preserve' fill='#7dd3fc'>fabricated.md:16</text>
+<text x='224.3' y='340' xml:space='preserve' fill='#e2e8f0'>  </text>
+<text x='241.2' y='340' xml:space='preserve' fill='#c4b5fd'>[R-HONEST-01]</text>
+<text x='350.8' y='340' xml:space='preserve' fill='#e2e8f0'> </text>
+<text x='359.2' y='340' xml:space='preserve' fill='#e2e8f0'>Education </text>
+<text x='443.5' y='340' xml:space='preserve' fill='#e2e8f0'>degree </text>
+<text x='502.5' y='340' xml:space='preserve' fill='#e2e8f0'>must </text>
+<text x='544.7' y='340' xml:space='preserve' fill='#e2e8f0'>read </text>
+<text x='586.8' y='340' xml:space='preserve' fill='#e2e8f0'>&#x27;Bachelor </text>
+<text x='671.1' y='340' xml:space='preserve' fill='#e2e8f0'>of </text>
+<text x='696.4' y='340' xml:space='preserve' fill='#e2e8f0'>Commerce&#x27;.</text>
+<rect x='19' y='347' width='50.1' height='20' rx='4' fill='#4c0519'/>
+<text x='23' y='362' font-weight='700' fill='#fda4af'>ERROR</text>
+<text x='89.4' y='362' xml:space='preserve' fill='#7dd3fc'>fabricated.md:19</text>
+<text x='224.3' y='362' xml:space='preserve' fill='#e2e8f0'>  </text>
+<text x='241.2' y='362' xml:space='preserve' fill='#c4b5fd'>[R-HONEST-01]</text>
+<text x='350.8' y='362' xml:space='preserve' fill='#e2e8f0'> </text>
+<text x='359.2' y='362' xml:space='preserve' fill='#e2e8f0'>Skill </text>
+<text x='409.8' y='362' xml:space='preserve' fill='#e2e8f0'>&#x27;TensorFlow&#x27; </text>
+<text x='519.4' y='362' xml:space='preserve' fill='#e2e8f0'>is </text>
+<text x='544.7' y='362' xml:space='preserve' fill='#e2e8f0'>not </text>
+<text x='578.4' y='362' xml:space='preserve' fill='#e2e8f0'>in </text>
+<text x='603.7' y='362' xml:space='preserve' fill='#e2e8f0'>facts </text>
+<text x='654.2' y='362' xml:space='preserve' fill='#e2e8f0'>(skills, </text>
+<text x='730.1' y='362' xml:space='preserve' fill='#e2e8f0'>role </text>
+<text x='772.3' y='362' xml:space='preserve' fill='#e2e8f0'>tools </text>
+<text x='822.8' y='362' xml:space='preserve' fill='#e2e8f0'>or </text>
+<text x='89.4' y='384' xml:space='preserve' fill='#e2e8f0'>certifications).</text>
+<text x='22' y='428' font-weight='700' fill='#2dd4bf'>❯</text>
+<text x='38.9' y='428' xml:space='preserve' fill='#f8fafc' font-weight='700'>python scripts/fact_check.py good.md</text>
+<rect x='19' y='435' width='24.9' height='20' rx='4' fill='#052e16'/>
+<text x='23' y='450' font-weight='700' fill='#86efac'>OK</text>
+<text x='89.4' y='450' xml:space='preserve' fill='#e2e8f0'>good.md: </text>
+<text x='165.3' y='450' xml:space='preserve' fill='#e2e8f0'>every </text>
+<text x='215.9' y='450' xml:space='preserve' fill='#e2e8f0'>fact </text>
+<text x='258.0' y='450' xml:space='preserve' fill='#e2e8f0'>traces </text>
+<text x='317.0' y='450' xml:space='preserve' fill='#e2e8f0'>to </text>
+<text x='342.3' y='450' xml:space='preserve' fill='#e2e8f0'>the </text>
+<text x='376.1' y='450' xml:space='preserve' fill='#e2e8f0'>fact </text>
+<text x='418.2' y='450' xml:space='preserve' fill='#e2e8f0'>sheet </text>
+<text x='468.8' y='450' xml:space='preserve' fill='#e2e8f0'>(0 </text>
+<text x='494.1' y='450' xml:space='preserve' fill='#e2e8f0'>warnings).</text>
+</g></svg>

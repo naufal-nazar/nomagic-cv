@@ -36,19 +36,36 @@ AI CV tools write fast and invent freely. NoMagicCV treats your CV like code und
 
 ## See it work
 
-<details open>
-<summary><b>🛡️ A job posting with hidden instructions for AI, caught and sanitized</b></summary>
-<br>
+### The final product
+
+<table>
+<tr>
+<td width="52%" valign="top"><img src="docs/assets/cv-example.png" alt="Example one-page CV exported by NoMagicCV for a fictional data analyst"></td>
+<td valign="top">
+
+A single-column, ATS-friendly PDF exported from the checked CV, named the way recruiters expect (`First_Last_Role.pdf`), then put through the parse test:
+
+<img src="docs/assets/final-cv-check.svg" alt="export.py writing the PDF and parse_check confirming every line survives extraction in order">
+
+Every number in it traces to the fact sheet. Fictional candidate; see [`evals/cases`](evals/cases).
+
+</td>
+</tr>
+</table>
+
+### Prompt injection in a job posting, caught
+
 <img src="docs/assets/posting-guard.svg" alt="posting_guard finding invisible Unicode, hidden HTML and injected instructions in a job posting" width="100%">
-</details>
 
 <details>
-<summary><b>📈 Two CV versions, and an honest answer: no winner yet</b></summary>
+<summary><b>Two CV versions, and an honest answer: no winner yet</b></summary>
 <br>
-<img src="docs/assets/honest-stats.svg" alt="tracker stats showing overlapping 95% intervals and refusing to declare a winner" width="80%">
+<img src="docs/assets/honest-stats.svg" alt="tracker stats showing overlapping 95% intervals and refusing to declare a winner" width="85%">
+
+Version 2 looks twice as good (21% vs 9%), but with ~20 applications each the likely ranges overlap, so the difference could be luck. NoMagicCV says so instead of crowning a winner.
 </details>
 
-<sub>Every screenshot is generated from real runs on the fictional eval cases by <a href="docs/make_screenshots.py"><code>docs/make_screenshots.py</code></a>.</sub>
+<sub>All visuals are generated from real runs on fictional data by <a href="docs/make_screenshots.py"><code>docs/make_screenshots.py</code></a>.</sub>
 
 ## Quick start
 
@@ -107,6 +124,7 @@ python scripts/posting_guard.py posting.md --sanitize
 python scripts/fact_check.py cv.md
 python scripts/consistency_check.py workspace/applications/<folder>
 python scripts/parse_check.py cv.pdf --source cv.md
+python scripts/export.py pdf cv.md                                # uses your Chrome/Edge; or:
 python scripts/export.py rendercv cv.md -o CV.yaml && rendercv render CV.yaml
 python scripts/tracker.py stats
 ```
@@ -172,7 +190,23 @@ NoMagicCV is the evidence and honesty layer. Its checks are plain scripts, so th
 
 A new rule needs a cited study, a sample size and a grade; grade C can't become a hard rule. Results from other agents and model benchmarks are welcome. See [`CONTRIBUTING.md`](CONTRIBUTING.md) and run `make check`.
 
-Integrates with [RenderCV](https://github.com/rendercv/rendercv), [JSON Resume](https://jsonresume.org), [Reactive Resume](https://github.com/amruthpillai/reactive-resume) and [OpenResume](https://github.com/xitanggg/open-resume). Credits: [`CREDITS.md`](CREDITS.md).
+## Built with and inspired by
+
+NoMagicCV connects to these projects rather than copying them. Thank you to their authors.
+
+| Project | License | How NoMagicCV uses it |
+|---|---|---|
+| [RenderCV](https://github.com/rendercv/rendercv) | MIT | Typst PDF rendering via `export.py rendercv` |
+| [JSON Resume](https://github.com/jsonresume/resume-schema) | MIT | Open schema for import and export via `export.py jsonresume` |
+| [Reactive Resume](https://github.com/amruthpillai/reactive-resume) | MIT | Visual editing, through JSON Resume |
+| [OpenResume](https://github.com/xitanggg/open-resume) | AGPL-3.0 | Optional second parse test, run separately |
+| [Resume Matcher](https://github.com/srbhr/Resume-Matcher) | Apache-2.0 | Optional keyword gaps, reported as coverage |
+| [ai-job-search](https://github.com/ai-job-search-dev/ai-job-search) | MIT | Inspired the posting integrity gate |
+| [career-ops](https://github.com/santifer/career-ops) | MIT | Inspired the application pipeline and tracker |
+| [JobOps](https://github.com/reggiechan74/jobops) | see repo | Inspired the one-file-per-role source of truth |
+| [Agent Skills](https://agentskills.io) | open standard | Packaging format that makes the skill portable across agents |
+
+Details in [`CREDITS.md`](CREDITS.md).
 
 ## License
 

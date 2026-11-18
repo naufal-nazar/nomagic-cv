@@ -1,88 +1,61 @@
-<svg class="rich-terminal" viewBox="0 0 1190 245.2" xmlns="http://www.w3.org/2000/svg">
-    <!-- Generated with Rich https://www.textualize.io -->
-    <style>
-
-    @font-face {
-        font-family: "Fira Code";
-        src: local("FiraCode-Regular"),
-                url("https://cdnjs.cloudflare.com/ajax/libs/firacode/6.2.0/woff2/FiraCode-Regular.woff2") format("woff2"),
-                url("https://cdnjs.cloudflare.com/ajax/libs/firacode/6.2.0/woff/FiraCode-Regular.woff") format("woff");
-        font-style: normal;
-        font-weight: 400;
-    }
-    @font-face {
-        font-family: "Fira Code";
-        src: local("FiraCode-Bold"),
-                url("https://cdnjs.cloudflare.com/ajax/libs/firacode/6.2.0/woff2/FiraCode-Bold.woff2") format("woff2"),
-                url("https://cdnjs.cloudflare.com/ajax/libs/firacode/6.2.0/woff/FiraCode-Bold.woff") format("woff");
-        font-style: bold;
-        font-weight: 700;
-    }
-
-    .terminal-3340252308-matrix {
-        font-family: Fira Code, monospace;
-        font-size: 20px;
-        line-height: 24.4px;
-        font-variant-east-asian: full-width;
-    }
-
-    .terminal-3340252308-title {
-        font-size: 18px;
-        font-weight: bold;
-        font-family: arial;
-    }
-
-    .terminal-3340252308-r1 { fill: #98a84b;font-weight: bold }
-.terminal-3340252308-r2 { fill: #c5c8c6 }
-.terminal-3340252308-r3 { fill: #68a0b3;font-weight: bold }
-    </style>
-
-    <defs>
-    <clipPath id="terminal-3340252308-clip-terminal">
-      <rect x="0" y="0" width="1170.1999999999998" height="194.2" />
-    </clipPath>
-    <clipPath id="terminal-3340252308-line-0">
-    <rect x="0" y="1.5" width="1171.2" height="24.65"/>
-            </clipPath>
-<clipPath id="terminal-3340252308-line-1">
-    <rect x="0" y="25.9" width="1171.2" height="24.65"/>
-            </clipPath>
-<clipPath id="terminal-3340252308-line-2">
-    <rect x="0" y="50.3" width="1171.2" height="24.65"/>
-            </clipPath>
-<clipPath id="terminal-3340252308-line-3">
-    <rect x="0" y="74.7" width="1171.2" height="24.65"/>
-            </clipPath>
-<clipPath id="terminal-3340252308-line-4">
-    <rect x="0" y="99.1" width="1171.2" height="24.65"/>
-            </clipPath>
-<clipPath id="terminal-3340252308-line-5">
-    <rect x="0" y="123.5" width="1171.2" height="24.65"/>
-            </clipPath>
-<clipPath id="terminal-3340252308-line-6">
-    <rect x="0" y="147.9" width="1171.2" height="24.65"/>
-            </clipPath>
-    </defs>
-
-    <rect fill="#292929" stroke="rgba(255,255,255,0.35)" stroke-width="1" x="1" y="1" width="1188" height="243.2" rx="8"/><text class="terminal-3340252308-title" fill="#c5c8c6" text-anchor="middle" x="594" y="27">NoMagicCV:&#160;honest&#160;callback&#160;statistics</text>
-            <g transform="translate(26,22)">
-            <circle cx="0" cy="0" r="7" fill="#ff5f57"/>
-            <circle cx="22" cy="0" r="7" fill="#febc2e"/>
-            <circle cx="44" cy="0" r="7" fill="#28c840"/>
-            </g>
-        
-    <g transform="translate(9, 41)" clip-path="url(#terminal-3340252308-clip-terminal)">
-    
-    <g class="terminal-3340252308-matrix">
-    <text class="terminal-3340252308-r1" x="0" y="20" textLength="24.4" clip-path="url(#terminal-3340252308-line-0)">$ </text><text class="terminal-3340252308-r1" x="24.4" y="20" textLength="378.2" clip-path="url(#terminal-3340252308-line-0)">python&#160;scripts/tracker.py&#160;stats</text><text class="terminal-3340252308-r2" x="1171.2" y="20" textLength="12.2" clip-path="url(#terminal-3340252308-line-0)">
-</text><text class="terminal-3340252308-r2" x="0" y="44.4" textLength="597.8" clip-path="url(#terminal-3340252308-line-1)">version&#160;&#160;&#160;&#160;&#160;&#160;&#160;n&#160;&#160;callbacks&#160;&#160;&#160;&#160;rate&#160;&#160;&#160;95%&#160;interval</text><text class="terminal-3340252308-r2" x="1171.2" y="44.4" textLength="12.2" clip-path="url(#terminal-3340252308-line-1)">
-</text><text class="terminal-3340252308-r2" x="0" y="68.8" textLength="597.8" clip-path="url(#terminal-3340252308-line-2)">backend-v1&#160;&#160;&#160;22&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;2&#160;&#160;&#160;&#160;9.1%&#160;&#160;&#160;2.5%&#160;-&#160;27.8%</text><text class="terminal-3340252308-r2" x="1171.2" y="68.8" textLength="12.2" clip-path="url(#terminal-3340252308-line-2)">
-</text><text class="terminal-3340252308-r2" x="0" y="93.2" textLength="597.8" clip-path="url(#terminal-3340252308-line-3)">backend-v2&#160;&#160;&#160;19&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;4&#160;&#160;&#160;21.1%&#160;&#160;&#160;8.5%&#160;-&#160;43.3%</text><text class="terminal-3340252308-r2" x="1171.2" y="93.2" textLength="12.2" clip-path="url(#terminal-3340252308-line-3)">
-</text><text class="terminal-3340252308-r2" x="1171.2" y="117.6" textLength="12.2" clip-path="url(#terminal-3340252308-line-4)">
-</text><text class="terminal-3340252308-r3" x="0" y="142" textLength="1171.2" clip-path="url(#terminal-3340252308-line-5)">Too&#160;few&#160;applications&#160;to&#160;judge&#160;backend-v1,&#160;backend-v2&#160;(fewer&#160;than&#160;30&#160;each).&#160;Treat&#160;differences&#160;as&#160;</text><text class="terminal-3340252308-r2" x="1171.2" y="142" textLength="12.2" clip-path="url(#terminal-3340252308-line-5)">
-</text><text class="terminal-3340252308-r3" x="0" y="166.4" textLength="73.2" clip-path="url(#terminal-3340252308-line-6)">noise.</text><text class="terminal-3340252308-r2" x="1171.2" y="166.4" textLength="12.2" clip-path="url(#terminal-3340252308-line-6)">
-</text><text class="terminal-3340252308-r3" x="0" y="190.8" textLength="1134.6" clip-path="url(#terminal-3340252308-line-7)">No&#160;winner&#160;yet:&#160;the&#160;intervals&#160;overlap.&#160;Keep&#160;both,&#160;change&#160;one&#160;element&#160;at&#160;a&#160;time&#160;[R-MEASURE-01].</text><text class="terminal-3340252308-r2" x="1171.2" y="190.8" textLength="12.2" clip-path="url(#terminal-3340252308-line-7)">
-</text>
-    </g>
-    </g>
-</svg>
+<svg xmlns='http://www.w3.org/2000/svg' width='820' height='280' viewBox='0 0 820 280' role='img' aria-label='NoMagicCV honest callback statistics'>
+<rect x='.5' y='.5' width='819' height='279' rx='12' fill='#0b1020' stroke='#24304d'/>
+<path d='M12.5 .5h795a12 12 0 0 1 12 12v32h-819v-32a12 12 0 0 1 12-12z' fill='#121a2f'/>
+<line x1='0' y1='44' x2='820' y2='44' stroke='#24304d'/>
+<g font-family="'JetBrains Mono','SFMono-Regular','Cascadia Code',Menlo,Consolas,'DejaVu Sans Mono',monospace" font-size='14'>
+<text x='22' y='27' font-weight='700' fill='#2dd4bf'>nomagic-cv</text>
+<text x='115' y='27' fill='#8b9bb4'>honest callback statistics</text>
+<text x='798' y='27' text-anchor='end' fill='#8b9bb4' font-size='12'>real output</text>
+<text x='22' y='76' font-weight='700' fill='#2dd4bf'>❯</text>
+<text x='38.9' y='76' xml:space='preserve' fill='#f8fafc' font-weight='700'>python scripts/tracker.py stats</text>
+<text x='22.0' y='98' xml:space='preserve' fill='#e2e8f0'>version       </text>
+<text x='140.0' y='98' xml:space='preserve' fill='#e2e8f0'>n  </text>
+<text x='165.3' y='98' xml:space='preserve' fill='#e2e8f0'>callbacks    </text>
+<text x='274.9' y='98' xml:space='preserve' fill='#e2e8f0'>rate   </text>
+<text x='333.9' y='98' xml:space='preserve' fill='#e2e8f0'>95% </text>
+<text x='367.6' y='98' xml:space='preserve' fill='#e2e8f0'>interval</text>
+<text x='22.0' y='120' xml:space='preserve' fill='#e2e8f0'>backend-v1   </text>
+<text x='131.6' y='120' xml:space='preserve' fill='#e2e8f0'>22          </text>
+<text x='232.8' y='120' xml:space='preserve' fill='#e2e8f0'>2    </text>
+<text x='274.9' y='120' xml:space='preserve' fill='#e2e8f0'>9.1%   </text>
+<text x='333.9' y='120' xml:space='preserve' fill='#e2e8f0'>2.5% </text>
+<text x='376.1' y='120' xml:space='preserve' fill='#e2e8f0'>- </text>
+<text x='392.9' y='120' xml:space='preserve' fill='#e2e8f0'>27.8%</text>
+<text x='22.0' y='142' xml:space='preserve' fill='#e2e8f0'>backend-v2   </text>
+<text x='131.6' y='142' xml:space='preserve' fill='#e2e8f0'>19          </text>
+<text x='232.8' y='142' xml:space='preserve' fill='#e2e8f0'>4   </text>
+<text x='266.5' y='142' xml:space='preserve' fill='#e2e8f0'>21.1%   </text>
+<text x='333.9' y='142' xml:space='preserve' fill='#e2e8f0'>8.5% </text>
+<text x='376.1' y='142' xml:space='preserve' fill='#e2e8f0'>- </text>
+<text x='392.9' y='142' xml:space='preserve' fill='#e2e8f0'>43.3%</text>
+<text x='22.0' y='186' xml:space='preserve' fill='#5eead4'>Too </text>
+<text x='55.7' y='186' xml:space='preserve' fill='#5eead4'>few </text>
+<text x='89.4' y='186' xml:space='preserve' fill='#5eead4'>applications </text>
+<text x='199.0' y='186' xml:space='preserve' fill='#5eead4'>to </text>
+<text x='224.3' y='186' xml:space='preserve' fill='#5eead4'>judge </text>
+<text x='274.9' y='186' xml:space='preserve' fill='#5eead4'>backend-v1, </text>
+<text x='376.1' y='186' xml:space='preserve' fill='#5eead4'>backend-v2 </text>
+<text x='468.8' y='186' xml:space='preserve' fill='#5eead4'>(fewer </text>
+<text x='527.8' y='186' xml:space='preserve' fill='#5eead4'>than </text>
+<text x='569.9' y='186' xml:space='preserve' fill='#5eead4'>30 </text>
+<text x='595.2' y='186' xml:space='preserve' fill='#5eead4'>each). </text>
+<text x='654.2' y='186' xml:space='preserve' fill='#5eead4'>Treat </text>
+<text x='704.8' y='186' xml:space='preserve' fill='#5eead4'>differences </text>
+<text x='22.0' y='208' xml:space='preserve' fill='#5eead4'>as </text>
+<text x='47.3' y='208' xml:space='preserve' fill='#5eead4'>noise.</text>
+<text x='22.0' y='230' xml:space='preserve' fill='#5eead4'>No </text>
+<text x='47.3' y='230' xml:space='preserve' fill='#5eead4'>winner </text>
+<text x='106.3' y='230' xml:space='preserve' fill='#5eead4'>yet: </text>
+<text x='148.4' y='230' xml:space='preserve' fill='#5eead4'>the </text>
+<text x='182.2' y='230' xml:space='preserve' fill='#5eead4'>intervals </text>
+<text x='266.5' y='230' xml:space='preserve' fill='#5eead4'>overlap. </text>
+<text x='342.3' y='230' xml:space='preserve' fill='#5eead4'>Keep </text>
+<text x='384.5' y='230' xml:space='preserve' fill='#5eead4'>both, </text>
+<text x='435.1' y='230' xml:space='preserve' fill='#5eead4'>change </text>
+<text x='494.1' y='230' xml:space='preserve' fill='#5eead4'>one </text>
+<text x='527.8' y='230' xml:space='preserve' fill='#5eead4'>element </text>
+<text x='595.2' y='230' xml:space='preserve' fill='#5eead4'>at </text>
+<text x='620.5' y='230' xml:space='preserve' fill='#5eead4'>a </text>
+<text x='637.4' y='230' xml:space='preserve' fill='#5eead4'>time </text>
+<text x='22.0' y='252' xml:space='preserve' fill='#5eead4'>[R-MEASURE-01].</text>
+</g></svg>

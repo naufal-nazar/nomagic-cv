@@ -7,7 +7,7 @@ This project integrates with other open-source tools through adapters. No third-
 | Project | License | How we use it |
 |---|---|---|
 | [RenderCV](https://github.com/rendercv/rendercv) by Sina Atalay and contributors | MIT | `scripts/export.py rendercv` writes its YAML input; the user runs `rendercv render`. |
-| [JSON Resume](https://jsonresume.org) schema | MIT | `scripts/export.py jsonresume` writes the open schema for import into other tools. |
+| [JSON Resume](https://github.com/jsonresume/resume-schema) schema ([jsonresume.org](https://jsonresume.org)) | MIT | `scripts/export.py jsonresume` writes the open schema for import into other tools. |
 | [Reactive Resume](https://github.com/amruthpillai/reactive-resume) by Amruth Pillai | MIT | Optional visual editing, via JSON Resume export. |
 | [OpenResume](https://github.com/xitanggg/open-resume) by Xitang Zhao | AGPL-3.0 | Optional second parse test, run as a separate program. No code copied. |
 | [Resume Matcher](https://github.com/srbhr/Resume-Matcher) by Saurabh Rai | Apache-2.0 | Optional keyword-gap check. We report must-have coverage, not a match score. |
