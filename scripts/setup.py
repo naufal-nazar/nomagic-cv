@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """One-command setup for NoMagicCV. Standard library only; works on macOS, Linux and Windows.
 
-Usage:
+Usage (with uv, recommended: `uv run scripts/setup.py ...`; without uv, use python3):
   python3 scripts/setup.py                 set up this clone for every agent (default)
   python3 scripts/setup.py --check         verify the setup without changing anything
   python3 scripts/setup.py --global claude install the skill for Claude Code in all your projects
@@ -72,8 +72,14 @@ def step_deps(check: bool) -> None:
         say(OK, "Dependencies installed" + (" (.venv)" if py != sys.executable else ""))
         return
     if check:
-        say(FAIL, "Dependencies missing (run: python3 scripts/setup.py)")
+        say(FAIL, "Dependencies missing (run: uv run scripts/setup.py, or python3 scripts/setup.py)")
         return
+    if shutil.which("uv"):
+        res = subprocess.run(["uv", "sync", "--no-dev"], cwd=ROOT, capture_output=True, text=True)
+        if res.returncode == 0 and has_deps(str(venv_python())):
+            say(OK, "Dependencies installed with uv (.venv, locked by uv.lock)")
+            return
+        say(WARN, "uv sync failed; falling back to pip:\n" + res.stderr[-400:])
     req = str(ROOT / "requirements.txt")
     attempt = subprocess.run([sys.executable, "-m", "pip", "install", "-q", "-r", req], capture_output=True, text=True)
     if attempt.returncode != 0 and "externally-managed" in (attempt.stderr + attempt.stdout):
@@ -272,7 +278,7 @@ Next step, in the agent you use:
   Claude Code (terminal, desktop app or IDE)  open this folder, then type  /nomagic-facts
   Codex (CLI, IDE or app)                     open this folder, then say   run nomagic-facts
   Other agents                                open this folder, then say   Read AGENTS.md, then run nomagic-facts
-  Claude app (chat, no terminal)              python3 scripts/setup.py --zip  and upload dist/nomagic-cv.zip
+  Claude app (chat, no terminal)              uv run scripts/setup.py --zip (or python3 ...), upload dist/nomagic-cv.zip
 """
 
 

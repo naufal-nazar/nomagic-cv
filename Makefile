@@ -1,21 +1,23 @@
 .PHONY: setup zip workspace check test evals lint
 
-setup: ## cross-platform setup (same as python3 scripts/setup.py)
-	python3 scripts/setup.py
+PY := $(shell command -v uv >/dev/null 2>&1 && echo "uv run" || echo python3)
+
+setup: ## cross-platform setup (uses uv when installed, pip otherwise)
+	$(PY) scripts/setup.py
 
 zip: ## build dist/nomagic-cv.zip for the Claude app
-	python3 scripts/setup.py --zip --skip-tests
+	$(PY) scripts/setup.py --zip --skip-tests
 
 workspace:
 	mkdir -p workspace/sources workspace/cvs workspace/applications
 
 lint:
-	python3 scripts/rules_lint.py
+	$(PY) scripts/rules_lint.py
 
 test:
-	python3 -m pytest -q
+	$(PY) -m pytest -q
 
 evals:
-	python3 evals/run_evals.py
+	$(PY) evals/run_evals.py
 
 check: lint test evals
