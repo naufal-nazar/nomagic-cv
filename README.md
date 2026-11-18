@@ -11,6 +11,7 @@ Every fact is checked by code. Every rule cites a study.
 [![Stars](https://img.shields.io/github/stars/naufal-nazar/nomagic-cv?style=flat-square&color=f59e0b)](https://github.com/naufal-nazar/nomagic-cv/stargazers)
 [![License: MIT](https://img.shields.io/badge/code-MIT-22c55e?style=flat-square)](LICENSE)
 [![Content: CC BY 4.0](https://img.shields.io/badge/content-CC%20BY%204.0-0ea5e9?style=flat-square)](LICENSE-CONTENT)
+[![Platforms](https://img.shields.io/badge/tested-Linux%20%C2%B7%20macOS%20%C2%B7%20Windows-64748b?style=flat-square)](.github/workflows/ci.yml)
 [![Agent Skills](https://img.shields.io/badge/Agent%20Skills-compatible-8b5cf6?style=flat-square)](https://agentskills.io)
 
 [Quick start](#quick-start) · [How it works](#how-it-works) · [Agents](#works-with-your-agent) · [Evidence](#the-evidence) · [Compare](#how-it-compares)
@@ -19,17 +20,9 @@ Every fact is checked by code. Every rule cites a study.
 
 ---
 
-AI CV tools write fast and invent freely. NoMagicCV treats your CV like code under test:
+AI CV tools write fast and invent freely. NoMagicCV treats your CV like code under test: change a number, rename a title or add a skill you don't have, and the check fails.
 
-```diff
-  ### Data Analyst, Acme Retail | Mar 2021 - Present          <!-- role:acme -->
-- - Built forecasts for 60 stores.                            <!-- f:acme.r1 -->
-+ - Built weekly demand forecasts for ~40 stores in SQL.      <!-- f:acme.r1 -->
-```
-
-```text
-ERROR  cv.md:13  [R-HONEST-01] Number '60' is not in the cited fact(s) ['acme.r1'].
-```
+<p align="center"><img src="docs/assets/fact-check.svg" alt="fact_check catching ten invented or inflated facts in a CV, then passing the honest version" width="100%"></p>
 
 | | |
 |---|---|
@@ -39,6 +32,22 @@ ERROR  cv.md:13  [R-HONEST-01] Number '60' is not in the cited fact(s) ['acme.r1
 | 🛡️ **Injection guard** | Job postings are scanned for hidden text and "ignore previous instructions" before an agent reads them. |
 | 📈 **Honest stats** | Callback rates with 95% intervals. No winner declared from 20 applications. |
 | 🔒 **Private** | Your data stays in `workspace/`; a git hook refuses to commit it. |
+
+## See it work
+
+<details open>
+<summary><b>🛡️ A job posting with hidden instructions for AI, caught and sanitized</b></summary>
+<br>
+<img src="docs/assets/posting-guard.svg" alt="posting_guard finding invisible Unicode, hidden HTML and injected instructions in a job posting" width="100%">
+</details>
+
+<details>
+<summary><b>📈 Two CV versions, and an honest answer: no winner yet</b></summary>
+<br>
+<img src="docs/assets/honest-stats.svg" alt="tracker stats showing overlapping 95% intervals and refusing to declare a winner" width="80%">
+</details>
+
+<sub>Every screenshot is generated from real runs on the fictional eval cases by <a href="docs/make_screenshots.py"><code>docs/make_screenshots.py</code></a>.</sub>
 
 ## Quick start
 
@@ -162,7 +171,7 @@ Integrates with [RenderCV](https://github.com/rendercv/rendercv), [JSON Resume](
 
 ## License
 
-Code [MIT](LICENSE) · Framework text [CC BY 4.0](LICENSE-CONTENT) · Not legal or career advice.
+Code [MIT](LICENSE) · Framework text [CC BY 4.0](LICENSE-CONTENT) · [Cite this project](CITATION.cff) · [Security](SECURITY.md) · Not legal or career advice.
 
 <div align="center">
 
