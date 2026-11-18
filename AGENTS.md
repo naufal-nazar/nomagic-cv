@@ -5,6 +5,11 @@ Instructions for any coding agent (Codex, Claude Code, Gemini CLI, Cursor, other
 ## What this repo is
 An evidence-based CV agent. The skill lives in `skills/nomagic-cv/SKILL.md` (also linked at `.agents/skills/` and `.claude/skills/`). Read it before doing CV work.
 
+## Setup
+If `python3 scripts/setup.py --check` fails, run `python3 scripts/setup.py` (full guide: `INSTALL.md`).
+Run scripts with `.venv/bin/python` (Windows: `.venv\Scripts\python`) if a `.venv` exists, otherwise `python3`.
+The candidate's data lives in `workspace/`, or in `$NOMAGIC_WORKSPACE` if set.
+
 ## Golden rules
 1. Every fact in a CV comes from `workspace/facts.yaml`. Ask the candidate for missing facts. Never invent.
 2. Only the candidate changes `workspace/facts.yaml`. Ask before writing to it.

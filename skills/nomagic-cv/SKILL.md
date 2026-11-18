@@ -32,6 +32,8 @@ Explain the trade-off in two sentences: AI writing help raised hires in a large 
 
 ## Workspace layout
 
+Inside the repo the workspace is `workspace/`; in a standalone install (global or uploaded skill) it is `~/nomagic-cv-workspace`; `NOMAGIC_WORKSPACE` overrides both. Scripts and rules ship next to this file in `scripts/` and `rules/`.
+
 ```
 workspace/                    # gitignored, private
   facts.yaml                  # single source of truth (see templates/facts.example.yaml)

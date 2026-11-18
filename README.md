@@ -42,13 +42,28 @@ ERROR  cv.md:13  [R-HONEST-01] Number '60' is not in the cited fact(s) ['acme.r1
 
 ## Quick start
 
-```bash
-git clone https://github.com/naufal-nazar/nomagic-cv.git && cd nomagic-cv
-make setup
-claude        # then: /nomagic-start      (Codex: "run nomagic-start")
+**Let your agent install it.** Paste this into Claude Code, Codex or any coding agent:
+
+```text
+Install NoMagicCV from https://github.com/naufal-nazar/nomagic-cv by following its INSTALL.md, then run nomagic-start.
 ```
 
-Python 3.10+. Optional: [RenderCV](https://github.com/rendercv/rendercv) for PDFs, `pdftotext` for the parse test.
+**Or do it yourself:**
+
+```bash
+git clone https://github.com/naufal-nazar/nomagic-cv.git && cd nomagic-cv
+python3 scripts/setup.py          # macOS, Linux, Windows (py scripts/setup.py)
+```
+
+| Where you work | Then |
+|---|---|
+| Claude Code: terminal, desktop app, IDE | open the folder, type `/nomagic-start` |
+| Codex: CLI, IDE, app | open the folder, say `run nomagic-start` |
+| Any other agent | say `Read AGENTS.md, then run nomagic-start` |
+| Claude app (chat) | `python3 scripts/setup.py --zip`, upload `dist/nomagic-cv.zip` in **Customize > Skills** |
+| Every project | `python3 scripts/setup.py --global claude` (or `codex`, `all`) |
+
+Python 3.10+. Full guide and troubleshooting: [`INSTALL.md`](INSTALL.md).
 
 ## How it works
 
