@@ -1,0 +1,11 @@
+cff-version: 1.2.0
+message: "If you use NoMagicCV or its evidence base, please cite it."
+title: "NoMagicCV: the Evidence-Based CV Framework"
+authors:
+  - family-names: Nazar
+    given-names: Noufal
+repository-code: "https://github.com/naufal-nazar/nomagic-cv"
+license: MIT
+version: 0.1.0
+date-released: 2026-11-19
+keywords: [resume, cv, ats, hiring research, ai agents, agent skills]

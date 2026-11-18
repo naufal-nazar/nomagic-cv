@@ -1,0 +1,24 @@
+name: Agent compatibility report
+description: Tell us how NoMagicCV works in your agent (Gemini CLI, Cursor, Copilot, others)
+labels: [compatibility]
+body:
+  - type: input
+    id: agent
+    attributes:
+      label: Agent and version
+    validations:
+      required: true
+  - type: checkboxes
+    id: works
+    attributes:
+      label: What worked?
+      options:
+        - label: Skill was discovered
+        - label: AGENTS.md rules were followed
+        - label: Commands worked as phrases (e.g. "run nomagic-apply")
+        - label: Checks ran (fact_check, posting_guard, consistency_check)
+        - label: Hooks ran automatically
+  - type: textarea
+    id: notes
+    attributes:
+      label: Notes, errors or setup steps you needed

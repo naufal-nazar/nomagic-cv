@@ -1,0 +1,35 @@
+name: Rule or evidence proposal
+description: Propose a new rule, or a study that supports or contradicts an existing one
+labels: [evidence]
+body:
+  - type: markdown
+    attributes:
+      value: "NoMagicCV only adopts rules backed by checkable evidence. Please link the primary source, not a blog summary."
+  - type: input
+    id: rule
+    attributes:
+      label: Rule (new, or existing id such as R-SCAN-04)
+    validations:
+      required: true
+  - type: input
+    id: source
+    attributes:
+      label: Primary source (title, authors, year, link)
+    validations:
+      required: true
+  - type: dropdown
+    id: grade
+    attributes:
+      label: Proposed grade
+      options:
+        - "A: peer-reviewed experiment or field study"
+        - "B: large controlled experiment or dataset, not peer-reviewed"
+        - "C: survey or vendor analysis"
+    validations:
+      required: true
+  - type: textarea
+    id: finding
+    attributes:
+      label: Exact finding, sample size, setting (field or lab) and region
+    validations:
+      required: true
