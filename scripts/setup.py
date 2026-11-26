@@ -4,10 +4,11 @@
 Usage (with uv, recommended: `uv run scripts/setup.py ...`; without uv, use python3):
   python3 scripts/setup.py                 set up this clone for every agent (default)
   python3 scripts/setup.py --check         verify the setup without changing anything
+  python3 scripts/setup.py --allow-user-install   only if no .venv can be created: pip install --user instead
   python3 scripts/setup.py --global claude install the skill for Claude Code in all your projects
   python3 scripts/setup.py --global codex  install the skill for Codex (CLI, IDE and app)
   python3 scripts/setup.py --codex-hooks   enable automatic checks in Codex for this project
-  python3 scripts/setup.py --zip           build dist/nomagic-cv.zip to upload to the Claude app
+  python3 scripts/setup.py --zip           build dist/nomagic-cv.zip (and its .sha256) for the Claude app or a marketplace
   python3 scripts/setup.py --email gmail   add Google's official Gmail MCP server (drafts) for outreach
   python3 scripts/setup.py --email smtp    prepare auto-send through your own provider's SMTP (app password)
   python3 scripts/setup.py --leads kit     install an open-source Google Maps scraper for /nomagic-employers
@@ -66,13 +67,14 @@ def step_python() -> None:
         say(OK, f"Python {platform.python_version()}")
 
 
-def step_deps(check: bool) -> None:
-    py = project_python()
-    if has_deps(py):
-        say(OK, "Dependencies installed" + (" (.venv)" if py != sys.executable else ""))
+def step_deps(check: bool, allow_user: bool = False) -> None:
+    """Install into the project .venv only. The user's own Python is touched only with --allow-user-install."""
+    vp_path = venv_python()
+    if vp_path.exists() and has_deps(str(vp_path)):      # only the project .venv counts, not the running Python
+        say(OK, "Dependencies installed (.venv)")
         return
     if check:
-        say(FAIL, "Dependencies missing (run: uv run scripts/setup.py, or python3 scripts/setup.py)")
+        say(FAIL, "Dependencies missing from the project .venv (run: uv run scripts/setup.py, or python3 scripts/setup.py)")
         return
     if shutil.which("uv"):
         res = subprocess.run(["uv", "sync", "--no-dev"], cwd=ROOT, capture_output=True, text=True)
@@ -81,20 +83,25 @@ def step_deps(check: bool) -> None:
             return
         say(WARN, "uv sync failed; falling back to pip:\n" + res.stderr[-400:])
     req = str(ROOT / "requirements.txt")
-    attempt = subprocess.run([sys.executable, "-m", "pip", "install", "-q", "-r", req], capture_output=True, text=True)
-    if attempt.returncode != 0 and "externally-managed" in (attempt.stderr + attempt.stdout):
-        attempt = subprocess.run([sys.executable, "-m", "pip", "install", "-q", "--user", "-r", req], capture_output=True, text=True)
-    if attempt.returncode == 0 and has_deps(sys.executable):
-        say(OK, "Dependencies installed")
+    try:
+        venv.EnvBuilder(with_pip=True, clear=False).create(ROOT / ".venv")
+    except Exception as exc:  # e.g. Debian/Ubuntu without the python3-venv package
+        if not allow_user:
+            say(FAIL, f"Could not create the project .venv ({exc}). Install your system's venv package "
+                      "(Debian/Ubuntu: sudo apt install python3-venv) or uv, then run setup again. To install into "
+                      "your own user site-packages instead, run setup with --allow-user-install.")
+            return
+        res = subprocess.run([sys.executable, "-m", "pip", "install", "-q", "--user", "-r", req], capture_output=True, text=True)
+        ok = res.returncode == 0 and has_deps(sys.executable)
+        say(OK if ok else FAIL, "Dependencies installed in your user site-packages (--allow-user-install)" if ok
+            else "Could not install dependencies:\n" + (res.stderr or res.stdout)[-800:])
         return
-    # Fall back to a project virtualenv; hooks pick it up automatically.
-    venv.EnvBuilder(with_pip=True, clear=False).create(ROOT / ".venv")
     vp = str(venv_python())
     res = subprocess.run([vp, "-m", "pip", "install", "-q", "-r", req], capture_output=True, text=True)
     if res.returncode == 0 and has_deps(vp):
         say(OK, "Dependencies installed in .venv (hooks use it automatically)")
     else:
-        say(FAIL, "Could not install dependencies:\n" + (res.stderr or attempt.stderr)[-800:])
+        say(FAIL, "Could not install dependencies in .venv:\n" + (res.stderr or res.stdout)[-800:])
 
 
 def step_workspace(check: bool) -> None:
@@ -168,7 +175,7 @@ def step_optional_tools() -> None:
     say(OK if shutil.which("pdftotext") else WARN,
         "pdftotext found" if shutil.which("pdftotext") else "pdftotext not found (optional; pypdf is used instead)")
     say(OK if shutil.which("rendercv") else WARN,
-        "RenderCV found" if shutil.which("rendercv") else 'RenderCV not found (optional, for PDFs: pip install "rendercv[full]")')
+        "RenderCV found" if shutil.which("rendercv") else 'RenderCV not found (optional, for PDFs: .venv/bin/python -m pip install "rendercv[full]")')
 
 
 def step_self_test() -> None:
@@ -182,14 +189,93 @@ def step_self_test() -> None:
 
 
 # ------------------------------------------------------------------ extras
+DEV_ONLY_REQUIREMENTS = ("pytest",)
+REPO_URL = "https://github.com/naufal-nazar/nomagic-cv"
+
+
+def project_version() -> str:
+    import re
+    m = re.search(r'^version\s*=\s*"([^"]+)"', (ROOT / "pyproject.toml").read_text(encoding="utf-8"), re.M)
+    return m.group(1) if m else "unknown"
+
+
+def git_commit() -> str:
+    try:
+        res = subprocess.run(["git", "-C", str(ROOT), "rev-parse", "--short", "HEAD"], capture_output=True, text=True)
+        return res.stdout.strip() if res.returncode == 0 else ""
+    except OSError:
+        return ""
+
+
+def runtime_requirements() -> str:
+    """requirements.txt without development-only packages: what the skill's scripts import at runtime."""
+    keep = []
+    for line in (ROOT / "requirements.txt").read_text(encoding="utf-8").splitlines():
+        name = line.split("#")[0].strip().split(">")[0].split("=")[0].split("<")[0].split("[")[0].strip().lower()
+        if name in DEV_ONLY_REQUIREMENTS:
+            continue
+        keep.append(line)
+    return ("# Runtime dependencies for the NoMagicCV skill scripts. Install with:\n"
+            "#   python3 -m venv .venv && .venv/bin/python -m pip install -r requirements.txt   (Windows: .venv\\Scripts\\python)\n" + "\n".join(keep).strip() + "\n")
+
+
+NOTICE_TEMPLATE = """# NOTICE
+
+This folder is a standalone package of **NoMagicCV: the Evidence-Based CV Framework**
+by Noufal Nazar, {url}
+
+Package built from version {version}{commit}.
+
+## Licences
+
+| Files in this folder | Licence | Full text |
+|---|---|---|
+| `SKILL.md`, `references/`, `templates/`, `rules/`, `CREDITS.md` | Creative Commons Attribution 4.0 International (CC BY 4.0) | `LICENSE-CONTENT`, https://creativecommons.org/licenses/by/4.0/legalcode |
+| `scripts/` | MIT | `LICENSE` |
+
+`LICENSE-CONTENT` names repository paths (`skills/`, `rules/`, ...). In this package,
+`skills/nomagic-cv/*` sits at the top level of the folder; `rules/` is unchanged.
+
+Summaries of third-party studies in `rules/sources.yaml` and `references/` credit their
+authors; the studies themselves remain under their publishers' terms. Third-party tools
+the scripts can call are listed in `CREDITS.md`; none of their code is included here.
+
+## Changes from the repository layout
+
+Packaging changes only; no framework text or check logic was edited:
+- The contents of `skills/nomagic-cv/` were moved to the top level of this folder.
+- `scripts/` and `rules/` were copied in next to `SKILL.md`.
+- Left out: `scripts/setup.py`, `scripts/git-hooks/`, the Claude Code slash commands,
+  subagents and hooks (`.claude/`, `hooks/`), tests, evals and docs. `SKILL.md` says which
+  steps need the full repository.
+- `requirements.txt` here lists runtime dependencies only (development tools removed).
+
+## Attribution
+
+If you share or adapt the framework text, credit it like this and say what you changed:
+
+  "NoMagicCV: the Evidence-Based CV Framework" by Noufal Nazar, CC BY 4.0,
+  {url}
+"""
+
+BUNDLE_ROOT_FILES = ("LICENSE", "LICENSE-CONTENT", "CREDITS.md")
+
+
 def bundle(dest: Path) -> None:
-    """Self-contained skill folder: SKILL.md + references + templates + scripts + rules."""
+    """Self-contained skill folder: SKILL.md + references + templates + scripts + rules,
+    plus licences, NOTICE (attribution and packaging changes) and runtime requirements."""
     if dest.exists():
         shutil.rmtree(dest)
     shutil.copytree(SKILL, dest, symlinks=False)
     ignore = shutil.ignore_patterns("__pycache__", "*.pyc", "git-hooks", "setup.py")
     shutil.copytree(ROOT / "scripts", dest / "scripts", ignore=ignore)
-    shutil.copytree(ROOT / "rules", dest / "rules")
+    shutil.copytree(ROOT / "rules", dest / "rules", ignore=shutil.ignore_patterns("__pycache__"))
+    for name in BUNDLE_ROOT_FILES:
+        shutil.copy2(ROOT / name, dest / name)
+    (dest / "requirements.txt").write_text(runtime_requirements(), encoding="utf-8")
+    commit = git_commit()
+    (dest / "NOTICE.md").write_text(NOTICE_TEMPLATE.format(
+        url=REPO_URL, version=project_version(), commit=f" (commit {commit})" if commit else ""), encoding="utf-8")
 
 
 def install_global(agent: str) -> None:
@@ -263,14 +349,21 @@ def setup_email(provider: str) -> None:
         say(OK, "Then set preferences.outreach.mode: auto in facts.yaml to let checked messages send")
 
 
-def build_zip() -> None:
-    dist = ROOT / "dist"
+def build_zip(dist: Path | None = None) -> Path:
+    dist = dist or ROOT / "dist"
     staging = dist / "staging" / "nomagic-cv"
     bundle(staging)
-    archive = shutil.make_archive(str(dist / "nomagic-cv"), "zip", root_dir=staging.parent, base_dir="nomagic-cv")
+    archive = Path(shutil.make_archive(str(dist / "nomagic-cv"), "zip", root_dir=staging.parent, base_dir="nomagic-cv"))
     shutil.rmtree(dist / "staging")
-    say(OK, f"Built {Path(archive).relative_to(ROOT)} (top-level folder: nomagic-cv/)")
+    import hashlib
+    digest = hashlib.sha256(archive.read_bytes()).hexdigest()
+    checksum = archive.with_name(archive.name + ".sha256")
+    checksum.write_text(f"{digest}  {archive.name}\n", encoding="utf-8")      # sha256sum -c format
+    shown = archive.relative_to(ROOT) if archive.is_relative_to(ROOT) else archive
+    say(OK, f"Built {shown} (top-level folder: nomagic-cv/)")
+    say(OK, f"SHA-256 {digest} (also in {checksum.name})")
     say(OK, "Upload it in the Claude app under Customize > Skills (code execution must be on)")
+    return archive
 
 
 NEXT = """
@@ -292,11 +385,13 @@ def main() -> int:
                     help="connect an email provider for outreach (repeatable)")
     ap.add_argument("--leads", choices=["kit", "gosom"], help="install an open-source Google Maps scraper for /nomagic-employers")
     ap.add_argument("--skip-tests", action="store_true")
+    ap.add_argument("--allow-user-install", action="store_true",
+                    help="only if no project .venv can be created: pip install --user into the running Python")
     a = ap.parse_args()
 
     print(f"NoMagicCV setup ({platform.system()}, {'check only' if a.check else 'installing'})")
     step_python()
-    step_deps(a.check)
+    step_deps(a.check, a.allow_user_install)
     step_workspace(a.check)
     step_skill_links(a.check)
     step_hook_interpreter(a.check)

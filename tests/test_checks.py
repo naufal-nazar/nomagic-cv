@@ -345,3 +345,58 @@ def test_both_themes_render_complete_html():
                        "Certified Clinical Research Associate (CCRA)", "Medidata Rave", "French (Professional)"):
             assert needle in html, (theme, needle)
         assert "letter-spacing: 1" not in html        # spaced-out headings break ATS text extraction
+
+
+def test_parse_check_decodes_pdftotext_as_utf8_whatever_the_locale(monkeypatch, tmp_path):
+    """Windows CI: pdftotext output decoded as cp1252 turned 'Mar 2021 – Present' into '... â€“ ...'."""
+    import parse_check
+    src = tmp_path / "cv.md"
+    src.write_text("# A B\n\n## Experience\n### Data Analyst, Acme Retail, Toronto, ON | Mar 2021 - Present\n"
+                   "\n## Education\nBachelor of Commerce\n", encoding="utf-8")
+    raw = ("A B\na@example.com\nEXPERIENCE\nData Analyst, Acme Retail, Toronto, ON\nMar 2021 – Present\n"
+           "EDUCATION\nBachelor of Commerce\n" + "filler text " * 20).encode("utf-8")
+
+    class Done:  # mimics subprocess.run: decodes with the requested encoding, else a cp1252 locale
+        def __init__(self, encoding):
+            self.stdout = raw.decode(encoding or "cp1252")
+    monkeypatch.setattr(parse_check.shutil, "which", lambda _n: "pdftotext")
+    monkeypatch.setattr(parse_check.subprocess, "run", lambda *a, **k: Done(k.get("encoding")))
+    (tmp_path / "cv.pdf").write_bytes(b"")
+    assert parse_check.check(str(tmp_path / "cv.pdf"), str(src))["errors"] == []
+    # The mojibake itself must still fail loudly: the check is not loosened to tolerate it.
+    bad = raw.decode("cp1252")
+    monkeypatch.setattr(parse_check, "pdf_text", lambda _p: (bad, bad))
+    assert ["R-PARSE-04", "Source lines missing from extracted text: [4]"] in parse_check.check(str(tmp_path / "cv.pdf"), str(src))["errors"]
+
+
+def test_setup_never_installs_outside_venv_without_consent(monkeypatch, tmp_path):
+    import importlib.util
+    spec = importlib.util.spec_from_file_location("nm_setup_deps", ROOT / "scripts" / "setup.py")
+    setup = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(setup)
+    calls = []
+    monkeypatch.setattr(setup, "ROOT", tmp_path)
+    monkeypatch.setattr(setup, "has_deps", lambda _py: False)
+    monkeypatch.setattr(setup.shutil, "which", lambda _n: None)                       # no uv
+    monkeypatch.setattr(setup.venv.EnvBuilder, "create", lambda *_a, **_k: (_ for _ in ()).throw(OSError("no ensurepip")))
+    monkeypatch.setattr(setup.subprocess, "run", lambda cmd, **_k: calls.append(cmd) or type("R", (), {"returncode": 0, "stdout": "", "stderr": ""})())
+    setup.step_deps(check=False)
+    assert calls == [] and any("--allow-user-install" in p for p in setup.problems)    # refused, nothing installed
+    setup.step_deps(check=False, allow_user=True)
+    assert len(calls) == 1 and "--user" in calls[0]                                    # only with explicit consent
+
+
+def test_setup_uses_venv_even_when_running_python_has_deps(monkeypatch, tmp_path):
+    import importlib.util, sys as _sys
+    spec = importlib.util.spec_from_file_location("nm_setup_early", ROOT / "scripts" / "setup.py")
+    setup = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(setup)
+    calls, created = [], []
+    monkeypatch.setattr(setup, "ROOT", tmp_path)                                         # no .venv yet
+    monkeypatch.setattr(setup, "has_deps", lambda py: py == _sys.executable or bool(calls))  # system has deps
+    monkeypatch.setattr(setup.shutil, "which", lambda _n: None)
+    monkeypatch.setattr(setup.venv.EnvBuilder, "create", lambda _self, d: created.append(d))
+    monkeypatch.setattr(setup.subprocess, "run", lambda cmd, **_k: calls.append(cmd) or type("R", (), {"returncode": 0, "stdout": "", "stderr": ""})())
+    setup.step_deps(check=False)
+    assert created == [tmp_path / ".venv"]                                               # no early return
+    assert len(calls) == 1 and calls[0][0] == str(setup.venv_python()) and "--user" not in calls[0]

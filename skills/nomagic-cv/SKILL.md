@@ -1,6 +1,6 @@
 ---
 name: nomagic-cv
-description: Build, tailor and check a CV or résumé for any field using graded hiring research, with every fact traced to the candidate's fact sheet and checked by code. Use for writing a CV, tailoring it to a job posting, cover letters, screening answers, or tracking applications.
+description: Build, tailor and check a CV or résumé for any field using graded hiring research, with every fact tagged to the candidate's fact sheet and its numbers, titles and dates checked by script. Use for writing a CV, tailoring it to a job posting, cover letters, screening answers, or tracking applications.
 ---
 
 # NoMagicCV
@@ -32,7 +32,7 @@ Explain the trade-off in two sentences: AI writing help raised hires in a large 
 
 ## Workspace layout
 
-Inside the repo the workspace is `workspace/`; in a standalone install (global or uploaded skill) it is `~/nomagic-cv-workspace`; `NOMAGIC_WORKSPACE` overrides both. Scripts and rules ship next to this file in `scripts/` and `rules/`.
+Inside the repo the workspace is `workspace/`; in a standalone install (global or uploaded skill) it is `~/nomagic-cv-workspace`; `NOMAGIC_WORKSPACE` overrides both. Scripts and rules ship next to this file in `scripts/` and `rules/`. Install the scripts' dependencies once into a virtual environment, not the system Python: from this folder, `python3 -m venv .venv` then `.venv/bin/python -m pip install -r requirements.txt` (Windows: `.venv\Scripts\python`), and run the scripts with that Python (the repo clone uses `scripts/setup.py` instead).
 
 ```
 workspace/                                  # gitignored, private
@@ -55,8 +55,20 @@ workspace/                                  # gitignored, private
 Naming rules every agent follows:
 - Slugs are lower-case with hyphens (`backend-engineer`); dates are ISO `YYYY-MM-DD`.
 - Version ids are `<family>-v<N>` (`backend-v2`) and are what the tracker records.
-- Never edit a frozen version or anything in `sources/`; hooks deny it. Change `draft.md`, then freeze.
+- Never edit a frozen version or anything in `sources/`. In the full project a hook denies such edits; in a standalone install nothing blocks them, so this rule is yours to keep. Change `draft.md`, then freeze.
 - Use `scripts/versions.py` for every move: `ingest`, `init`, `freeze`, `list`, `current`, `diff`, `apply`.
+
+## Standalone install vs full project
+
+This skill works on its own (global install, uploaded zip or marketplace install): every script in `scripts/` and every rule in `rules/` ships with it. The full project clone (https://github.com/naufal-nazar/nomagic-cv) adds three things a skill install does not inherit. Without them, do the matching step yourself:
+
+| Full project only | What it does there | In a standalone install |
+|---|---|---|
+| Slash commands (`.claude/commands/`) | `/nomagic-facts`, `/nomagic-tailor`, ... | Treat the names as plain requests ("run nomagic-tailor") and follow the workflow sections below and `references/outreach.md`. |
+| Subagents (`.claude/agents/`) | Career Consultant, Researcher, Resume Builder, Reviewer and Tracker each get their own context | Do each role as a separate step. For review, re-read only the CV, the fact sheet and `rules/rules.yaml`, not your drafting notes. This is weaker than a separate context; say so, and offer `scripts/cross_review.sh` if another model's CLI is installed (R-AI-02). |
+| Hooks (`hooks/dispatch.py`) | Run the checks after every write, ask before `facts.yaml` changes, deny edits to frozen files, gate email send tools, block finishing with an untracked application | Run `fact_check.py`, `consistency_check.py`, `parse_check.py` and `posting_guard.py` yourself after each write. Ask before writing `facts.yaml`. Never edit frozen files. **Never call an email connector's send action**: create drafts, and send only through `scripts/outreach.py send`, which applies the consent, cap and lint checks itself. Before finishing, run `python scripts/tracker.py check-complete`. At the start of a session, `python scripts/tracker.py due`. |
+
+Also full project only: `scripts/schedule.py` (unattended daily runs call the `/nomagic-daily` slash command; in a standalone install use your agent app's own scheduled tasks with the prompt "run nomagic-daily"), `scripts/setup.py` (email and lead-finder setup) and `scripts/rules_lint.py` (a contributor check that also reads the repo README).
 
 ## CV source format
 
@@ -80,7 +92,7 @@ Data analyst with 6 years in retail analytics. Built demand forecasts for about 
 - `calc:years` allows "N years" where N is no more than the total computed from the roles.
 - Skills, certifications and education lines must match items in the fact sheet.
 
-`scripts/fact_check.py` enforces all of this. A hook runs it whenever a CV file is written.
+`scripts/fact_check.py` checks all of this mechanically: tags, titles, dates, numbers and listed items against the fact sheet. It cannot tell whether a fact in the fact sheet is true, or whether a sentence's meaning matches the fact it cites; the candidate's approval covers that. In the full project a hook runs it whenever a CV file is written; in a standalone install, run it yourself after every write.
 
 ## Workflow (slash commands)
 
@@ -104,13 +116,13 @@ Agents without slash commands: the same names work as plain requests ("run nomag
 2. Interview role by role: exact dates, official title, employer, location, results with numbers, tools. One question at a time.
 3. Fuzzy numbers: ask once; accept a range or approximate figure the candidate would defend in an interview, marked `approximate: true`. Otherwise leave the number out.
 4. Agree 1-3 role families (e.g. "backend engineer", "platform engineer") and list target titles under each.
-5. Show the fact sheet and get explicit approval. A hook asks the candidate before any later change to `facts.yaml`.
+5. Show the fact sheet and get explicit approval. Ask the candidate before any later change to `facts.yaml` (in the full project a hook also asks).
 
 ### /nomagic-master: master CV per role family
 1. `python scripts/versions.py init <family>` creates `cvs/<family>/draft.md` from `templates/master-cv.md`. Fill only from the fact sheet.
 2. Apply the six layers in order: Parse, Match, Scan, Prove, Signal, Knockouts (see `references/layers.md`).
 3. Run `python scripts/fact_check.py <cv>` and fix every error.
-4. Hand off to the Reviewer (fresh context, different model family where possible).
+4. Hand off to the Reviewer (fresh context, different model family where possible; in a standalone install, see the table above).
 5. When the candidate approves, `python scripts/versions.py freeze <family> --note "what changed and why"`. Freezing refuses a draft that fails the fact check. Later edits go into `draft.md` and become the next version; change one element per version so callback rates stay comparable.
 
 ### /nomagic-tailor: one posting, minutes not hours
@@ -120,8 +132,8 @@ Agents without slash commands: the same names work as plain requests ("run nomag
 3. Missing must-haves are reported to the candidate (R-HONEST-06), never papered over.
 4. Draft `letter.md` for priority roles and `answers.md` from the fact sheet.
 5. Run `fact_check.py`, `consistency_check.py` on the folder, then `parse_check.py` on the exported PDF/DOCX.
-6. **Tracker** adds the row: `python scripts/tracker.py add --company ... --role ... --family ... --folder <folder>` (the version id comes from `meta.yaml`). Export the final CV under the `export_name` in `meta.yaml`.
-7. The candidate reviews everything and submits it themselves.
+6. **Tracker** adds the row as a draft: `python scripts/tracker.py add --company ... --role ... --family ... --folder <folder>` (the version id comes from `meta.yaml`). Export the final CV under the `export_name` in `meta.yaml`.
+7. The candidate reviews everything and submits it themselves. Only when they tell you they submitted it, record it: `python scripts/tracker.py status <id> applied --confirmed-submitted [--date YYYY-MM-DD]`. Drafts don't count in callback statistics or follow-up dates.
 
 ### /nomagic-stats: honest measurement
 Run `python scripts/tracker.py stats`. Report callback rate per CV version with 95% intervals. If intervals overlap or a version has fewer than 30 applications, say there is no winner yet. Suggest changing one element at a time (R-MEASURE-01).
@@ -130,6 +142,8 @@ Run `python scripts/tracker.py stats`. Report callback rate per CV version with 
 Load `references/situations.md` when a case applies: early career, 8+ years, newcomer with foreign experience, current role junior to past roles, career changer, employment gap, serving notice, regulated fields, several target roles.
 
 ## References
+Install guide, walkthrough and help (not included in the skill zip): https://github.com/naufal-nazar/nomagic-cv
+
 - `references/layers.md`: the six layers in detail
 - `references/evidence.md`: graded evidence table
 - `references/myths.md`: myths vs evidence

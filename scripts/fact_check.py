@@ -1,5 +1,7 @@
 #!/usr/bin/env python3
-"""Check that every fact in a CV traces to workspace/facts.yaml.
+"""Check that a CV's tagged facts match workspace/facts.yaml: tags, numbers, titles, dates and listed items.
+
+This is a mechanical comparison. It cannot judge whether a sentence's meaning matches the fact it cites.
 
 Enforces R-HONEST-01 (no invented facts), R-HONEST-02 (official titles only),
 R-HONEST-03 (approximate numbers marked) and R-SIGNAL-05 (current dates honest).
@@ -210,7 +212,7 @@ def main() -> int:
         for w in rep.warnings:
             print(f"WARN   {a.cv}:{w['line']}  [{w['rule']}] {w['message']}")
         if not rep.errors:
-            print(f"OK     {a.cv}: every fact traces to the fact sheet ({len(rep.warnings)} warnings).")
+            print(f"OK     {a.cv}: tags, numbers, titles, dates and listed items match the fact sheet ({len(rep.warnings)} warnings).")
     return 1 if rep.errors else 0
 
 

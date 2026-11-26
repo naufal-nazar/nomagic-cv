@@ -4,8 +4,21 @@ All notable changes to this project are documented here. Versions follow [Semant
 
 ## [Unreleased]
 
+## [0.2.0] - 2026-11-26
+
 ### Changed
+- README, `SKILL.md` description, `pyproject.toml`, `CREDITS.md` and `docs/DEVELOPERS.md` now say precisely what the checks verify (tags, numbers, titles, dates, listed items, text extraction) and what they cannot (meaning, the truth of the fact sheet, a real ATS), and what leaves the machine (content the host assistant sends to its model provider; optional email, lead-finder, DNS and cross-review features). New README section: "What the checks prove, and what they don't"; the parse-check row describes its table, image and column detection as heuristic warnings; the data section says which protections (read-only versions, fact-sheet approval, email gating) rely on full-project hooks and which are instructions only in a skill-only install. `fact_check.py`'s OK line reworded to match
+- Tracker: `tracker.py add` now logs a `draft`. A row becomes `applied` only with `tracker.py status <id> applied --confirmed-submitted` (or `add --confirmed-submitted`), which sets the submission date and the first follow-up. Drafts are left out of callback statistics and follow-up lists, and `due` lists them for confirmation. Existing rows are read as they are and never rewritten; saves keep extra columns and write atomically. A submitted row cannot silently return to `draft`: that needs `--not-submitted` (the earlier `applied` was a mistake), and rows with an outcome never return. New ids are the highest existing `A<number>` plus one, so deleting a row no longer reuses an id; old CSVs need no migration, and `status` refuses ids that already appear twice
+- `SKILL.md` and `references/outreach.md` now say which steps rely on the full project's slash commands, subagents and hooks, and what to do instead in a standalone install (including: never use a connector's send action without the hook; draft instead)
+- `schedule.py install` and `run-once` stop with an explanation outside the full project clone, where the `nomagic-daily` command they run does not exist
 - Commands renamed to say what they do: `/nomagic-start` → `/nomagic-facts`, `/nomagic-build` → `/nomagic-master`, `/nomagic-apply` → `/nomagic-tailor` (it never submits), `/nomagic-review` → `/nomagic-stats`, `/nomagic-leads` → `/nomagic-employers`
+
+### Fixed
+- `setup.py` installs dependencies only into the project `.venv` (uv, or venv + pip). It no longer tries pip in the running Python or `--user` first; if no `.venv` can be created it stops, and `--allow-user-install` is the explicit opt-in for user site-packages. It also creates `.venv` when the running Python already has the packages (it used to report success without one), and `--check` looks only at `.venv`. Install hints in docs and script messages no longer suggest a bare `pip install`
+- Docs: INSTALL.md lists prerequisites first, separates the Claude app (cloud sandbox) from local installs, and its uninstall steps protect a repo-local `workspace/`; the walkthrough describes the parse check's heuristics and asks you to read the PDF yourself; reference wording on match scores and knockout questions now matches its evidence
+- `parse_check.py` asks pdftotext for UTF-8 and decodes it as UTF-8. It used the locale encoding, so on Windows (cp1252) an en dash became `â€“` and a correct PDF failed the source-line check
+- PDF text layer: ligatures are turned off, so words like "Certified" extract as plain letters instead of `ﬁ` (seen with macOS Helvetica Neue, DejaVu Sans and Source Sans 3)
+- PDF export: role dates are now a separate line under the title in normal text flow, and skill groups render as one line ("Label: items"). Before, right-aligned dates were extracted out of reading order with fallback fonts (pdftotext put them at the end of the document), and `tabular-nums` glyphs lost their digits in pypdf, so `parse_check.py` could not find the role lines. Found by the new PDF smoke test; checked locally across Inter, Source Sans 3, Liberation Sans and Liberation Serif with both extractors (old: 5 of 8 combinations failed; new: 0). README screenshots and the walkthrough image regenerated
 
 ### Added
 - Outreach in two modes: semi-auto drafts (default) and capped auto-send, with consent basis, follow-up limits, opt-outs and banned phrases enforced by `outreach.py` and a pre-send hook
@@ -15,6 +28,10 @@ All notable changes to this project are documented here. Versions follow [Semant
 - `/nomagic-employers` runs gosom/google-maps-scraper or google-maps-scraper-kit and imports results
 - `/nomagic-daily` unattended routine and `schedule.py` (cron, Task Scheduler); permission allowlist for headless runs
 - Versioned CV storage (`versions.py`), HTML/PDF export, branded README visuals
+- Standalone bundle (`setup.py --zip`, `--global`) now ships `LICENSE`, `LICENSE-CONTENT`, `CREDITS.md`, a runtime-only `requirements.txt`, and `NOTICE.md` with CC BY 4.0 attribution and a list of packaging changes
+- `setup.py --zip` also writes `nomagic-cv.zip.sha256` (`sha256sum -c` format); release zips are attached to GitHub releases
+- `docs/WALKTHROUGH.md`: install from the release zip and take a fictional candidate from the facts interview to a checked PDF, with real check output
+- `tests/test_bundle_smoke.py`: builds the zip, installs it into a temporary skills folder and a fresh virtualenv from the bundle's `requirements.txt`, and runs the fact, consistency, parse (DOCX and PDF) and posting checks. Facts come from the bundle's fictional example; CVs, letters and postings are inline test strings, not repository files. PDF export is skipped, with the reason printed, when no Chrome, Chromium or Edge is installed. The docstring lists what a pass does and does not show
 
 ## [0.1.0] - 2026-11-19
 

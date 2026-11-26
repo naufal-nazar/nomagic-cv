@@ -47,6 +47,16 @@ def headless(agent: str) -> list[str]:
     return ["codex", "exec", "--full-auto", PROMPTS["codex"]]
 
 
+def in_full_project() -> bool:
+    """The daily job runs the nomagic-daily command, which lives in the repo clone, not in a skill install."""
+    return (ROOT / ".claude" / "commands" / "nomagic-daily.md").exists()
+
+
+STANDALONE_MSG = ("schedule.py needs the full project clone (https://github.com/naufal-nazar/nomagic-cv): the job runs "
+                  "the nomagic-daily command, which a standalone skill install does not include. Use your agent app's "
+                  "own scheduled tasks with the prompt \"run nomagic-daily\" instead.")
+
+
 def job_command(agent: str) -> str:
     return f'cd "{ROOT}" && "{python()}" scripts/schedule.py run-once --agent {agent}'
 
@@ -57,6 +67,9 @@ def cron_lines() -> list[str]:
 
 
 def cmd_install(a) -> int:
+    if not in_full_project():
+        print(STANDALONE_MSG, file=sys.stderr)
+        return 2
     if not shutil.which(a.agent):
         print(f"'{a.agent}' is not on PATH. Install it and sign in first.", file=sys.stderr)
         return 1
@@ -99,6 +112,9 @@ def cmd_status(_a) -> int:
 
 
 def cmd_run_once(a) -> int:
+    if not in_full_project():
+        print(STANDALONE_MSG, file=sys.stderr)
+        return 2
     sys.path.insert(0, str(ROOT / "scripts"))
     from cvlib import WORKSPACE
     reports = WORKSPACE / "reports"

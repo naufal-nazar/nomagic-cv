@@ -3,13 +3,30 @@
 
 Commands:
   add     --company C --role R --family F [--cv-version V | --folder DIR with meta.yaml] [--source S] [--posting-date YYYY-MM-DD] [--folder DIR] [--date YYYY-MM-DD]
-  status  ID STATUS [--date YYYY-MM-DD]      STATUS: applied callback interview offer rejected ghosted withdrawn
-  due                                       follow-ups due and applications with no reply after 21 days
+          [--confirmed-submitted]           logs a DRAFT by default; add the flag only if the candidate says they already submitted it
+  status  ID STATUS [--date YYYY-MM-DD] [--confirmed-submitted | --not-submitted]
+                                            STATUS: draft applied callback interview offer rejected ghosted withdrawn
+                                            'applied' needs --confirmed-submitted: the candidate told you they submitted it
+                                            'draft' on a submitted row needs --not-submitted (see below)
+  due                                       follow-ups due, applications with no reply after 21 days, drafts not yet submitted
   list
   stats   [--family F]                      callback rate per CV version with 95% Wilson intervals
   check-complete                            application folders with a cv.md but no tracker row (exit 1 if any)
 
 Data: workspace/tracker.csv (override with CV_TRACKER=path).
+
+A row starts as 'draft' when the application package is saved. It becomes 'applied' only when the candidate
+confirms they submitted it; that date starts the follow-up clock and counts the row in stats. Rows written by
+earlier versions (always 'applied') are read as they are; nothing is rewritten.
+
+Back to draft: a submitted application cannot become unsubmitted, so moving an 'applied' row (or a withdrawn
+row that had been submitted) back to 'draft' is refused unless --not-submitted says the earlier 'applied' was a
+mistake and the application was never sent; then its submission date and follow-up are cleared and it leaves
+the statistics. Rows with an outcome (callback, interview, offer, rejected, ghosted) cannot go back to draft.
+
+IDs: new rows get the highest existing A<number> plus one, so deleting a row never reuses an id. Old CSVs need
+no migration. If a CSV already holds a duplicate id (possible with versions before 0.2.0 after a row was
+deleted, or after hand edits), `status` refuses to guess which row you mean; rename one copy in the CSV.
 """
 from __future__ import annotations
 
@@ -18,6 +35,7 @@ import csv
 import datetime as dt
 import math
 import os
+import re
 import sys
 from pathlib import Path
 
@@ -26,11 +44,31 @@ import cvlib  # noqa: E402
 
 FIELDS = ["id", "date_applied", "company", "role", "role_family", "cv_version", "source",
           "posting_date", "status", "status_date", "next_followup", "folder"]
-STATUSES = ["applied", "callback", "interview", "offer", "rejected", "ghosted", "withdrawn"]
+STATUSES = ["draft", "applied", "callback", "interview", "offer", "rejected", "ghosted", "withdrawn"]
 POSITIVE = {"callback", "interview", "offer"}
+NEEDS_SUBMISSION = {"callback", "interview", "offer", "rejected", "ghosted"}   # outcomes only a submitted application can have
 MIN_N = 30
 FOLLOWUP_DAYS = 7
 STALE_DAYS = 21
+
+
+ID_RE = re.compile(r"^A(\d+)$")
+
+
+def next_id(rows: list[dict]) -> str:
+    """Highest existing A<number> + 1, so ids are never reused after a row is deleted."""
+    nums = [int(m.group(1)) for r in rows if (m := ID_RE.match((r.get("id") or "").strip()))]
+    return f"A{max(nums, default=0) + 1:04d}"
+
+
+def duplicate_ids(rows: list[dict]) -> list[str]:
+    seen, dups = set(), []
+    for r in rows:
+        rid = r.get("id")
+        if rid in seen and rid not in dups:
+            dups.append(rid)
+        seen.add(rid)
+    return dups
 
 
 def tracker_path() -> Path:
@@ -45,14 +83,26 @@ def load() -> list[dict]:
         return list(csv.DictReader(fh))
 
 
+def _existing_header() -> list[str]:
+    p = tracker_path()
+    if not p.exists():
+        return []
+    with open(p, newline="", encoding="utf-8") as fh:
+        return next(csv.reader(fh), [])
+
+
 def save(rows: list[dict]) -> None:
+    """Write atomically, keeping any extra columns the candidate added to the CSV."""
     p = tracker_path()
     p.parent.mkdir(parents=True, exist_ok=True)
-    with open(p, "w", newline="", encoding="utf-8") as fh:
-        w = csv.DictWriter(fh, fieldnames=FIELDS)
+    fields = FIELDS + [c for c in _existing_header() if c and c not in FIELDS]
+    tmp = p.with_name(p.name + ".tmp")
+    with open(tmp, "w", newline="", encoding="utf-8") as fh:
+        w = csv.DictWriter(fh, fieldnames=fields)
         w.writeheader()
         for r in rows:
-            w.writerow({k: r.get(k, "") for k in FIELDS})
+            w.writerow({k: r.get(k) or "" for k in fields})
+    os.replace(tmp, p)
 
 
 def today() -> dt.date:
@@ -81,15 +131,21 @@ def cmd_add(a) -> int:
         return 2
     rows = load()
     date = a.date or today().isoformat()
-    rid = f"A{len(rows) + 1:04d}"
-    row = {"id": rid, "date_applied": date, "company": a.company, "role": a.role, "role_family": a.family,
+    rid = next_id(rows)
+    for dup in duplicate_ids(rows):
+        print(f"Warning: id {dup} appears more than once in {tracker_path()}; rename one copy by hand.", file=sys.stderr)
+    row = {"id": rid, "date_applied": "", "company": a.company, "role": a.role, "role_family": a.family,
            "cv_version": a.cv_version, "source": a.source or "", "posting_date": a.posting_date or "",
-           "status": "applied", "status_date": date,
-           "next_followup": (dt.date.fromisoformat(date) + dt.timedelta(days=FOLLOWUP_DAYS)).isoformat(),
-           "folder": a.folder or ""}
+           "status": "draft", "status_date": date, "next_followup": "", "folder": a.folder or ""}
+    if a.confirmed_submitted:
+        mark_applied(row, date)
     rows.append(row)
     save(rows)
-    print(f"Added {rid}: {a.company} / {a.role} (cv {a.cv_version}). Follow up on {row['next_followup']}.")
+    if row["status"] == "applied":
+        print(f"Added {rid}: {a.company} / {a.role} (cv {a.cv_version}), submitted {date}. Follow up on {row['next_followup']}.")
+    else:
+        print(f"Added {rid} as a draft: {a.company} / {a.role} (cv {a.cv_version}). "
+              f"When the candidate confirms they submitted it: tracker.py status {rid} applied --confirmed-submitted")
     if a.posting_date:
         age = (dt.date.fromisoformat(date) - dt.date.fromisoformat(a.posting_date)).days
         if age > 4:
@@ -97,18 +153,54 @@ def cmd_add(a) -> int:
     return 0
 
 
+def mark_applied(row: dict, date: str) -> None:
+    row["status"] = "applied"
+    row["status_date"] = date
+    row["date_applied"] = date
+    row["next_followup"] = (dt.date.fromisoformat(date) + dt.timedelta(days=FOLLOWUP_DAYS)).isoformat()
+
+
 def cmd_status(a) -> int:
     if a.status not in STATUSES:
         print(f"Status must be one of {STATUSES}", file=sys.stderr)
         return 2
     rows = load()
-    for r in rows:
+    matches = [r for r in rows if r["id"] == a.id]
+    if len(matches) > 1:
+        print(f"{a.id} appears {len(matches)} times in {tracker_path()}. Give one copy an unused id by hand "
+              f"(for example {next_id(rows)}), then try again.", file=sys.stderr)
+        return 2
+    for r in matches:
         if r["id"] == a.id:
-            r["status"] = a.status
-            r["status_date"] = a.date or today().isoformat()
-            r["next_followup"] = "" if a.status != "applied" else r["next_followup"]
+            date = a.date or today().isoformat()
+            if a.status == "applied" and r["status"] != "applied":
+                if not a.confirmed_submitted:
+                    print("Mark an application 'applied' only after the candidate confirms they submitted it, then add "
+                          "--confirmed-submitted (and --date if it was not today).", file=sys.stderr)
+                    return 2
+                mark_applied(r, date)
+            elif a.status == "draft" and r["status"] in NEEDS_SUBMISSION:
+                print(f"{a.id} is '{r['status']}', an outcome only a submitted application can have, so it cannot "
+                      "go back to draft.", file=sys.stderr)
+                return 2
+            elif a.status == "draft" and r.get("date_applied") and not a.not_submitted:
+                print(f"{a.id} was recorded as submitted on {r['date_applied']}. A submitted application stays submitted. "
+                      "If that was a mistake and it was never sent, add --not-submitted (this removes it from the "
+                      "statistics and clears its follow-up).", file=sys.stderr)
+                return 2
+            elif a.status in NEEDS_SUBMISSION and not r.get("date_applied"):
+                print(f"{a.id} is still a draft. Ask the candidate when they submitted it, record that first with "
+                      f"tracker.py status {a.id} applied --confirmed-submitted --date YYYY-MM-DD, then set '{a.status}'.",
+                      file=sys.stderr)
+                return 2
+            else:
+                r["status"] = a.status
+                r["status_date"] = date
+                r["next_followup"] = r["next_followup"] if a.status == "applied" else ""
+                if a.status == "draft":
+                    r["date_applied"] = ""
             save(rows)
-            print(f"{a.id} -> {a.status}")
+            print(f"{a.id} -> {r['status']}")
             return 0
     print(f"No application {a.id}", file=sys.stderr)
     return 1
@@ -116,6 +208,7 @@ def cmd_status(a) -> int:
 
 def due_items(rows: list[dict]) -> tuple[list[dict], list[dict]]:
     t = today()
+    rows = [r for r in rows if r.get("date_applied")]
     follow = [r for r in rows if r["status"] == "applied" and r["next_followup"]
               and dt.date.fromisoformat(r["next_followup"]) <= t]
     stale = [r for r in rows if r["status"] == "applied"
@@ -124,9 +217,14 @@ def due_items(rows: list[dict]) -> tuple[list[dict], list[dict]]:
 
 
 def cmd_due(_a) -> int:
-    follow, stale = due_items(load())
-    if not follow and not stale:
+    rows = load()
+    follow, stale = due_items(rows)
+    drafts = [r for r in rows if r["status"] == "draft"]
+    if not follow and not stale and not drafts:
         print("Nothing due.")
+    for r in drafts:
+        print(f"DRAFT      {r['id']} {r['company']} / {r['role']} (saved {r['status_date']}): not marked submitted; "
+              "ask the candidate whether they sent it.")
     for r in follow:
         print(f"FOLLOW UP  {r['id']} {r['company']} / {r['role']} (applied {r['date_applied']})")
     for r in stale:
@@ -136,15 +234,18 @@ def cmd_due(_a) -> int:
 
 def cmd_list(_a) -> int:
     for r in load():
-        print(f"{r['id']}  {r['date_applied']}  {r['status']:<10} {r['cv_version']:<8} {r['company']} / {r['role']}")
+        print(f"{r['id']}  {r['date_applied'] or '(draft)':<10}  {r['status']:<10} {r['cv_version']:<8} {r['company']} / {r['role']}")
     return 0
 
 
 def cmd_stats(a) -> int:
     rows = [r for r in load() if not a.family or r["role_family"] == a.family]
-    rows = [r for r in rows if r["status"] != "withdrawn"]
+    drafts = sum(1 for r in rows if r["status"] == "draft")
+    rows = [r for r in rows if r["status"] not in ("withdrawn", "draft")]
+    if drafts:
+        print(f"{drafts} draft(s) not counted: only applications the candidate confirmed as submitted are measured.")
     if not rows:
-        print("No applications yet.")
+        print("No submitted applications yet.")
         return 0
     groups: dict[str, list[dict]] = {}
     for r in rows:
@@ -194,11 +295,17 @@ def main() -> int:
     s.add_argument("--posting-date")
     s.add_argument("--folder")
     s.add_argument("--date")
+    s.add_argument("--confirmed-submitted", action="store_true",
+                   help="the candidate confirmed this application was already submitted")
     s.set_defaults(fn=cmd_add)
     s = sub.add_parser("status")
     s.add_argument("id")
     s.add_argument("status")
     s.add_argument("--date")
+    s.add_argument("--confirmed-submitted", action="store_true",
+                   help="required with 'applied': the candidate confirmed they submitted it")
+    s.add_argument("--not-submitted", action="store_true",
+                   help="with 'draft' on a submitted row: the earlier 'applied' was a mistake; it was never sent")
     s.set_defaults(fn=cmd_status)
     sub.add_parser("due").set_defaults(fn=cmd_due)
     sub.add_parser("list").set_defaults(fn=cmd_list)

@@ -2,7 +2,7 @@
 
 The strongest evidence says three things matter most: clear, error-free writing; tailoring to the posting; and signals beyond the CV such as referrals and early applications.
 
-**Grades.** A = peer-reviewed experiment or field study (tagged field or lab; field outranks lab when they disagree). B = large controlled experiment or dataset, not peer-reviewed. C = survey or vendor analysis: direction, not proof. Full citations and links: `rules/sources.yaml`.
+**Grades.** A = peer-reviewed experiment or field study (tagged field or lab; field outranks lab when they disagree). B = large controlled experiment or dataset, not peer-reviewed. C = survey or vendor analysis: direction, not proof. Full citations and links: `rules/sources.yaml` (relative to the skill folder, a sibling of `references/`).
 
 | Finding | Study | Grade | What to do |
 |---|---|---|---|

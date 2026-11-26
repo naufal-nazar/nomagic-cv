@@ -180,13 +180,17 @@
 <rect x='19' y='435' width='24.9' height='20' rx='4' fill='#052e16'/>
 <text x='23' y='450' font-weight='700' fill='#86efac'>OK</text>
 <text x='89.4' y='450' xml:space='preserve' fill='#e2e8f0'>good.md: </text>
-<text x='165.3' y='450' xml:space='preserve' fill='#e2e8f0'>every </text>
-<text x='215.9' y='450' xml:space='preserve' fill='#e2e8f0'>fact </text>
-<text x='258.0' y='450' xml:space='preserve' fill='#e2e8f0'>traces </text>
-<text x='317.0' y='450' xml:space='preserve' fill='#e2e8f0'>to </text>
-<text x='342.3' y='450' xml:space='preserve' fill='#e2e8f0'>the </text>
-<text x='376.1' y='450' xml:space='preserve' fill='#e2e8f0'>fact </text>
-<text x='418.2' y='450' xml:space='preserve' fill='#e2e8f0'>sheet </text>
-<text x='468.8' y='450' xml:space='preserve' fill='#e2e8f0'>(0 </text>
-<text x='494.1' y='450' xml:space='preserve' fill='#e2e8f0'>warnings).</text>
+<text x='165.3' y='450' xml:space='preserve' fill='#e2e8f0'>tags, </text>
+<text x='215.9' y='450' xml:space='preserve' fill='#e2e8f0'>numbers, </text>
+<text x='291.8' y='450' xml:space='preserve' fill='#e2e8f0'>titles, </text>
+<text x='359.2' y='450' xml:space='preserve' fill='#e2e8f0'>dates </text>
+<text x='409.8' y='450' xml:space='preserve' fill='#e2e8f0'>and </text>
+<text x='443.5' y='450' xml:space='preserve' fill='#e2e8f0'>listed </text>
+<text x='502.5' y='450' xml:space='preserve' fill='#e2e8f0'>items </text>
+<text x='553.1' y='450' xml:space='preserve' fill='#e2e8f0'>match </text>
+<text x='603.7' y='450' xml:space='preserve' fill='#e2e8f0'>the </text>
+<text x='637.4' y='450' xml:space='preserve' fill='#e2e8f0'>fact </text>
+<text x='679.5' y='450' xml:space='preserve' fill='#e2e8f0'>sheet </text>
+<text x='730.1' y='450' xml:space='preserve' fill='#e2e8f0'>(0 </text>
+<text x='755.4' y='450' xml:space='preserve' fill='#e2e8f0'>warnings).</text>
 </g></svg>

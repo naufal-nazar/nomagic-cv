@@ -35,13 +35,15 @@ PHONE_RE = re.compile(r"\+?\d[\d\s().-]{7,}\d")
 def pdf_text(path: Path) -> tuple[str, str]:
     """Return (reading-order text, layout text)."""
     if shutil.which("pdftotext"):
-        plain = subprocess.run(["pdftotext", str(path), "-"], capture_output=True, text=True).stdout
-        layout = subprocess.run(["pdftotext", "-layout", str(path), "-"], capture_output=True, text=True).stdout
+        # Ask for UTF-8 and decode it as UTF-8: the locale default (cp1252 on Windows) turns "–" into "â€“".
+        run = lambda *a: subprocess.run(["pdftotext", "-enc", "UTF-8", *a, str(path), "-"], capture_output=True,
+                                        encoding="utf-8").stdout
+        plain, layout = run(), run("-layout")
         return plain, layout
     try:
         from pypdf import PdfReader
     except ImportError as exc:
-        raise RuntimeError("Install poppler (pdftotext) or `pip install pypdf`.") from exc
+        raise RuntimeError("Install poppler (pdftotext), or pypdf into the Python that runs NoMagicCV (`python -m pip install pypdf`).") from exc
     text = "\n".join(page.extract_text() or "" for page in PdfReader(str(path)).pages)
     return text, text
 
@@ -50,7 +52,7 @@ def docx_text(path: Path) -> tuple[str, str, dict]:
     try:
         import docx
     except ImportError as exc:
-        raise RuntimeError("`pip install python-docx` to check .docx files.") from exc
+        raise RuntimeError("Install python-docx into the Python that runs NoMagicCV (`python -m pip install python-docx`) to check .docx files.") from exc
     d = docx.Document(str(path))
     body = "\n".join(p.text for p in d.paragraphs)
     hf = []

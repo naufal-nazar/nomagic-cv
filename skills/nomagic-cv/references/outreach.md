@@ -20,7 +20,7 @@ preferences:
 | | Semi-auto (default) | Auto |
 |---|---|---|
 | Who sends | The candidate, from drafts | `outreach.py send` by SMTP, or an email MCP send tool |
-| Checks | `outreach.py lint` | Same lint, plus the daily cap; the `pre-send` hook blocks sends that break a rule |
+| Checks | `outreach.py lint` | Same lint, plus the daily cap; in the full project the `pre-send` hook also blocks connector sends that break a rule (standalone installs have no hook: send only via `outreach.py send`) |
 | Best for | Priority roles, first weeks | Follow-ups and well-tested templates |
 
 ## Where contacts come from (in order of strength)
@@ -61,17 +61,17 @@ NoMagicCV never guesses addresses and never probes mail servers (SMTP checks can
 
 `/nomagic-daily` is safe to run unattended: it checks the inbox, records replies, prepares due follow-ups (drafts in semi-auto mode, checked sends in auto mode), flags stale applications and writes `workspace/reports/<date>_daily.md`. It never edits the fact sheet, freezes versions, submits applications or accepts terms.
 
-- Terminal: `python scripts/schedule.py install --agent claude --time 08:30` (or `--agent codex`) adds a cron job on macOS/Linux or a Task Scheduler task on Windows. The computer must be awake.
+- Terminal (full project clone only; the job runs the `/nomagic-daily` slash command): `python scripts/schedule.py install --agent claude --time 08:30` (or `--agent codex`) adds a cron job on macOS/Linux or a Task Scheduler task on Windows. The computer must be awake.
 - In-app: the Codex app's automations, or your Claude app's scheduled tasks, with the prompt `/nomagic-daily` (Claude) or `run nomagic-daily` (Codex).
 
 ## Connecting a mailbox
 
-Two first-class routes, plus SMTP for auto-send. Whichever you use, the email tools appear to the agent as MCP tools, and the `pre-send` hook gates every send, reply and forward the same way.
+Two first-class routes, plus SMTP for auto-send. Whichever you use, the email tools appear to the agent as MCP tools, and in the full project the `pre-send` hook gates every send, reply and forward the same way. A standalone skill install has no hooks: there, never use a connector's send action; create drafts, and auto-send only through `outreach.py send`.
 
 | Route | Works in | Setup | Drafts | Sends |
 |---|---|---|:--:|:--:|
-| **Connectors** (Gmail, Microsoft 365) | Claude app, desktop and Claude Code | Turn the connector on in Claude and sign in | ✅ | ✅ where the connector allows, gated by the hook |
-| **Official MCP servers**: [Gmail MCP](https://developers.google.com/workspace/gmail/api/reference/mcp) (Google), [Work IQ Mail](https://learn.microsoft.com/en-us/microsoft-copilot-studio/use-work-iq) (Microsoft) | Codex, Claude Code and any MCP client | `setup.py --email gmail` or `--email outlook` | ✅ | Gmail MCP: no (draft-only by design). Work IQ: yes, per tenant policy |
-| **SMTP** with an app password | Anywhere Python runs | `setup.py --email smtp` | — | ✅ auto mode only, via `outreach.py send` |
+| **Connectors** (Gmail, Microsoft 365) | Claude app, desktop and Claude Code | Turn the connector on in Claude and sign in | ✅ | ✅ where the connector allows, gated by the hook in the full project; standalone: drafts only |
+| **Official MCP servers**: [Gmail MCP](https://developers.google.com/workspace/gmail/api/reference/mcp) (Google), [Work IQ Mail](https://learn.microsoft.com/en-us/microsoft-copilot-studio/use-work-iq) (Microsoft) | Codex, Claude Code and any MCP client | `setup.py --email gmail` or `--email outlook` (full project) | ✅ | Gmail MCP: no (draft-only by design). Work IQ: yes, per tenant policy |
+| **SMTP** with an app password | Anywhere Python runs | `setup.py --email smtp` (full project), or fill in `<workspace>/.smtp.env` by hand | — | ✅ auto mode only, via `outreach.py send` |
 
 Google's Gmail MCP server is a Developer Preview (enrol, enable the Gmail API and Gmail MCP API in a Google Cloud project, then sign in). Microsoft's Work IQ Mail needs a Microsoft 365 Copilot licence in an organisation tenant.

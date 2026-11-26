@@ -24,12 +24,29 @@ jobs:
       - name: Install poppler (Linux)
         if: runner.os == 'Linux'
         run: sudo apt-get update && sudo apt-get install -y poppler-utils
+      - name: Install poppler (Windows; Git's bundled pdftotext is otherwise first on PATH)
+        if: runner.os == 'Windows'
+        run: |
+          choco install poppler -y --no-progress
+          "C:\ProgramData\chocolatey\bin" >> $env:GITHUB_PATH
+      - name: Show which pdftotext the tests use
+        if: runner.os == 'Windows'
+        run: (Get-Command pdftotext).Source; pdftotext -v 2>&1 | Select-Object -First 1; exit 0
       - name: Setup (same command users run)
         run: uv run scripts/setup.py
       - name: Verify setup
         run: uv run scripts/setup.py --check --skip-tests
       - name: Unit tests
         run: uv run --group dev pytest -q
+        env:
+          NOMAGIC_SMOKE_ARTIFACTS: ${{ runner.temp }}/smoke-artifacts
+      - name: Upload smoke-test PDFs (only when tests fail)
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: smoke-${{ matrix.os }}-py${{ matrix.python }}
+          path: ${{ runner.temp }}/smoke-artifacts
+          if-no-files-found: ignore
       - name: Build Claude app skill zip
         run: uv run scripts/setup.py --zip --skip-tests
 
