@@ -1,5 +1,6 @@
 """Tracker statuses: drafts are not applications until the candidate confirms submission."""
 import csv
+import os
 import subprocess
 import sys
 from pathlib import Path
@@ -21,8 +22,11 @@ def tr(tmp_path, monkeypatch):
     path = tmp_path / "tracker.csv"
 
     def run(*args):
-        env = {"CV_TRACKER": str(path), "CV_TODAY": "2026-11-19", "PYTHONUTF8": "1",
-               "NOMAGIC_WORKSPACE": str(tmp_path / "ws"), "PATH": ""}
+        # Inherit the parent environment: Windows Python 3.10 cannot start without SYSTEMROOT
+        # ("_Py_HashRandomization_Init: failed to get random numbers"). Drop only our own settings.
+        env = {k: v for k, v in os.environ.items() if not k.startswith(("CV_", "NOMAGIC_"))}
+        env.update({"CV_TRACKER": str(path), "CV_TODAY": "2026-11-19", "PYTHONUTF8": "1",
+                    "NOMAGIC_WORKSPACE": str(tmp_path / "ws")})
         return subprocess.run([sys.executable, str(TRACKER), *args], env=env, capture_output=True, text=True)
     run.path = path
     return run
