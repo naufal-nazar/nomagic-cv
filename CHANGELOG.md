@@ -5,6 +5,8 @@ All notable changes to this project are documented here. Versions follow [Semant
 ## [Unreleased]
 
 ### Changed
+- `SKILL.md` and `references/outreach.md` now say which steps rely on the full project's slash commands, subagents and hooks, and what to do instead in a standalone install (including: never use a connector's send action without the hook; draft instead)
+- `schedule.py install` and `run-once` stop with an explanation outside the full project clone, where the `nomagic-daily` command they run does not exist
 - Commands renamed to say what they do: `/nomagic-start` → `/nomagic-facts`, `/nomagic-build` → `/nomagic-master`, `/nomagic-apply` → `/nomagic-tailor` (it never submits), `/nomagic-review` → `/nomagic-stats`, `/nomagic-leads` → `/nomagic-employers`
 
 ### Added

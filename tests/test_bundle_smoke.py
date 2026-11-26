@@ -42,6 +42,9 @@ REQUIRED = [
     "scripts/posting_guard.py", "scripts/versions.py", "scripts/tracker.py", "scripts/export.py",
 ]
 
+# Named in SKILL.md, but documented there as full-project only and deliberately left out of the bundle.
+FULL_PROJECT_ONLY = {"scripts/setup.py"}
+
 DOCX_HELPER = textwrap.dedent('''
     """Test helper (not shipped): turn clean CV Markdown into a plain single-column DOCX."""
     import sys
@@ -126,7 +129,7 @@ def test_every_path_named_in_the_skill_ships(installed):
     pat = re.compile(r"(?<![\w./-])((?:scripts|references|templates|rules)/[\w.-]+\.(?:py|md|yaml|sh))")
     texts = [skill / "SKILL.md", *sorted((skill / "references").glob("*.md"))]
     missing = sorted({f"{t.name}: {m}" for t in texts for m in pat.findall(t.read_text(encoding="utf-8"))
-                      if not (skill / m).exists()})
+                      if not (skill / m).exists() and m not in FULL_PROJECT_ONLY})
     assert not missing, f"SKILL text names files the bundle lacks: {missing}"
 
 
@@ -204,3 +207,24 @@ def test_versions_init_uses_bundled_template_and_default_workspace(installed):
     draft = installed["tmp"] / "home" / "nomagic-cv-workspace" / "cvs" / "data-analyst" / "draft.md"
     assert draft.is_file(), "standalone installs must default to ~/nomagic-cv-workspace"
     assert "FIRSTNAME LASTNAME" in draft.read_text(encoding="utf-8"), "draft was not filled from templates/master-cv.md"
+
+
+def test_skill_text_scopes_every_hook_claim(installed):
+    """A standalone install has no hooks, so every mention of one must say it is full-project only."""
+    skill = installed["skill"]
+    offenders = []
+    for t in [skill / "SKILL.md", *sorted((skill / "references").glob("*.md"))]:
+        in_scope_section = False
+        for no, line in enumerate(t.read_text(encoding="utf-8").splitlines(), 1):
+            if line.startswith("## "):
+                in_scope_section = "standalone" in line.lower()
+            if in_scope_section:
+                continue
+            if re.search(r"\bhooks?\b", line, re.I) and not re.search(r"full project|standalone", line, re.I):
+                offenders.append(f"{t.name}:{no}: {line.strip()[:100]}")
+    assert not offenders, "hook claims without full-project/standalone scope:\n" + "\n".join(offenders)
+
+
+def test_schedule_explains_it_needs_the_full_project(installed):
+    res = run(installed, "schedule.py", "install", "--agent", "claude")
+    assert res.returncode == 2 and "full project clone" in res.stderr
