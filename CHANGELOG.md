@@ -15,6 +15,8 @@ All notable changes to this project are documented here. Versions follow [Semant
 - `/nomagic-employers` runs gosom/google-maps-scraper or google-maps-scraper-kit and imports results
 - `/nomagic-daily` unattended routine and `schedule.py` (cron, Task Scheduler); permission allowlist for headless runs
 - Versioned CV storage (`versions.py`), HTML/PDF export, branded README visuals
+- Standalone bundle (`setup.py --zip`, `--global`) now ships `LICENSE`, `LICENSE-CONTENT`, `CREDITS.md`, a runtime-only `requirements.txt`, and `NOTICE.md` with CC BY 4.0 attribution and a list of packaging changes
+- `tests/test_bundle_smoke.py`: builds the zip, installs it into a temporary skills folder and a fresh virtualenv using only the bundle's files, and runs the fact, consistency, parse and posting checks on the fictional example data
 
 ## [0.1.0] - 2026-11-19
 

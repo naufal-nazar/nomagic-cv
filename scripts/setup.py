@@ -182,14 +182,93 @@ def step_self_test() -> None:
 
 
 # ------------------------------------------------------------------ extras
+DEV_ONLY_REQUIREMENTS = ("pytest",)
+REPO_URL = "https://github.com/naufal-nazar/nomagic-cv"
+
+
+def project_version() -> str:
+    import re
+    m = re.search(r'^version\s*=\s*"([^"]+)"', (ROOT / "pyproject.toml").read_text(encoding="utf-8"), re.M)
+    return m.group(1) if m else "unknown"
+
+
+def git_commit() -> str:
+    try:
+        res = subprocess.run(["git", "-C", str(ROOT), "rev-parse", "--short", "HEAD"], capture_output=True, text=True)
+        return res.stdout.strip() if res.returncode == 0 else ""
+    except OSError:
+        return ""
+
+
+def runtime_requirements() -> str:
+    """requirements.txt without development-only packages: what the skill's scripts import at runtime."""
+    keep = []
+    for line in (ROOT / "requirements.txt").read_text(encoding="utf-8").splitlines():
+        name = line.split("#")[0].strip().split(">")[0].split("=")[0].split("<")[0].split("[")[0].strip().lower()
+        if name in DEV_ONLY_REQUIREMENTS:
+            continue
+        keep.append(line)
+    return ("# Runtime dependencies for the NoMagicCV skill scripts. Install with:\n"
+            "#   python3 -m pip install -r requirements.txt\n" + "\n".join(keep).strip() + "\n")
+
+
+NOTICE_TEMPLATE = """# NOTICE
+
+This folder is a standalone package of **NoMagicCV: the Evidence-Based CV Framework**
+by Noufal Nazar, {url}
+
+Package built from version {version}{commit}.
+
+## Licences
+
+| Files in this folder | Licence | Full text |
+|---|---|---|
+| `SKILL.md`, `references/`, `templates/`, `rules/`, `CREDITS.md` | Creative Commons Attribution 4.0 International (CC BY 4.0) | `LICENSE-CONTENT`, https://creativecommons.org/licenses/by/4.0/legalcode |
+| `scripts/` | MIT | `LICENSE` |
+
+`LICENSE-CONTENT` names repository paths (`skills/`, `rules/`, ...). In this package,
+`skills/nomagic-cv/*` sits at the top level of the folder; `rules/` is unchanged.
+
+Summaries of third-party studies in `rules/sources.yaml` and `references/` credit their
+authors; the studies themselves remain under their publishers' terms. Third-party tools
+the scripts can call are listed in `CREDITS.md`; none of their code is included here.
+
+## Changes from the repository layout
+
+Packaging changes only; no framework text or check logic was edited:
+- The contents of `skills/nomagic-cv/` were moved to the top level of this folder.
+- `scripts/` and `rules/` were copied in next to `SKILL.md`.
+- Left out: `scripts/setup.py`, `scripts/git-hooks/`, the Claude Code slash commands,
+  subagents and hooks (`.claude/`, `hooks/`), tests, evals and docs. `SKILL.md` says which
+  steps need the full repository.
+- `requirements.txt` here lists runtime dependencies only (development tools removed).
+
+## Attribution
+
+If you share or adapt the framework text, credit it like this and say what you changed:
+
+  "NoMagicCV: the Evidence-Based CV Framework" by Noufal Nazar, CC BY 4.0,
+  {url}
+"""
+
+BUNDLE_ROOT_FILES = ("LICENSE", "LICENSE-CONTENT", "CREDITS.md")
+
+
 def bundle(dest: Path) -> None:
-    """Self-contained skill folder: SKILL.md + references + templates + scripts + rules."""
+    """Self-contained skill folder: SKILL.md + references + templates + scripts + rules,
+    plus licences, NOTICE (attribution and packaging changes) and runtime requirements."""
     if dest.exists():
         shutil.rmtree(dest)
     shutil.copytree(SKILL, dest, symlinks=False)
     ignore = shutil.ignore_patterns("__pycache__", "*.pyc", "git-hooks", "setup.py")
     shutil.copytree(ROOT / "scripts", dest / "scripts", ignore=ignore)
-    shutil.copytree(ROOT / "rules", dest / "rules")
+    shutil.copytree(ROOT / "rules", dest / "rules", ignore=shutil.ignore_patterns("__pycache__"))
+    for name in BUNDLE_ROOT_FILES:
+        shutil.copy2(ROOT / name, dest / name)
+    (dest / "requirements.txt").write_text(runtime_requirements(), encoding="utf-8")
+    commit = git_commit()
+    (dest / "NOTICE.md").write_text(NOTICE_TEMPLATE.format(
+        url=REPO_URL, version=project_version(), commit=f" (commit {commit})" if commit else ""), encoding="utf-8")
 
 
 def install_global(agent: str) -> None:
@@ -263,14 +342,16 @@ def setup_email(provider: str) -> None:
         say(OK, "Then set preferences.outreach.mode: auto in facts.yaml to let checked messages send")
 
 
-def build_zip() -> None:
-    dist = ROOT / "dist"
+def build_zip(dist: Path | None = None) -> Path:
+    dist = dist or ROOT / "dist"
     staging = dist / "staging" / "nomagic-cv"
     bundle(staging)
-    archive = shutil.make_archive(str(dist / "nomagic-cv"), "zip", root_dir=staging.parent, base_dir="nomagic-cv")
+    archive = Path(shutil.make_archive(str(dist / "nomagic-cv"), "zip", root_dir=staging.parent, base_dir="nomagic-cv"))
     shutil.rmtree(dist / "staging")
-    say(OK, f"Built {Path(archive).relative_to(ROOT)} (top-level folder: nomagic-cv/)")
+    shown = archive.relative_to(ROOT) if archive.is_relative_to(ROOT) else archive
+    say(OK, f"Built {shown} (top-level folder: nomagic-cv/)")
     say(OK, "Upload it in the Claude app under Customize > Skills (code execution must be on)")
+    return archive
 
 
 NEXT = """
