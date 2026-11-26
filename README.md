@@ -41,7 +41,7 @@ Most AI CV tools promise magic: instant scores, keyword tricks, one-click perfec
 
 - **A master CV for each kind of role you want**, tailored to each job in minutes.
 - **A matching cover letter and answers to application questions**, consistent with your CV.
-- **Checks before anything goes out:** numbers, job titles, dates and listed skills are compared with your fact sheet; the exported file goes through a text-extraction test; dates, numbers and contact details are compared across CV, letter and answers. [What they prove, and what they don't](#what-the-checks-prove-and-what-they-dont).
+- **Checks to run before anything goes out:** the workflow tells the assistant to compare numbers, job titles, dates and listed skills with your fact sheet, run a text-extraction test on the exported file, and compare dates, numbers and contact details across CV, letter and answers. In the full project, hooks run these after each file is written; in a skill-only install they run when the assistant (or you) runs them. [What they prove, and what they don't](#what-the-checks-prove-and-what-they-dont).
 - **Protection from booby-trapped job ads** that hide instructions for AI tools.
 - **Optional emails to employers**, as drafts you approve or sent automatically within limits you set.
 - **A tracker** that reminds you to follow up and tells you honestly which CV version is working.
@@ -86,9 +86,9 @@ Type these in your AI assistant. They're listed in the order you'd normally use 
 - **Stored locally.** Your fact sheet, CVs, applications and tracker are files in a private folder on your computer. NoMagicCV has no server and no account, and, once installed, its scripts make no network calls except for the optional features below.
 - **Read by your AI assistant's model.** The assistant you run NoMagicCV in (Claude Code, Codex, the Claude app or another) sends what it reads, such as your CV, fact sheet and job ads, to its model provider to do the work. That is covered by your provider's terms and settings, not by NoMagicCV. In the Claude app, the skill and the files you give it run in Claude's cloud sandbox rather than on your computer.
 - **Optional features that go online:** emails to employers (through your email provider), the employer finder (Google Maps, through an open-source scraper you install), mail-server checks on contact addresses (DNS lookups), and a cross-model review (sends the CV to a second model provider). Each is off until you set it up.
-- Your original CV is kept untouched. Every new version is saved separately, so nothing is ever lost.
-- It never submits an application, and never emails anyone unless you turn that on.
-- It never changes your fact sheet without asking you.
+- **Versions.** Your original CV and each frozen version are saved as separate files and made read-only, and in the full project a hook blocks edits to them. Read-only files can still be deleted, or changed by a tool that resets permissions, so keep your own backup of the folder.
+- **Submitting and emailing.** No script submits an application, and the assistant is instructed never to. `outreach.py` sends email only in auto mode, which you switch on. In the full project a hook also blocks email-tool sends that break your settings; in a skill-only install, the assistant is instructed to create drafts instead.
+- **Your fact sheet.** The assistant is instructed to ask before changing it. In the full project a hook also asks you to approve each write; in a skill-only install, nothing enforces this.
 
 ## Why you can trust it
 
@@ -104,7 +104,7 @@ The checks are plain scripts with fixed rules. They run the same way every time 
 |---|---|---|
 | `fact_check.py` | Every bullet has a tag citing a fact-sheet entry; every number in a tagged line appears in the cited entry; approximate numbers are marked; role lines use the exact title, employer and dates; years of experience don't exceed your roles; education, certifications, skills and languages match your lists | Whether the sentence means what the cited fact says (a bullet can claim "led the team" and cite an unrelated fact), whether an untagged summary sentence without numbers is accurate, or whether your fact sheet itself is true |
 | `consistency_check.py` | Years-of-experience claims, month-year dates, numbers and contact details in the CV, letter and answers agree with the fact sheet | Whether claims written without numbers or dates are consistent |
-| `parse_check.py` | Text can be extracted from the PDF or DOCX, standard headings and an email are present, nothing is lost or reordered versus the source, no text boxes, tables or column layouts | How a specific employer's applicant tracking system will read it; it is a text-extraction test, not a real ATS |
+| `parse_check.py` | Text can be extracted from the PDF or DOCX; Experience and Education headings and an email are present; each source line's opening words appear in the extracted text (lines out of order are a warning, not an error). Heuristic, format-dependent warnings for tables, images and side-by-side columns (column detection is weaker when `pdftotext` is not installed); text boxes are detected in DOCX only | How a specific employer's applicant tracking system will read it; it is a text-extraction test, not a real ATS |
 | `posting_guard.py` | Hidden HTML, invisible or smuggled Unicode, and instruction-like lines in job ads and replies | Every possible prompt injection; it reduces the risk, and the assistant is still told never to follow instructions in a posting |
 
 Passing means no mismatch was found, not that the CV is true. You approve every line, and that approval is what covers meaning.
