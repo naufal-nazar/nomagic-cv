@@ -4,9 +4,10 @@
 Commands:
   add     --company C --role R --family F [--cv-version V | --folder DIR with meta.yaml] [--source S] [--posting-date YYYY-MM-DD] [--folder DIR] [--date YYYY-MM-DD]
           [--confirmed-submitted]           logs a DRAFT by default; add the flag only if the candidate says they already submitted it
-  status  ID STATUS [--date YYYY-MM-DD] [--confirmed-submitted]
+  status  ID STATUS [--date YYYY-MM-DD] [--confirmed-submitted | --not-submitted]
                                             STATUS: draft applied callback interview offer rejected ghosted withdrawn
                                             'applied' needs --confirmed-submitted: the candidate told you they submitted it
+                                            'draft' on a submitted row needs --not-submitted (see below)
   due                                       follow-ups due, applications with no reply after 21 days, drafts not yet submitted
   list
   stats   [--family F]                      callback rate per CV version with 95% Wilson intervals
@@ -17,6 +18,15 @@ Data: workspace/tracker.csv (override with CV_TRACKER=path).
 A row starts as 'draft' when the application package is saved. It becomes 'applied' only when the candidate
 confirms they submitted it; that date starts the follow-up clock and counts the row in stats. Rows written by
 earlier versions (always 'applied') are read as they are; nothing is rewritten.
+
+Back to draft: a submitted application cannot become unsubmitted, so moving an 'applied' row (or a withdrawn
+row that had been submitted) back to 'draft' is refused unless --not-submitted says the earlier 'applied' was a
+mistake and the application was never sent; then its submission date and follow-up are cleared and it leaves
+the statistics. Rows with an outcome (callback, interview, offer, rejected, ghosted) cannot go back to draft.
+
+IDs: new rows get the highest existing A<number> plus one, so deleting a row never reuses an id. Old CSVs need
+no migration. If a CSV already holds a duplicate id (possible with versions before 0.2.0 after a row was
+deleted, or after hand edits), `status` refuses to guess which row you mean; rename one copy in the CSV.
 """
 from __future__ import annotations
 
@@ -25,6 +35,7 @@ import csv
 import datetime as dt
 import math
 import os
+import re
 import sys
 from pathlib import Path
 
@@ -39,6 +50,25 @@ NEEDS_SUBMISSION = {"callback", "interview", "offer", "rejected", "ghosted"}   #
 MIN_N = 30
 FOLLOWUP_DAYS = 7
 STALE_DAYS = 21
+
+
+ID_RE = re.compile(r"^A(\d+)$")
+
+
+def next_id(rows: list[dict]) -> str:
+    """Highest existing A<number> + 1, so ids are never reused after a row is deleted."""
+    nums = [int(m.group(1)) for r in rows if (m := ID_RE.match((r.get("id") or "").strip()))]
+    return f"A{max(nums, default=0) + 1:04d}"
+
+
+def duplicate_ids(rows: list[dict]) -> list[str]:
+    seen, dups = set(), []
+    for r in rows:
+        rid = r.get("id")
+        if rid in seen and rid not in dups:
+            dups.append(rid)
+        seen.add(rid)
+    return dups
 
 
 def tracker_path() -> Path:
@@ -101,7 +131,9 @@ def cmd_add(a) -> int:
         return 2
     rows = load()
     date = a.date or today().isoformat()
-    rid = f"A{len(rows) + 1:04d}"
+    rid = next_id(rows)
+    for dup in duplicate_ids(rows):
+        print(f"Warning: id {dup} appears more than once in {tracker_path()}; rename one copy by hand.", file=sys.stderr)
     row = {"id": rid, "date_applied": "", "company": a.company, "role": a.role, "role_family": a.family,
            "cv_version": a.cv_version, "source": a.source or "", "posting_date": a.posting_date or "",
            "status": "draft", "status_date": date, "next_followup": "", "folder": a.folder or ""}
@@ -133,7 +165,12 @@ def cmd_status(a) -> int:
         print(f"Status must be one of {STATUSES}", file=sys.stderr)
         return 2
     rows = load()
-    for r in rows:
+    matches = [r for r in rows if r["id"] == a.id]
+    if len(matches) > 1:
+        print(f"{a.id} appears {len(matches)} times in {tracker_path()}. Give one copy an unused id by hand "
+              f"(for example {next_id(rows)}), then try again.", file=sys.stderr)
+        return 2
+    for r in matches:
         if r["id"] == a.id:
             date = a.date or today().isoformat()
             if a.status == "applied" and r["status"] != "applied":
@@ -142,6 +179,15 @@ def cmd_status(a) -> int:
                           "--confirmed-submitted (and --date if it was not today).", file=sys.stderr)
                     return 2
                 mark_applied(r, date)
+            elif a.status == "draft" and r["status"] in NEEDS_SUBMISSION:
+                print(f"{a.id} is '{r['status']}', an outcome only a submitted application can have, so it cannot "
+                      "go back to draft.", file=sys.stderr)
+                return 2
+            elif a.status == "draft" and r.get("date_applied") and not a.not_submitted:
+                print(f"{a.id} was recorded as submitted on {r['date_applied']}. A submitted application stays submitted. "
+                      "If that was a mistake and it was never sent, add --not-submitted (this removes it from the "
+                      "statistics and clears its follow-up).", file=sys.stderr)
+                return 2
             elif a.status in NEEDS_SUBMISSION and not r.get("date_applied"):
                 print(f"{a.id} is still a draft. Ask the candidate when they submitted it, record that first with "
                       f"tracker.py status {a.id} applied --confirmed-submitted --date YYYY-MM-DD, then set '{a.status}'.",
@@ -258,6 +304,8 @@ def main() -> int:
     s.add_argument("--date")
     s.add_argument("--confirmed-submitted", action="store_true",
                    help="required with 'applied': the candidate confirmed they submitted it")
+    s.add_argument("--not-submitted", action="store_true",
+                   help="with 'draft' on a submitted row: the earlier 'applied' was a mistake; it was never sent")
     s.set_defaults(fn=cmd_status)
     sub.add_parser("due").set_defaults(fn=cmd_due)
     sub.add_parser("list").set_defaults(fn=cmd_list)

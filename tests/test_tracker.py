@@ -97,3 +97,70 @@ def test_legacy_csv_is_preserved(tr):
     assert after[1]["status"] == "callback"
     assert after[2]["status"] == "draft"
     assert not tr.path.with_name("tracker.csv.tmp").exists()
+
+
+HEADER = "id,date_applied,company,role,role_family,cv_version,source,posting_date,status,status_date,next_followup,folder\r\n"
+
+
+def legacy_row(rid, company, status="applied", date="2026-10-01"):
+    follow = "2026-10-08" if status == "applied" else ""
+    return f"{rid},{date},{company},Data Analyst,data-analyst,data-analyst-v1,,,{status},{date},{follow},\r\n"
+
+
+def test_ids_are_not_reused_after_a_middle_row_is_deleted(tr):
+    # Legacy CSV (0.1.0 layout) where A0002 was deleted by hand: len(rows)+1 would give a second A0003.
+    tr.path.write_text(HEADER + legacy_row("A0001", "Acme") + legacy_row("A0003", "Initech"), encoding="utf-8", newline="")
+    add(tr)
+    assert [r["id"] for r in rows(tr.path)] == ["A0001", "A0003", "A0004"]
+
+
+def test_ids_ignore_hand_written_ids_and_grow_past_9999(tr):
+    tr.path.write_text(HEADER + legacy_row("my-first-app", "Acme") + legacy_row("A9999", "Initech"),
+                       encoding="utf-8", newline="")
+    add(tr)
+    assert rows(tr.path)[-1]["id"] == "A10000"
+
+
+def test_existing_duplicate_ids_are_refused_not_guessed(tr):
+    tr.path.write_text(HEADER + legacy_row("A0003", "Acme") + legacy_row("A0003", "Initech"), encoding="utf-8", newline="")
+    before = tr.path.read_bytes()
+    res = tr("status", "A0003", "callback")
+    assert res.returncode == 2 and "appears 2 times" in res.stderr and "A0004" in res.stderr
+    assert tr.path.read_bytes() == before
+    res = add(tr)
+    assert "appears more than once" in res.stderr and rows(tr.path)[-1]["id"] == "A0004"
+
+
+def test_submitted_row_cannot_silently_return_to_draft(tr):
+    tr.path.write_text(HEADER + legacy_row("A0001", "Acme"), encoding="utf-8", newline="")
+    before = tr.path.read_bytes()
+    res = tr("status", "A0001", "draft")
+    assert res.returncode == 2 and "--not-submitted" in res.stderr
+    assert tr.path.read_bytes() == before                     # date kept, still counted in stats
+    assert "    1" in tr("stats").stdout.splitlines()[1]
+
+
+def test_not_submitted_corrects_a_mistaken_applied(tr):
+    add(tr)
+    tr("status", "A0001", "applied", "--confirmed-submitted")
+    res = tr("status", "A0001", "draft", "--not-submitted")
+    assert res.returncode == 0
+    r = rows(tr.path)[0]
+    assert (r["status"], r["date_applied"], r["next_followup"]) == ("draft", "", "")
+    assert "No submitted applications yet." in tr("stats").stdout
+
+
+def test_outcomes_never_return_to_draft(tr):
+    tr.path.write_text(HEADER + legacy_row("A0001", "Acme", status="callback"), encoding="utf-8", newline="")
+    for extra in ((), ("--not-submitted",)):
+        res = tr("status", "A0001", "draft", *extra)
+        assert res.returncode == 2 and "cannot go back to draft" in res.stderr
+
+
+def test_withdrawn_draft_can_be_reopened_but_withdrawn_submission_cannot(tr):
+    add(tr)
+    tr("status", "A0001", "withdrawn")
+    assert tr("status", "A0001", "draft").returncode == 0       # never submitted: reopening is fine
+    add(tr, "--confirmed-submitted")
+    tr("status", "A0002", "withdrawn")
+    assert tr("status", "A0002", "draft").returncode == 2       # was submitted: needs --not-submitted
