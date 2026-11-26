@@ -5,6 +5,7 @@ All notable changes to this project are documented here. Versions follow [Semant
 ## [Unreleased]
 
 ### Changed
+- README, `SKILL.md` description, `pyproject.toml`, `CREDITS.md` and `docs/DEVELOPERS.md` now say precisely what the checks verify (tags, numbers, titles, dates, listed items, text extraction) and what they cannot (meaning, the truth of the fact sheet, a real ATS), and what leaves the machine (content the host assistant sends to its model provider; optional email, lead-finder, DNS and cross-review features). New README section: "What the checks prove, and what they don't". `fact_check.py`'s OK line reworded to match
 - Tracker: `tracker.py add` now logs a `draft`. A row becomes `applied` only with `tracker.py status <id> applied --confirmed-submitted` (or `add --confirmed-submitted`), which sets the submission date and the first follow-up. Drafts are left out of callback statistics and follow-up lists, and `due` lists them for confirmation. Existing rows are read as they are and never rewritten; saves keep extra columns and write atomically
 - `SKILL.md` and `references/outreach.md` now say which steps rely on the full project's slash commands, subagents and hooks, and what to do instead in a standalone install (including: never use a connector's send action without the hook; draft instead)
 - `schedule.py install` and `run-once` stop with an explanation outside the full project clone, where the `nomagic-daily` command they run does not exist

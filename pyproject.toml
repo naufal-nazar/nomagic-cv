@@ -1,7 +1,7 @@
 [project]
 name = "nomagic-cv"
 version = "0.1.0"
-description = "Open-source AI resume & CV agent: every fact checked by code, every rule backed by research."
+description = "Open-source AI resume & CV agent: numbers, titles and dates checked against your fact sheet by code; every rule graded against published research."
 readme = "README.md"
 requires-python = ">=3.10"
 license = "MIT"

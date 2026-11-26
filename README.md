@@ -14,7 +14,7 @@
 [![License: MIT](https://img.shields.io/badge/code-MIT-22c55e?style=flat-square)](LICENSE)
 [![Works with Claude Code and Codex](https://img.shields.io/badge/works%20with-Claude%20Code%20%C2%B7%20Codex-8b5cf6?style=flat-square)](#works-with)
 
-[Get started](#get-started) · [Commands](#commands) · [What you get](#what-you-get) · [Your data](#your-data-stays-yours)
+[Get started](#get-started) · [Commands](#commands) · [What you get](#what-you-get) · [Your data](#your-data-what-stays-local-and-what-doesnt) · [What the checks prove](#what-the-checks-prove-and-what-they-dont)
 
 </div>
 
@@ -22,7 +22,7 @@
 
 Most AI CV tools promise magic: instant scores, keyword tricks, one-click perfection. They also invent things you never did.
 
-**NoMagicCV works the other way.** It interviews you once, keeps your real experience in one place, and builds every CV from that. If a number, job title or skill isn't something you confirmed, it doesn't go in. Every tip it follows comes from published hiring research, and it tells you how strong that research is.
+**NoMagicCV works the other way.** It interviews you once, keeps your real experience in one place, and builds every CV from that. If a number, job title, date or skill doesn't match what you confirmed, a check flags it before you send anything. Every tip it follows comes from published hiring research, and it tells you how strong that research is.
 
 ## What you get
 
@@ -41,7 +41,7 @@ Most AI CV tools promise magic: instant scores, keyword tricks, one-click perfec
 
 - **A master CV for each kind of role you want**, tailored to each job in minutes.
 - **A matching cover letter and answers to application questions**, consistent with your CV.
-- **Checks before anything goes out:** no invented facts, nothing hiring software can't read, no mismatched dates.
+- **Checks before anything goes out:** numbers, job titles, dates and listed skills are compared with your fact sheet; the exported file goes through a text-extraction test; dates, numbers and contact details are compared across CV, letter and answers. [What they prove, and what they don't](#what-the-checks-prove-and-what-they-dont).
 - **Protection from booby-trapped job ads** that hide instructions for AI tools.
 - **Optional emails to employers**, as drafts you approve or sent automatically within limits you set.
 - **A tracker** that reminds you to follow up and tells you honestly which CV version is working.
@@ -81,27 +81,42 @@ Type these in your AI assistant. They're listed in the order you'd normally use 
 | `/nomagic-stats` | Shows which CV version gets more callbacks, and says "not enough data yet" when that's the honest answer. |
 | `/nomagic-daily` | A morning routine that runs on its own: checks replies, prepares follow-ups, sends you a short report. |
 
-## Your data stays yours
+## Your data: what stays local and what doesn't
 
-- Everything stays in a private folder on your computer. Nothing is uploaded by NoMagicCV.
+- **Stored locally.** Your fact sheet, CVs, applications and tracker are files in a private folder on your computer. NoMagicCV has no server and no account, and, once installed, its scripts make no network calls except for the optional features below.
+- **Read by your AI assistant's model.** The assistant you run NoMagicCV in (Claude Code, Codex, the Claude app or another) sends what it reads, such as your CV, fact sheet and job ads, to its model provider to do the work. That is covered by your provider's terms and settings, not by NoMagicCV. In the Claude app, the skill and the files you give it run in Claude's cloud sandbox rather than on your computer.
+- **Optional features that go online:** emails to employers (through your email provider), the employer finder (Google Maps, through an open-source scraper you install), mail-server checks on contact addresses (DNS lookups), and a cross-model review (sends the CV to a second model provider). Each is off until you set it up.
 - Your original CV is kept untouched. Every new version is saved separately, so nothing is ever lost.
 - It never submits an application, and never emails anyone unless you turn that on.
 - It never changes your fact sheet without asking you.
 
 ## Why you can trust it
 
-- **No invented facts.** Every line in your CV is checked against what you confirmed. This is done by code, not by asking the AI to behave.
+- **Numbers, titles and dates checked by code.** Each fact-bearing line carries a hidden tag pointing to an entry in your fact sheet, and a script compares its numbers, job titles, dates, skills and credentials with that entry. The AI is not asked to grade itself. Read below for what this does and does not prove.
 - **Research, not folklore.** For example: a well-written CV leads to more hires, a tailored cover letter gets more callbacks than a generic one, and most applications arrive in the first four days, so it helps you apply early. Popular myths, like "75% of CVs are rejected by robots" or "your CV must fit on one page", are explained and set aside. [See the evidence](skills/nomagic-cv/references/evidence.md).
-- **A second opinion.** A separate reviewer checks each CV without having seen it written, because AI tools tend to rate their own writing too highly.
+- **A second opinion.** In Claude Code, a reviewer subagent checks each CV in a fresh context, without the drafting notes, because AI tools tend to rate their own writing too highly. If a second model's command-line tool is installed, `cross_review.sh` asks a different model family as well. Elsewhere, the review is a separate pass by the same assistant, which is weaker.
+
+## What the checks prove, and what they don't
+
+The checks are plain scripts with fixed rules. They run the same way every time and catch mechanical mismatches; they do not understand meaning.
+
+| Check | What it verifies | What it cannot tell you |
+|---|---|---|
+| `fact_check.py` | Every bullet has a tag citing a fact-sheet entry; every number in a tagged line appears in the cited entry; approximate numbers are marked; role lines use the exact title, employer and dates; years of experience don't exceed your roles; education, certifications, skills and languages match your lists | Whether the sentence means what the cited fact says (a bullet can claim "led the team" and cite an unrelated fact), whether an untagged summary sentence without numbers is accurate, or whether your fact sheet itself is true |
+| `consistency_check.py` | Years-of-experience claims, month-year dates, numbers and contact details in the CV, letter and answers agree with the fact sheet | Whether claims written without numbers or dates are consistent |
+| `parse_check.py` | Text can be extracted from the PDF or DOCX, standard headings and an email are present, nothing is lost or reordered versus the source, no text boxes, tables or column layouts | How a specific employer's applicant tracking system will read it; it is a text-extraction test, not a real ATS |
+| `posting_guard.py` | Hidden HTML, invisible or smuggled Unicode, and instruction-like lines in job ads and replies | Every possible prompt injection; it reduces the risk, and the assistant is still told never to follow instructions in a posting |
+
+Passing means no mismatch was found, not that the CV is true. You approve every line, and that approval is what covers meaning.
 
 ## Works with
 
 | | |
 |---|---|
-| **Claude Code** (terminal, desktop app, IDE) | Everything, including the commands above and the automatic checks. |
+| **Claude Code** (terminal, desktop app, IDE) | Everything, including the commands above and hooks that run the checks after each file is written. |
 | **Codex** (CLI, IDE, app) | Everything; say "run nomagic-tailor" instead of typing a slash command. |
 | **Other AI coding assistants** | Point them at `AGENTS.md`; the checks work the same. |
-| **Claude app** (chat) | The CV method and checks, uploaded as a skill. |
+| **Claude app** (chat) and skill-only installs | The CV method and the check scripts, installed as a skill. No slash commands, subagents or hooks: the assistant runs the checks as steps. See [standalone installs](skills/nomagic-cv/SKILL.md#standalone-install-vs-full-project). |
 | **Email** | Gmail and Microsoft 365 through Claude's connectors or their official servers. |
 
 ## For developers

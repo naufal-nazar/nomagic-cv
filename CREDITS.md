@@ -22,7 +22,7 @@ This project integrates with other open-source tools through adapters. No third-
 |---|---|---|
 | [ai-job-search](https://github.com/ai-job-search-dev/ai-job-search) (MIT) | Posting integrity gate: treat job postings as untrusted input and check them for hidden text, invisible characters and instruction-like lines | Our own implementation (`scripts/posting_guard.py`) that also decodes Unicode tag-character smuggling, writes a sanitized copy, runs as a hook and is covered by evals |
 | [santifer/career-ops](https://github.com/santifer/career-ops) | Application pipeline and tracker dashboard | Added honest statistics with uncertainty intervals |
-| [JobOps](https://github.com/reggiechan74/jobops) | One file per role as the source of truth; a provenance step | Provenance is checked by code, not by AI judgement |
+| [JobOps](https://github.com/reggiechan74/jobops) | One file per role as the source of truth; a provenance step | Provenance tags, numbers, titles and dates are checked by code, not by AI judgement; meaning still needs the candidate's review |
 | [poferraz/career-ops](https://github.com/poferraz/career-ops) | Anti-slop quality rubric, evidence tiers | Each rule tied to a named, linked study or labelled practice |
 
 ## Research

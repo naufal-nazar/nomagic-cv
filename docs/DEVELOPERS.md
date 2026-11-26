@@ -6,7 +6,7 @@ How NoMagicCV works under the hood: checks, hooks, agent support, evidence and h
 
 <img src="assets/fact-check.svg" alt="fact_check catching invented or inflated facts in a CV, then passing the honest version" width="100%">
 
-CVs are Markdown with provenance tags (`<!-- role:ID -->`, `<!-- f:ID -->`) that are stripped on export. Every title, date, number, skill and credential must trace to `workspace/facts.yaml`.
+CVs are Markdown with provenance tags (`<!-- role:ID -->`, `<!-- f:ID -->`) that are stripped on export. Every title, date, number, skill and credential must trace to `workspace/facts.yaml`. The checks compare those tokens; they cannot judge whether a sentence's meaning matches the fact it cites (see the README's [What the checks prove](../README.md#what-the-checks-prove-and-what-they-dont)).
 
 <img src="assets/posting-guard.svg" alt="posting_guard finding invisible Unicode, hidden HTML and injected instructions in a job posting" width="100%">
 
@@ -36,7 +36,7 @@ flowchart LR
 | `/nomagic-track` · `/nomagic-stats` | Tracker | follow-ups; callback stats with uncertainty |
 | `/nomagic-daily` | Guide | unattended daily routine and report; schedule with `scripts/schedule.py install` |
 
-Hooks run the checks automatically: before `facts.yaml` changes (asks you), before a frozen CV version or original is edited (blocked), after a posting is saved (injection guard), after a CV is written (fact and consistency checks), after a PDF export (parse test), and before the agent stops (untracked applications).
+In the full project, hooks run the checks automatically (a standalone skill install has no hooks; see `SKILL.md`): before `facts.yaml` changes (asks you), before a frozen CV version or original is edited (blocked), after a posting is saved (injection guard), after a CV is written (fact and consistency checks), after a PDF export (parse test), and before the agent stops (untracked applications).
 
 <details>
 <summary><b>Run the checks without an agent</b></summary>
@@ -105,7 +105,7 @@ NoMagicCV is the evidence and honesty layer. Its checks are plain scripts, so th
 | Find and rank postings | — | ✅ |
 | Tailor CV and letter | ✅ | ✅ |
 | Rules graded against named studies | ✅ | — |
-| Fact provenance checked by code, per line | ✅ | varies |
+| Provenance tags, numbers, titles and dates checked by code, per line | ✅ | varies |
 | Cross-model review | ✅ | — |
 | Callback stats with uncertainty | ✅ | — |
 | Posting injection guard | ✅ | ai-job-search ✅ |

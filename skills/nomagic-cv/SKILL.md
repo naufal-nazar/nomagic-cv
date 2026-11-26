@@ -1,6 +1,6 @@
 ---
 name: nomagic-cv
-description: Build, tailor and check a CV or résumé for any field using graded hiring research, with every fact traced to the candidate's fact sheet and checked by code. Use for writing a CV, tailoring it to a job posting, cover letters, screening answers, or tracking applications.
+description: Build, tailor and check a CV or résumé for any field using graded hiring research, with every fact tagged to the candidate's fact sheet and its numbers, titles and dates checked by script. Use for writing a CV, tailoring it to a job posting, cover letters, screening answers, or tracking applications.
 ---
 
 # NoMagicCV
