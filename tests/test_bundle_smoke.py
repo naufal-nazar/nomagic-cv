@@ -328,7 +328,10 @@ def test_pdf_export_then_parse_check(installed):
     res = run(installed, "parse_check.py", str(pdf), "--source", str(f["good"]))
     if res.returncode != 0:      # show exactly what the extractor saw, for debugging font/OS differences
         dump = subprocess.run([str(installed["py"]), "-I", "-c",
-                               f"import sys; sys.path.insert(0, {str(installed['skill'] / 'scripts')!r}); "
+                               f"import sys, shutil, subprocess, pypdf; sys.path.insert(0, {str(installed['skill'] / 'scripts')!r}); "
+                               "w = shutil.which('pdftotext'); "
+                               "v = subprocess.run([w, '-v'], capture_output=True, text=True).stderr.strip() if w else ''; "
+                               "print('extractor:', w or 'pypdf', '|', v.splitlines()[0] if v else '', '| pypdf', pypdf.__version__); "
                                f"import parse_check, pathlib; print(parse_check.pdf_text(pathlib.Path({str(pdf)!r}))[0])"],
                               cwd=installed["cwd"], env=installed["env"], capture_output=True, text=True,
                               encoding="utf-8", errors="replace")

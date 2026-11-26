@@ -138,7 +138,8 @@ BASE_CSS = """
 * { box-sizing: border-box; }
 html { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
 body { font-family: "Inter", "Source Sans 3", "Segoe UI", "Helvetica Neue", Arial, sans-serif; color: #1f2937;
-       font-size: 10.6pt; line-height: 1.5; margin: 0; }
+       font-size: 10.6pt; line-height: 1.5; margin: 0;
+       font-variant-ligatures: none; }   /* macOS Chrome put "ﬁ" (U+FB01) in the text layer: "Certiﬁed" */
 h1 { font-size: 28pt; line-height: 1.05; margin: 0; color: #0f2a4a; font-weight: 750; }
 .headline { font-size: 12.5pt; font-weight: 600; color: #334e68; margin: 5pt 0 7pt; }
 .contact { font-size: 9.6pt; color: #475569; margin: 0; }
