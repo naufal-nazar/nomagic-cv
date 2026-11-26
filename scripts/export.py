@@ -271,12 +271,18 @@ def html_to_pdf(html_text: str, pdf_path: Path) -> None:
     with tempfile.TemporaryDirectory() as tmp:
         src = Path(tmp) / "cv.html"
         src.write_text(html_text, encoding="utf-8")
+        pdf_path.unlink(missing_ok=True)      # so an old file is never mistaken for this run's output
         res = subprocess.run([browser, "--headless=new", "--no-sandbox", "--disable-gpu", "--no-pdf-header-footer",
                               f"--print-to-pdf={pdf_path.resolve()}", src.resolve().as_uri()],
                              capture_output=True, text=True, errors="replace")
-        if res.returncode != 0 or not pdf_path.exists():
+        written = pdf_path.exists() and pdf_path.stat().st_size > 0
+        if not written:
             raise SystemExit(f"{browser} could not print the PDF (exit {res.returncode}).\n{(res.stderr or '')[-1500:]}\n"
                              "Alternatives: `export.py html` then print to PDF, or `export.py rendercv`.")
+        if res.returncode != 0:
+            # Seen on macOS CI: Chrome writes the whole PDF, then its shutdown watchdog fires and it exits 2.
+            print(f"Note: the browser exited with code {res.returncode} after writing the PDF; run parse_check.py on it.",
+                  file=sys.stderr)
 
 
 def main() -> int:

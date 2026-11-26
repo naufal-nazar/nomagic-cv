@@ -332,6 +332,10 @@ def test_pdf_export_then_parse_check(installed):
                                f"import parse_check, pathlib; print(parse_check.pdf_text(pathlib.Path({str(pdf)!r}))[0])"],
                               cwd=installed["cwd"], env=installed["env"], capture_output=True, text=True,
                               encoding="utf-8", errors="replace")
+        keep = os.environ.get("NOMAGIC_SMOKE_ARTIFACTS")     # CI uploads this folder when the job fails
+        if keep:
+            Path(keep).mkdir(parents=True, exist_ok=True)
+            shutil.copy2(pdf, Path(keep) / f"{sys.platform}-py{sys.version_info[0]}{sys.version_info[1]}-{pdf.name}")
         pytest.fail(f"{res.stdout}{res.stderr}\n--- extracted text ---\n{dump.stdout}{dump.stderr}")
     assert res.stdout.startswith("OK"), res.stdout
 
