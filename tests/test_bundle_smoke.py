@@ -326,7 +326,13 @@ def test_pdf_export_then_parse_check(installed):
     res = run(installed, "export.py", "pdf", str(f["good"]), "--facts", str(f["facts"]), "-o", str(pdf))
     assert res.returncode == 0 and pdf.is_file() and pdf.stat().st_size > 1000, res.stdout + res.stderr
     res = run(installed, "parse_check.py", str(pdf), "--source", str(f["good"]))
-    assert res.returncode == 0, res.stdout + res.stderr
+    if res.returncode != 0:      # show exactly what the extractor saw, for debugging font/OS differences
+        dump = subprocess.run([str(installed["py"]), "-I", "-c",
+                               f"import sys; sys.path.insert(0, {str(installed['skill'] / 'scripts')!r}); "
+                               f"import parse_check, pathlib; print(parse_check.pdf_text(pathlib.Path({str(pdf)!r}))[0])"],
+                              cwd=installed["cwd"], env=installed["env"], capture_output=True, text=True,
+                              encoding="utf-8", errors="replace")
+        pytest.fail(f"{res.stdout}{res.stderr}\n--- extracted text ---\n{dump.stdout}{dump.stderr}")
     assert res.stdout.startswith("OK"), res.stdout
 
 

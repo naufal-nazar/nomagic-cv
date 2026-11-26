@@ -271,9 +271,12 @@ def html_to_pdf(html_text: str, pdf_path: Path) -> None:
     with tempfile.TemporaryDirectory() as tmp:
         src = Path(tmp) / "cv.html"
         src.write_text(html_text, encoding="utf-8")
-        subprocess.run([browser, "--headless=new", "--no-sandbox", "--disable-gpu", "--no-pdf-header-footer",
-                        f"--print-to-pdf={pdf_path.resolve()}", src.resolve().as_uri()],
-                       check=True, capture_output=True)
+        res = subprocess.run([browser, "--headless=new", "--no-sandbox", "--disable-gpu", "--no-pdf-header-footer",
+                              f"--print-to-pdf={pdf_path.resolve()}", src.resolve().as_uri()],
+                             capture_output=True, text=True, errors="replace")
+        if res.returncode != 0 or not pdf_path.exists():
+            raise SystemExit(f"{browser} could not print the PDF (exit {res.returncode}).\n{(res.stderr or '')[-1500:]}\n"
+                             "Alternatives: `export.py html` then print to PDF, or `export.py rendercv`.")
 
 
 def main() -> int:
