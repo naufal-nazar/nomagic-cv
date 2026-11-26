@@ -69,12 +69,12 @@ def step_python() -> None:
 
 def step_deps(check: bool, allow_user: bool = False) -> None:
     """Install into the project .venv only. The user's own Python is touched only with --allow-user-install."""
-    py = project_python()
-    if has_deps(py):
-        say(OK, "Dependencies installed" + (" (.venv)" if py != sys.executable else ""))
+    vp_path = venv_python()
+    if vp_path.exists() and has_deps(str(vp_path)):      # only the project .venv counts, not the running Python
+        say(OK, "Dependencies installed (.venv)")
         return
     if check:
-        say(FAIL, "Dependencies missing (run: uv run scripts/setup.py, or python3 scripts/setup.py)")
+        say(FAIL, "Dependencies missing from the project .venv (run: uv run scripts/setup.py, or python3 scripts/setup.py)")
         return
     if shutil.which("uv"):
         res = subprocess.run(["uv", "sync", "--no-dev"], cwd=ROOT, capture_output=True, text=True)
@@ -175,7 +175,7 @@ def step_optional_tools() -> None:
     say(OK if shutil.which("pdftotext") else WARN,
         "pdftotext found" if shutil.which("pdftotext") else "pdftotext not found (optional; pypdf is used instead)")
     say(OK if shutil.which("rendercv") else WARN,
-        "RenderCV found" if shutil.which("rendercv") else 'RenderCV not found (optional, for PDFs: pip install "rendercv[full]")')
+        "RenderCV found" if shutil.which("rendercv") else 'RenderCV not found (optional, for PDFs: .venv/bin/python -m pip install "rendercv[full]")')
 
 
 def step_self_test() -> None:
@@ -216,7 +216,7 @@ def runtime_requirements() -> str:
             continue
         keep.append(line)
     return ("# Runtime dependencies for the NoMagicCV skill scripts. Install with:\n"
-            "#   python3 -m pip install -r requirements.txt\n" + "\n".join(keep).strip() + "\n")
+            "#   python3 -m venv .venv && .venv/bin/python -m pip install -r requirements.txt   (Windows: .venv\\Scripts\\python)\n" + "\n".join(keep).strip() + "\n")
 
 
 NOTICE_TEMPLATE = """# NOTICE

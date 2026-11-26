@@ -211,7 +211,7 @@ def cmd_verify(_a) -> int:
             r["status"] = "bounced"
     save_contacts(rows)
     if unknown:
-        print("Install dnspython for MX checks: pip install dnspython")
+        print("Install dnspython for MX checks: install dnspython into the Python that runs NoMagicCV (python -m pip install dnspython)")
     print(f"Checked {len(rows) - unknown} domains. No SMTP probing is done: it can harm your sender reputation.")
     return 0
 

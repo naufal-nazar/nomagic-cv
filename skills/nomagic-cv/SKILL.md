@@ -32,7 +32,7 @@ Explain the trade-off in two sentences: AI writing help raised hires in a large 
 
 ## Workspace layout
 
-Inside the repo the workspace is `workspace/`; in a standalone install (global or uploaded skill) it is `~/nomagic-cv-workspace`; `NOMAGIC_WORKSPACE` overrides both. Scripts and rules ship next to this file in `scripts/` and `rules/`. Install the scripts' dependencies once with `python3 -m pip install -r requirements.txt` from this folder (the repo clone uses `scripts/setup.py` instead).
+Inside the repo the workspace is `workspace/`; in a standalone install (global or uploaded skill) it is `~/nomagic-cv-workspace`; `NOMAGIC_WORKSPACE` overrides both. Scripts and rules ship next to this file in `scripts/` and `rules/`. Install the scripts' dependencies once into a virtual environment, not the system Python: from this folder, `python3 -m venv .venv` then `.venv/bin/python -m pip install -r requirements.txt` (Windows: `.venv\Scripts\python`), and run the scripts with that Python (the repo clone uses `scripts/setup.py` instead).
 
 ```
 workspace/                                  # gitignored, private

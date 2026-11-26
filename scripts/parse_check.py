@@ -43,7 +43,7 @@ def pdf_text(path: Path) -> tuple[str, str]:
     try:
         from pypdf import PdfReader
     except ImportError as exc:
-        raise RuntimeError("Install poppler (pdftotext) or `pip install pypdf`.") from exc
+        raise RuntimeError("Install poppler (pdftotext), or pypdf into the Python that runs NoMagicCV (`python -m pip install pypdf`).") from exc
     text = "\n".join(page.extract_text() or "" for page in PdfReader(str(path)).pages)
     return text, text
 
@@ -52,7 +52,7 @@ def docx_text(path: Path) -> tuple[str, str, dict]:
     try:
         import docx
     except ImportError as exc:
-        raise RuntimeError("`pip install python-docx` to check .docx files.") from exc
+        raise RuntimeError("Install python-docx into the Python that runs NoMagicCV (`python -m pip install python-docx`) to check .docx files.") from exc
     d = docx.Document(str(path))
     body = "\n".join(p.text for p in d.paragraphs)
     hf = []

@@ -5,7 +5,7 @@ This file is written for **AI agents and humans alike**. If you are an agent ask
 ## 0. Prerequisites
 
 - **Python 3.10+** (and [uv](https://docs.astral.sh/uv/) if you want the exact locked versions; optional).
-- **For PDF export:** Chrome, Chromium or Edge already on your computer, or `pip install "rendercv[full]"`.
+- **For PDF export:** Chrome, Chromium or Edge already on your computer, or RenderCV installed into the project `.venv` (`.venv/bin/python -m pip install "rendercv[full]"`; Windows: `.venv\Scripts\python`).
 - Optional: poppler's `pdftotext` for the parse check; without it, the check uses pypdf.
 - Claude app only (no terminal): a plan with code execution turned on. Skip to the Claude app row in section 3.
 
@@ -34,7 +34,7 @@ python3 scripts/setup.py        # Windows: py scripts/setup.py  or  python scrip
 
 It is safe to run more than once. It:
 
-- checks Python 3.10+ and installs dependencies into the project `.venv` only: with `uv sync` from `uv.lock` when uv is installed, otherwise it creates `.venv` and runs pip inside it. It never installs into your own Python. If no `.venv` can be created (for example Debian/Ubuntu without `python3-venv`), it stops and explains; `--allow-user-install` (*user-wide*) then installs into your user site-packages instead
+- checks Python 3.10+ and installs dependencies into the project `.venv` only: with `uv sync` from `uv.lock` when uv is installed, otherwise it creates `.venv` and runs pip inside it, even if your own Python already has the packages. It installs into your own Python only if you pass `--allow-user-install`, and only when no `.venv` can be created. If no `.venv` can be created (for example Debian/Ubuntu without `python3-venv`), it stops and explains; `--allow-user-install` (*user-wide*) then installs into your user site-packages instead
 - creates the private `workspace/` folder
 - makes the skill visible to Claude Code (`.claude/skills/`) and Codex and other agents (`.agents/skills/`), copying instead of linking where symlinks are unavailable
 - points the hooks at a Python that exists on this machine
@@ -97,7 +97,7 @@ python3 scripts/setup.py --check
 | `externally-managed-environment` from pip | Setup installs only into `.venv`, where this doesn't apply. If `.venv` can't be created, install `python3-venv` (or uv) and rerun, or use `--allow-user-install` (*user-wide*). |
 | Skill not found by the agent | Run setup again; it repairs the skill links. Restart the agent. |
 | Hooks don't run in Codex | Hooks are optional there. Run the checks listed in `AGENTS.md` as steps. |
-| PDF export fails | `pip install "rendercv[full]"`, or export to `.docx` from your editor and run `parse_check.py` on it. |
+| PDF export fails | `.venv/bin/python -m pip install "rendercv[full]"` (Windows: `.venv\Scripts\python`), or export to `.docx` from your editor and run `parse_check.py` on it. |
 
 ## Uninstall
 
