@@ -132,8 +132,8 @@ Agents without slash commands: the same names work as plain requests ("run nomag
 3. Missing must-haves are reported to the candidate (R-HONEST-06), never papered over.
 4. Draft `letter.md` for priority roles and `answers.md` from the fact sheet.
 5. Run `fact_check.py`, `consistency_check.py` on the folder, then `parse_check.py` on the exported PDF/DOCX.
-6. **Tracker** adds the row: `python scripts/tracker.py add --company ... --role ... --family ... --folder <folder>` (the version id comes from `meta.yaml`). Export the final CV under the `export_name` in `meta.yaml`.
-7. The candidate reviews everything and submits it themselves.
+6. **Tracker** adds the row as a draft: `python scripts/tracker.py add --company ... --role ... --family ... --folder <folder>` (the version id comes from `meta.yaml`). Export the final CV under the `export_name` in `meta.yaml`.
+7. The candidate reviews everything and submits it themselves. Only when they tell you they submitted it, record it: `python scripts/tracker.py status <id> applied --confirmed-submitted [--date YYYY-MM-DD]`. Drafts don't count in callback statistics or follow-up dates.
 
 ### /nomagic-stats: honest measurement
 Run `python scripts/tracker.py stats`. Report callback rate per CV version with 95% intervals. If intervals overlap or a version has fewer than 30 applications, say there is no winner yet. Suggest changing one element at a time (R-MEASURE-01).

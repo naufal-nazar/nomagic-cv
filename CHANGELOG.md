@@ -5,6 +5,7 @@ All notable changes to this project are documented here. Versions follow [Semant
 ## [Unreleased]
 
 ### Changed
+- Tracker: `tracker.py add` now logs a `draft`. A row becomes `applied` only with `tracker.py status <id> applied --confirmed-submitted` (or `add --confirmed-submitted`), which sets the submission date and the first follow-up. Drafts are left out of callback statistics and follow-up lists, and `due` lists them for confirmation. Existing rows are read as they are and never rewritten; saves keep extra columns and write atomically
 - `SKILL.md` and `references/outreach.md` now say which steps rely on the full project's slash commands, subagents and hooks, and what to do instead in a standalone install (including: never use a connector's send action without the hook; draft instead)
 - `schedule.py install` and `run-once` stop with an explanation outside the full project clone, where the `nomagic-daily` command they run does not exist
 - Commands renamed to say what they do: `/nomagic-start` → `/nomagic-facts`, `/nomagic-build` → `/nomagic-master`, `/nomagic-apply` → `/nomagic-tailor` (it never submits), `/nomagic-review` → `/nomagic-stats`, `/nomagic-leads` → `/nomagic-employers`
