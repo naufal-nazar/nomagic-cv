@@ -142,6 +142,8 @@ Run `python scripts/tracker.py stats`. Report callback rate per CV version with 
 Load `references/situations.md` when a case applies: early career, 8+ years, newcomer with foreign experience, current role junior to past roles, career changer, employment gap, serving notice, regulated fields, several target roles.
 
 ## References
+Install guide, walkthrough and help (not included in the skill zip): https://github.com/naufal-nazar/nomagic-cv
+
 - `references/layers.md`: the six layers in detail
 - `references/evidence.md`: graded evidence table
 - `references/myths.md`: myths vs evidence

@@ -4,6 +4,7 @@
 Usage (with uv, recommended: `uv run scripts/setup.py ...`; without uv, use python3):
   python3 scripts/setup.py                 set up this clone for every agent (default)
   python3 scripts/setup.py --check         verify the setup without changing anything
+  python3 scripts/setup.py --allow-user-install   only if no .venv can be created: pip install --user instead
   python3 scripts/setup.py --global claude install the skill for Claude Code in all your projects
   python3 scripts/setup.py --global codex  install the skill for Codex (CLI, IDE and app)
   python3 scripts/setup.py --codex-hooks   enable automatic checks in Codex for this project
@@ -66,7 +67,8 @@ def step_python() -> None:
         say(OK, f"Python {platform.python_version()}")
 
 
-def step_deps(check: bool) -> None:
+def step_deps(check: bool, allow_user: bool = False) -> None:
+    """Install into the project .venv only. The user's own Python is touched only with --allow-user-install."""
     py = project_python()
     if has_deps(py):
         say(OK, "Dependencies installed" + (" (.venv)" if py != sys.executable else ""))
@@ -81,20 +83,25 @@ def step_deps(check: bool) -> None:
             return
         say(WARN, "uv sync failed; falling back to pip:\n" + res.stderr[-400:])
     req = str(ROOT / "requirements.txt")
-    attempt = subprocess.run([sys.executable, "-m", "pip", "install", "-q", "-r", req], capture_output=True, text=True)
-    if attempt.returncode != 0 and "externally-managed" in (attempt.stderr + attempt.stdout):
-        attempt = subprocess.run([sys.executable, "-m", "pip", "install", "-q", "--user", "-r", req], capture_output=True, text=True)
-    if attempt.returncode == 0 and has_deps(sys.executable):
-        say(OK, "Dependencies installed")
+    try:
+        venv.EnvBuilder(with_pip=True, clear=False).create(ROOT / ".venv")
+    except Exception as exc:  # e.g. Debian/Ubuntu without the python3-venv package
+        if not allow_user:
+            say(FAIL, f"Could not create the project .venv ({exc}). Install your system's venv package "
+                      "(Debian/Ubuntu: sudo apt install python3-venv) or uv, then run setup again. To install into "
+                      "your own user site-packages instead, run setup with --allow-user-install.")
+            return
+        res = subprocess.run([sys.executable, "-m", "pip", "install", "-q", "--user", "-r", req], capture_output=True, text=True)
+        ok = res.returncode == 0 and has_deps(sys.executable)
+        say(OK if ok else FAIL, "Dependencies installed in your user site-packages (--allow-user-install)" if ok
+            else "Could not install dependencies:\n" + (res.stderr or res.stdout)[-800:])
         return
-    # Fall back to a project virtualenv; hooks pick it up automatically.
-    venv.EnvBuilder(with_pip=True, clear=False).create(ROOT / ".venv")
     vp = str(venv_python())
     res = subprocess.run([vp, "-m", "pip", "install", "-q", "-r", req], capture_output=True, text=True)
     if res.returncode == 0 and has_deps(vp):
         say(OK, "Dependencies installed in .venv (hooks use it automatically)")
     else:
-        say(FAIL, "Could not install dependencies:\n" + (res.stderr or attempt.stderr)[-800:])
+        say(FAIL, "Could not install dependencies in .venv:\n" + (res.stderr or res.stdout)[-800:])
 
 
 def step_workspace(check: bool) -> None:
@@ -378,11 +385,13 @@ def main() -> int:
                     help="connect an email provider for outreach (repeatable)")
     ap.add_argument("--leads", choices=["kit", "gosom"], help="install an open-source Google Maps scraper for /nomagic-employers")
     ap.add_argument("--skip-tests", action="store_true")
+    ap.add_argument("--allow-user-install", action="store_true",
+                    help="only if no project .venv can be created: pip install --user into the running Python")
     a = ap.parse_args()
 
     print(f"NoMagicCV setup ({platform.system()}, {'check only' if a.check else 'installing'})")
     step_python()
-    step_deps(a.check)
+    step_deps(a.check, a.allow_user_install)
     step_workspace(a.check)
     step_skill_links(a.check)
     step_hook_interpreter(a.check)

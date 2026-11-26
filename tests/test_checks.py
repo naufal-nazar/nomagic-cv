@@ -367,3 +367,20 @@ def test_parse_check_decodes_pdftotext_as_utf8_whatever_the_locale(monkeypatch, 
     bad = raw.decode("cp1252")
     monkeypatch.setattr(parse_check, "pdf_text", lambda _p: (bad, bad))
     assert ["R-PARSE-04", "Source lines missing from extracted text: [4]"] in parse_check.check(str(tmp_path / "cv.pdf"), str(src))["errors"]
+
+
+def test_setup_never_installs_outside_venv_without_consent(monkeypatch, tmp_path):
+    import importlib.util
+    spec = importlib.util.spec_from_file_location("nm_setup_deps", ROOT / "scripts" / "setup.py")
+    setup = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(setup)
+    calls = []
+    monkeypatch.setattr(setup, "ROOT", tmp_path)
+    monkeypatch.setattr(setup, "has_deps", lambda _py: False)
+    monkeypatch.setattr(setup.shutil, "which", lambda _n: None)                       # no uv
+    monkeypatch.setattr(setup.venv.EnvBuilder, "create", lambda *_a, **_k: (_ for _ in ()).throw(OSError("no ensurepip")))
+    monkeypatch.setattr(setup.subprocess, "run", lambda cmd, **_k: calls.append(cmd) or type("R", (), {"returncode": 0, "stdout": "", "stderr": ""})())
+    setup.step_deps(check=False)
+    assert calls == [] and any("--allow-user-install" in p for p in setup.problems)    # refused, nothing installed
+    setup.step_deps(check=False, allow_user=True)
+    assert len(calls) == 1 and "--user" in calls[0]                                    # only with explicit consent

@@ -1,38 +1,61 @@
 # Walkthrough: from the skill bundle to a checked PDF
 
-This walkthrough installs NoMagicCV from the release zip and takes a **fictional** candidate, Jordan Lee, from the fact-sheet interview to an exported, checked PDF. Every name, employer, number and address here is invented. Jordan's fact sheet is the one that ships in the bundle as `templates/facts.example.yaml`.
+**This is an illustrative session.** It takes a **fictional** candidate, Jordan Lee, from the fact-sheet interview to an exported, checked PDF. Jordan's fact sheet ships in the bundle as `templates/facts.example.yaml`. The finished CV and the Maple Grocers job posting do not: in a real session the assistant writes the CV from your fact sheet, and you paste the posting. Every name, employer, number and address here is invented.
 
-The command output below is copied from a real run on Linux with Python 3.13 and Google Chrome on 26 November 2026, with home-directory paths shortened to `~`. Your dates, folder names and checksum will differ. The conversation excerpts show the kind of exchange to expect; the assistant's exact wording will vary.
+The command output is copied from a real run on Linux (Python 3.13, Google Chrome) on 26 November 2026, with home paths shortened to `~`. Your dates, folder names and checksum will differ, and the assistant's wording will vary.
 
-It uses a skill-only install, so there are no slash commands, subagents or hooks: you (or your assistant) run each check as a step. See `SKILL.md`, "Standalone install vs full project".
+A skill-only install has no slash commands, subagents or hooks: you (or your assistant) run each check as a step. See `SKILL.md`, "Standalone install vs full project".
 
 ## 1. Download and verify the bundle
 
 From the [releases page](https://github.com/naufal-nazar/nomagic-cv/releases), download `nomagic-cv.zip` and `nomagic-cv.zip.sha256` into the same folder, then:
 
 ```console
-$ sha256sum -c nomagic-cv.zip.sha256
+$ sha256sum -c nomagic-cv.zip.sha256          # macOS: shasum -a 256 -c nomagic-cv.zip.sha256
 nomagic-cv.zip: OK
 ```
 
-On macOS use `shasum -a 256 -c nomagic-cv.zip.sha256`. On Windows, compare the output of `certutil -hashfile nomagic-cv.zip SHA256` with the file's first word.
+On Windows, compare the output of `certutil -hashfile nomagic-cv.zip SHA256` with the first word of the `.sha256` file.
 
-## 2. Install the skill
+## 2a. Claude app (chat, no terminal)
 
-Unzip into your assistant's skills folder (Claude Code: `~/.claude/skills/`; Codex: `~/.codex/skills/`) and install the four runtime dependencies into a virtual environment:
+You need: a Claude plan with code execution turned on. Nothing to install on your computer.
+
+1. In the Claude app, open **Customize > Skills** and upload `nomagic-cv.zip`.
+2. Start a chat and say "run nomagic-facts".
+
+Where things run: the skill's scripts run in Claude's cloud sandbox, not on your computer. The assistant installs `requirements.txt` there when a script needs it; if the sandbox cannot install packages, it should tell you which checks did not run. Your workspace is a folder in that sandbox and may not persist between chats, so ask the assistant to share `facts.yaml` and each finished CV as downloadable files and keep your own copies; upload `facts.yaml` again at the start of a new chat.
+
+PDFs: the sandbox may have no browser for `export.py pdf`. The assistant can share `export.py html` output for you to print to PDF on your computer; upload that PDF back to the chat to run `parse_check.py` on it.
+
+## 2b. Claude Code or Codex (local terminal)
+
+You need: Python 3.10+, and for PDF export a Chrome, Chromium or Edge on your computer (or RenderCV).
+
+Unzip into your assistant's skills folder (Claude Code: `~/.claude/skills/`; Codex: `~/.codex/skills/`) and install the four runtime dependencies into a virtual environment.
+
+macOS / Linux:
 
 ```console
 $ mkdir -p ~/.claude/skills && python3 -m zipfile -e nomagic-cv.zip ~/.claude/skills/
-$ ls ~/.claude/skills/nomagic-cv
-CREDITS.md  LICENSE  LICENSE-CONTENT  NOTICE.md  SKILL.md  references  requirements.txt  rules  scripts  templates
 $ python3 -m venv ~/.nomagic-venv
 $ ~/.nomagic-venv/bin/python -m pip install -q -r ~/.claude/skills/nomagic-cv/requirements.txt
-$ source ~/.nomagic-venv/bin/activate        # Windows: %USERPROFILE%\.nomagic-venv\Scripts\activate
+$ source ~/.nomagic-venv/bin/activate
+$ S=~/.claude/skills/nomagic-cv/scripts
 ```
 
-Start your assistant from this activated shell so it finds the dependencies. Your data will live in `~/nomagic-cv-workspace` (set `NOMAGIC_WORKSPACE` to choose another folder). `NOTICE.md` explains the licences and how the bundle differs from the repository.
+Windows (PowerShell):
 
-The commands below use `S=~/.claude/skills/nomagic-cv/scripts`.
+```powershell
+New-Item -ItemType Directory -Force "$HOME\.claude\skills" | Out-Null
+py -m zipfile -e nomagic-cv.zip "$HOME\.claude\skills"
+py -m venv "$HOME\.nomagic-venv"
+& "$HOME\.nomagic-venv\Scripts\python" -m pip install -q -r "$HOME\.claude\skills\nomagic-cv\requirements.txt"
+& "$HOME\.nomagic-venv\Scripts\Activate.ps1"
+$S = "$HOME\.claude\skills\nomagic-cv\scripts"
+```
+
+Start your assistant from this activated shell so it finds the dependencies. Your data will live in `~/nomagic-cv-workspace` (set `NOMAGIC_WORKSPACE` to choose another folder). The commands below are written for macOS / Linux; in PowerShell use `python $S\fact_check.py` and so on.
 
 ## 3. Facts interview
 
@@ -148,7 +171,11 @@ $ python $S/parse_check.py Jordan_Lee_Business_Intelligence_Analyst.pdf --source
 OK     Jordan_Lee_Business_Intelligence_Analyst.pdf: 1160 characters parsed (0 warnings).
 ```
 
-`export.py pdf` uses a Chrome, Chromium or Edge already on your computer; without one, use `export.py html` and print to PDF, or `export.py rendercv`. The parse check extracts the text the way simple parsers do and confirms every source line survived, in order. It is not a test against any particular employer's applicant tracking system.
+`export.py pdf` uses a Chrome, Chromium or Edge already on your computer; without one, use `export.py html` and print to PDF, or `export.py rendercv`.
+
+The parse check is a text-extraction test with heuristics, not a test against any employer's applicant tracking system. It checks that text can be extracted, that Experience and Education headings and an email are present, and that the opening words (the first 50 normalised characters) of each bullet, role and text line in the CV's sections appear in the extracted text. Lines shorter than 12 characters are skipped, and lines out of order are a warning, not an error. A pass does not prove that every word survived or that the layout reads well.
+
+**Before you use the PDF, open it and read it yourself**: check every line, the dates and the page breaks.
 
 The exported PDF from this run (page 1, rendered to an image):
 
@@ -179,4 +206,4 @@ The follow-up date starts from the confirmed submission, and drafts are never co
 
 ## What left the machine in this walkthrough
 
-The check scripts ran locally and made no network calls (pip downloaded the dependencies once). The PDF was rendered by the local Chrome. In a real session, the assistant sends what it reads (the fact sheet, CV and posting) to its model provider, under that provider's terms.
+In this local run, the check scripts made no network calls (pip downloaded the dependencies once). The PDF was rendered by the local Chrome. In a real session, the assistant sends what it reads (the fact sheet, CV and posting) to its model provider, under that provider's terms. In the Claude app, the scripts and your files are in Claude's cloud sandbox throughout.

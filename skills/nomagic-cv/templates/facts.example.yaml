@@ -1,5 +1,6 @@
 # facts.yaml: the single source of truth. Fictional example.
-# Copy to workspace/facts.yaml. Only the candidate changes this file (a hook asks first).
+# Copy to <workspace>/facts.yaml. Only the candidate changes this file: the assistant asks before writing
+# (full-project installs also enforce this with a hook).
 schema_version: 1
 
 preferences:
