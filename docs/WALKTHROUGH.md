@@ -145,7 +145,7 @@ ERROR  letter.md:3  [R-KNOCK-02] Claims 10 years; the fact sheet supports at mos
 $ python $S/export.py pdf cv.md
 Wrote Jordan_Lee_Business_Intelligence_Analyst.pdf
 $ python $S/parse_check.py Jordan_Lee_Business_Intelligence_Analyst.pdf --source cv.md
-OK     Jordan_Lee_Business_Intelligence_Analyst.pdf: 1158 characters parsed (0 warnings).
+OK     Jordan_Lee_Business_Intelligence_Analyst.pdf: 1160 characters parsed (0 warnings).
 ```
 
 `export.py pdf` uses a Chrome, Chromium or Edge already on your computer; without one, use `export.py html` and print to PDF, or `export.py rendercv`. The parse check extracts the text the way simple parsers do and confirms every source line survived, in order. It is not a test against any particular employer's applicant tracking system.

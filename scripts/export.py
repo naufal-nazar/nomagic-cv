@@ -151,9 +151,11 @@ ul { margin: 3pt 0 0 0; padding-left: 13pt; }
 li { margin: 0 0 3.6pt; padding-left: 1pt; }
 li::marker { color: #64748b; }
 .role { margin: 0 0 12pt; break-inside: avoid; }
-.role-head { display: flex; justify-content: space-between; align-items: baseline; gap: 10pt; }
+/* Title line, then dates on their own line, both in normal text flow. Right-aligned (flex) dates were
+   extracted out of reading order with some fonts, and tabular-nums glyphs lost their digits in pypdf. */
+.role-head { display: block; }
 .role-title { font-weight: 700; color: #0f172a; font-size: 11pt; }
-.dates { white-space: nowrap; color: #475569; font-size: 9.8pt; font-variant-numeric: tabular-nums; }
+.dates { display: block; white-space: nowrap; color: #475569; font-size: 9.8pt; }
 .org { color: #334e68; font-weight: 500; }
 .item { margin: 0 0 7pt; }
 .item strong { color: #0f172a; }
@@ -165,8 +167,7 @@ li::marker { color: #64748b; }
 THEMES = {
     "classic": BASE_CSS + """
 header { padding-bottom: 9pt; border-bottom: 2.2pt solid #0f2a4a; margin-bottom: 2pt; }
-.skills-inline .skill-group { display: flex; gap: 6pt; }
-.skills-inline .skill-group b { display: inline; min-width: 72pt; margin: 0; }
+.skills-inline .skill-group b { display: inline; margin: 0; }   /* one line of text: "Label: items" */
 """,
     "modern": BASE_CSS + """
 header { background: #0f2a4a; color: #fff; margin: 0 0 16pt; padding: 8mm 8mm 7mm; border-radius: 3pt; }
@@ -202,7 +203,7 @@ def _sections(s: dict, facts: dict) -> dict[str, str]:
             dates = f"{cvlib.fmt_month(role['start'])} – {cvlib.fmt_month(role.get('end', 'present'))}"
             where = ", ".join(x for x in (role["employer"], role.get("location", "")) if x)
             parts.append(f"<div class='role'><div class='role-head'><span><span class='role-title'>{esc(role['title'])}</span>"
-                         f"<span class='org'>, {esc(where)}</span></span><span class='dates'>{esc(dates)}</span></div>")
+                         f"<span class='org'>, {esc(where)}</span></span> <span class='dates'>{esc(dates)}</span></div>")
             if r["highlights"]:
                 parts.append("<ul>" + "".join(f"<li>{esc(h)}</li>" for h in r["highlights"]) + "</ul>")
             parts.append("</div>")
@@ -219,7 +220,7 @@ def _sections(s: dict, facts: dict) -> dict[str, str]:
             for x in s["certifications"])
     if s["skills"]:
         out["skills"] = "<h2>Skills</h2>" + "".join(
-            f"<div class='skill-group'><b>{esc(g['label'])}</b>{esc(', '.join(g['items']))}</div>" for g in s["skills"])
+            f"<div class='skill-group'><b>{esc(g['label'])}:</b> {esc(', '.join(g['items']))}</div>" for g in s["skills"])
     if s["languages"]:
         out["languages"] = "<h2>Languages</h2><p>" + ", ".join(
             f"{esc(l['name'])} ({esc(l.get('level', ''))})" for l in s["languages"]) + "</p>"

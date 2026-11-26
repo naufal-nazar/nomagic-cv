@@ -13,6 +13,9 @@ All notable changes to this project are documented here. Versions follow [Semant
 - `schedule.py install` and `run-once` stop with an explanation outside the full project clone, where the `nomagic-daily` command they run does not exist
 - Commands renamed to say what they do: `/nomagic-start` → `/nomagic-facts`, `/nomagic-build` → `/nomagic-master`, `/nomagic-apply` → `/nomagic-tailor` (it never submits), `/nomagic-review` → `/nomagic-stats`, `/nomagic-leads` → `/nomagic-employers`
 
+### Fixed
+- PDF export: role dates are now a separate line under the title in normal text flow, and skill groups render as one line ("Label: items"). Before, right-aligned dates were extracted out of reading order with fallback fonts (pdftotext put them at the end of the document), and `tabular-nums` glyphs lost their digits in pypdf, so `parse_check.py` could not find the role lines. Found by the new PDF smoke test; checked locally across Inter, Source Sans 3, Liberation Sans and Liberation Serif with both extractors (old: 5 of 8 combinations failed; new: 0). README screenshots and the walkthrough image regenerated
+
 ### Added
 - Outreach in two modes: semi-auto drafts (default) and capped auto-send, with consent basis, follow-up limits, opt-outs and banned phrases enforced by `outreach.py` and a pre-send hook
 - Lead import from gosom/google-maps-scraper and google-maps-scraper-kit exports; MX checks without SMTP probing
