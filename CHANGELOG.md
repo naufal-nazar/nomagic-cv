@@ -24,7 +24,7 @@ All notable changes to this project are documented here. Versions follow [Semant
 - Standalone bundle (`setup.py --zip`, `--global`) now ships `LICENSE`, `LICENSE-CONTENT`, `CREDITS.md`, a runtime-only `requirements.txt`, and `NOTICE.md` with CC BY 4.0 attribution and a list of packaging changes
 - `setup.py --zip` also writes `nomagic-cv.zip.sha256` (`sha256sum -c` format); release zips are attached to GitHub releases
 - `docs/WALKTHROUGH.md`: install from the release zip and take a fictional candidate from the facts interview to a checked PDF, with real check output
-- `tests/test_bundle_smoke.py`: builds the zip, installs it into a temporary skills folder and a fresh virtualenv using only the bundle's files, and runs the fact, consistency, parse and posting checks on the fictional example data
+- `tests/test_bundle_smoke.py`: builds the zip, installs it into a temporary skills folder and a fresh virtualenv from the bundle's `requirements.txt`, and runs the fact, consistency, parse (DOCX and PDF) and posting checks. Facts come from the bundle's fictional example; CVs, letters and postings are inline test strings, not repository files. PDF export is skipped, with the reason printed, when no Chrome, Chromium or Edge is installed. The docstring lists what a pass does and does not show
 
 ## [0.1.0] - 2026-11-19
 

@@ -29,3 +29,4 @@ package = false
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
+addopts = "-rs"   # always print why a test was skipped (e.g. no browser for PDF export)
