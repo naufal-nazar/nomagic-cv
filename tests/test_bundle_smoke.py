@@ -336,7 +336,11 @@ def test_pdf_export_then_parse_check(installed):
         if keep:
             Path(keep).mkdir(parents=True, exist_ok=True)
             shutil.copy2(pdf, Path(keep) / f"{sys.platform}-py{sys.version_info[0]}{sys.version_info[1]}-{pdf.name}")
-        pytest.fail(f"{res.stdout}{res.stderr}\n--- extracted text ---\n{dump.stdout}{dump.stderr}")
+        b64 = ""
+        if os.environ.get("NOMAGIC_SMOKE_DUMP_PDF"):     # temporary CI diagnostic: the PDF itself, base64
+            import base64
+            b64 = "\n--- pdf base64 ---\n" + base64.b64encode(pdf.read_bytes()).decode() + "\n--- end pdf ---"
+        pytest.fail(f"{res.stdout}{res.stderr}\n--- extracted text ---\n{dump.stdout}{dump.stderr}{b64}")
     assert res.stdout.startswith("OK"), res.stdout
 
 
