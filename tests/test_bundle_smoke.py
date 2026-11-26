@@ -95,6 +95,9 @@ def make_venv(venv_dir: Path, requirements: Path) -> Path:
 def installed(tmp_path_factory):
     tmp = tmp_path_factory.mktemp("smoke")
     archive = load_setup().build_zip(tmp / "dist")
+    import hashlib
+    line = archive.with_name("nomagic-cv.zip.sha256").read_text(encoding="utf-8")
+    assert line == f"{hashlib.sha256(archive.read_bytes()).hexdigest()}  nomagic-cv.zip\n"
     skills = tmp / "home" / ".claude" / "skills"
     skills.mkdir(parents=True)
     with zipfile.ZipFile(archive) as z:

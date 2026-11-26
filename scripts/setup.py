@@ -7,7 +7,7 @@ Usage (with uv, recommended: `uv run scripts/setup.py ...`; without uv, use pyth
   python3 scripts/setup.py --global claude install the skill for Claude Code in all your projects
   python3 scripts/setup.py --global codex  install the skill for Codex (CLI, IDE and app)
   python3 scripts/setup.py --codex-hooks   enable automatic checks in Codex for this project
-  python3 scripts/setup.py --zip           build dist/nomagic-cv.zip to upload to the Claude app
+  python3 scripts/setup.py --zip           build dist/nomagic-cv.zip (and its .sha256) for the Claude app or a marketplace
   python3 scripts/setup.py --email gmail   add Google's official Gmail MCP server (drafts) for outreach
   python3 scripts/setup.py --email smtp    prepare auto-send through your own provider's SMTP (app password)
   python3 scripts/setup.py --leads kit     install an open-source Google Maps scraper for /nomagic-employers
@@ -348,8 +348,13 @@ def build_zip(dist: Path | None = None) -> Path:
     bundle(staging)
     archive = Path(shutil.make_archive(str(dist / "nomagic-cv"), "zip", root_dir=staging.parent, base_dir="nomagic-cv"))
     shutil.rmtree(dist / "staging")
+    import hashlib
+    digest = hashlib.sha256(archive.read_bytes()).hexdigest()
+    checksum = archive.with_name(archive.name + ".sha256")
+    checksum.write_text(f"{digest}  {archive.name}\n", encoding="utf-8")      # sha256sum -c format
     shown = archive.relative_to(ROOT) if archive.is_relative_to(ROOT) else archive
     say(OK, f"Built {shown} (top-level folder: nomagic-cv/)")
+    say(OK, f"SHA-256 {digest} (also in {checksum.name})")
     say(OK, "Upload it in the Claude app under Customize > Skills (code execution must be on)")
     return archive
 

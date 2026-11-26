@@ -6,6 +6,6 @@ authors:
     given-names: Noufal
 repository-code: "https://github.com/naufal-nazar/nomagic-cv"
 license: MIT
-version: 0.1.0
-date-released: 2026-11-19
+version: 0.2.0
+date-released: 2026-11-26
 keywords: [resume, cv, ats, hiring research, ai agents, agent skills]

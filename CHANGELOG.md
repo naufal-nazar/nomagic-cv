@@ -4,6 +4,8 @@ All notable changes to this project are documented here. Versions follow [Semant
 
 ## [Unreleased]
 
+## [0.2.0] - 2026-11-26
+
 ### Changed
 - README, `SKILL.md` description, `pyproject.toml`, `CREDITS.md` and `docs/DEVELOPERS.md` now say precisely what the checks verify (tags, numbers, titles, dates, listed items, text extraction) and what they cannot (meaning, the truth of the fact sheet, a real ATS), and what leaves the machine (content the host assistant sends to its model provider; optional email, lead-finder, DNS and cross-review features). New README section: "What the checks prove, and what they don't". `fact_check.py`'s OK line reworded to match
 - Tracker: `tracker.py add` now logs a `draft`. A row becomes `applied` only with `tracker.py status <id> applied --confirmed-submitted` (or `add --confirmed-submitted`), which sets the submission date and the first follow-up. Drafts are left out of callback statistics and follow-up lists, and `due` lists them for confirmation. Existing rows are read as they are and never rewritten; saves keep extra columns and write atomically
@@ -20,6 +22,8 @@ All notable changes to this project are documented here. Versions follow [Semant
 - `/nomagic-daily` unattended routine and `schedule.py` (cron, Task Scheduler); permission allowlist for headless runs
 - Versioned CV storage (`versions.py`), HTML/PDF export, branded README visuals
 - Standalone bundle (`setup.py --zip`, `--global`) now ships `LICENSE`, `LICENSE-CONTENT`, `CREDITS.md`, a runtime-only `requirements.txt`, and `NOTICE.md` with CC BY 4.0 attribution and a list of packaging changes
+- `setup.py --zip` also writes `nomagic-cv.zip.sha256` (`sha256sum -c` format); release zips are attached to GitHub releases
+- `docs/WALKTHROUGH.md`: install from the release zip and take a fictional candidate from the facts interview to a checked PDF, with real check output
 - `tests/test_bundle_smoke.py`: builds the zip, installs it into a temporary skills folder and a fresh virtualenv using only the bundle's files, and runs the fact, consistency, parse and posting checks on the fictional example data
 
 ## [0.1.0] - 2026-11-19

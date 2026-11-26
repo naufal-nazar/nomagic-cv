@@ -62,7 +62,7 @@ cd nomagic-cv
 uv run scripts/setup.py
 ```
 
-Then open the folder in your assistant and type `/nomagic-facts` (in Codex, say "run nomagic-facts"). Full guide: [`INSTALL.md`](INSTALL.md).
+Then open the folder in your assistant and type `/nomagic-facts` (in Codex, say "run nomagic-facts"). Full guide: [`INSTALL.md`](INSTALL.md). Prefer a skill-only install from the release zip? [`docs/WALKTHROUGH.md`](docs/WALKTHROUGH.md) goes from download to a checked PDF with a fictional candidate.
 
 ## Commands
 

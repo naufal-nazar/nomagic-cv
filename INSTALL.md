@@ -43,7 +43,7 @@ Success ends with `NoMagicCV is ready.` To verify later without changing anythin
 | **Claude Code**: terminal, desktop app or IDE | Open the `nomagic-cv` folder as the project. Type `/nomagic-facts`. | Skill, `/nomagic-*` commands, 5 subagents, automatic hooks |
 | **Codex**: CLI, IDE extension or app | Open the folder as the project. Say `run nomagic-facts`. Optional automatic checks: `python3 scripts/setup.py --codex-hooks`, then check the file against your Codex version. | Skill, `AGENTS.md` rules, checks as steps or hooks |
 | **Gemini CLI, Cursor, Copilot, other agents** | Open the folder. Say `Read AGENTS.md, then run nomagic-facts`. | Skill where supported, `AGENTS.md` rules, checks run as steps |
-| **Claude app** (chat on web or desktop, no terminal) | On a computer: `python3 scripts/setup.py --zip`, then upload `dist/nomagic-cv.zip` in **Customize > Skills** (code execution must be on). | The skill and its checks inside Claude's sandbox; no slash commands or hooks |
+| **Claude app** (chat on web or desktop, no terminal) | Download `nomagic-cv.zip` from [Releases](https://github.com/naufal-nazar/nomagic-cv/releases) and check it against `nomagic-cv.zip.sha256` (or build it: `python3 scripts/setup.py --zip`), then upload it in **Customize > Skills** (code execution must be on). Step by step: [`docs/WALKTHROUGH.md`](docs/WALKTHROUGH.md). | The skill and its checks inside Claude's sandbox; no slash commands or hooks |
 | **Use it in every project** *(user-wide)* | `python3 scripts/setup.py --global claude` or `--global codex` or `--global all` | Skill installed to `~/.claude/skills` or `~/.codex/skills`; data in `~/nomagic-cv-workspace` |
 
 ## 3b. Connect email for outreach (optional)
