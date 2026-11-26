@@ -35,8 +35,10 @@ PHONE_RE = re.compile(r"\+?\d[\d\s().-]{7,}\d")
 def pdf_text(path: Path) -> tuple[str, str]:
     """Return (reading-order text, layout text)."""
     if shutil.which("pdftotext"):
-        plain = subprocess.run(["pdftotext", str(path), "-"], capture_output=True, text=True).stdout
-        layout = subprocess.run(["pdftotext", "-layout", str(path), "-"], capture_output=True, text=True).stdout
+        # Ask for UTF-8 and decode it as UTF-8: the locale default (cp1252 on Windows) turns "–" into "â€“".
+        run = lambda *a: subprocess.run(["pdftotext", "-enc", "UTF-8", *a, str(path), "-"], capture_output=True,
+                                        encoding="utf-8").stdout
+        plain, layout = run(), run("-layout")
         return plain, layout
     try:
         from pypdf import PdfReader

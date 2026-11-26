@@ -345,3 +345,25 @@ def test_both_themes_render_complete_html():
                        "Certified Clinical Research Associate (CCRA)", "Medidata Rave", "French (Professional)"):
             assert needle in html, (theme, needle)
         assert "letter-spacing: 1" not in html        # spaced-out headings break ATS text extraction
+
+
+def test_parse_check_decodes_pdftotext_as_utf8_whatever_the_locale(monkeypatch, tmp_path):
+    """Windows CI: pdftotext output decoded as cp1252 turned 'Mar 2021 – Present' into '... â€“ ...'."""
+    import parse_check
+    src = tmp_path / "cv.md"
+    src.write_text("# A B\n\n## Experience\n### Data Analyst, Acme Retail, Toronto, ON | Mar 2021 - Present\n"
+                   "\n## Education\nBachelor of Commerce\n", encoding="utf-8")
+    raw = ("A B\na@example.com\nEXPERIENCE\nData Analyst, Acme Retail, Toronto, ON\nMar 2021 – Present\n"
+           "EDUCATION\nBachelor of Commerce\n" + "filler text " * 20).encode("utf-8")
+
+    class Done:  # mimics subprocess.run: decodes with the requested encoding, else a cp1252 locale
+        def __init__(self, encoding):
+            self.stdout = raw.decode(encoding or "cp1252")
+    monkeypatch.setattr(parse_check.shutil, "which", lambda _n: "pdftotext")
+    monkeypatch.setattr(parse_check.subprocess, "run", lambda *a, **k: Done(k.get("encoding")))
+    (tmp_path / "cv.pdf").write_bytes(b"")
+    assert parse_check.check(str(tmp_path / "cv.pdf"), str(src))["errors"] == []
+    # The mojibake itself must still fail loudly: the check is not loosened to tolerate it.
+    bad = raw.decode("cp1252")
+    monkeypatch.setattr(parse_check, "pdf_text", lambda _p: (bad, bad))
+    assert ["R-PARSE-04", "Source lines missing from extracted text: [4]"] in parse_check.check(str(tmp_path / "cv.pdf"), str(src))["errors"]

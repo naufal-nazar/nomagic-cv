@@ -14,6 +14,8 @@ All notable changes to this project are documented here. Versions follow [Semant
 - Commands renamed to say what they do: `/nomagic-start` → `/nomagic-facts`, `/nomagic-build` → `/nomagic-master`, `/nomagic-apply` → `/nomagic-tailor` (it never submits), `/nomagic-review` → `/nomagic-stats`, `/nomagic-leads` → `/nomagic-employers`
 
 ### Fixed
+- `parse_check.py` asks pdftotext for UTF-8 and decodes it as UTF-8. It used the locale encoding, so on Windows (cp1252) an en dash became `â€“` and a correct PDF failed the source-line check
+- PDF text layer: ligatures are turned off, so words like "Certified" extract as plain letters instead of `ﬁ` (seen with macOS Helvetica Neue, DejaVu Sans and Source Sans 3)
 - PDF export: role dates are now a separate line under the title in normal text flow, and skill groups render as one line ("Label: items"). Before, right-aligned dates were extracted out of reading order with fallback fonts (pdftotext put them at the end of the document), and `tabular-nums` glyphs lost their digits in pypdf, so `parse_check.py` could not find the role lines. Found by the new PDF smoke test; checked locally across Inter, Source Sans 3, Liberation Sans and Liberation Serif with both extractors (old: 5 of 8 combinations failed; new: 0). README screenshots and the walkthrough image regenerated
 
 ### Added
